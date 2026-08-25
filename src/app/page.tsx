@@ -99,25 +99,34 @@ export default function Home() {
     <>
       <SiteHeader />
       <main className="flex-1">
-        <section className="relative overflow-hidden bg-neutral-50">
+        <section className="relative overflow-hidden bg-neutral-50 dark:bg-neutral-950">
           <div className="mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2 md:items-center md:py-28">
             <div>
-              <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700">
+              <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
                 Menú digital para restaurantes
               </span>
-              <h1 className="mt-4 text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl">
+              <h1 className="mt-4 text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white sm:text-5xl">
                 El menú de tu restaurante, siempre actualizado.
               </h1>
-              <p className="mt-4 max-w-md text-lg text-neutral-600">
+              <p className="mt-4 max-w-md text-lg text-neutral-600 dark:text-neutral-400">
                 Crea una landing y un menú digital con código QR en minutos.
                 Edita platos y precios desde tu panel, sin reimprimir nada.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/signup">
-                  <Button size="lg">Crea tu menú gratis</Button>
+                  <Button
+                    size="lg"
+                    className="dark:bg-lime-400 dark:text-neutral-950 dark:hover:bg-lime-300"
+                  >
+                    Crea tu menú gratis
+                  </Button>
                 </Link>
                 <Link href="#how-it-works">
-                  <Button size="lg" variant="secondary">
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    className="dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
+                  >
                     Cómo funciona
                   </Button>
                 </Link>
@@ -127,24 +136,34 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="features" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+        <section
+          id="features"
+          className="mx-auto max-w-6xl bg-white px-4 py-20 dark:bg-neutral-950 sm:px-6"
+        >
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-semibold tracking-tight text-neutral-900">
+            <h2 className="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-white">
               Todo lo que necesitas para tu menú digital
             </h2>
-            <p className="mt-3 text-neutral-600">
+            <p className="mt-3 text-neutral-600 dark:text-neutral-400">
               Diseñado para que administrar tu menú sea tan fácil como enviar
               un mensaje.
             </p>
           </div>
           <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map(({ icon: Icon, title, description }) => (
-              <div key={title} className="rounded-2xl border border-neutral-100 p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-900 text-white">
+              <div
+                key={title}
+                className="rounded-2xl border border-neutral-100 p-6 dark:border-neutral-800"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-900 text-white dark:bg-lime-400/10 dark:text-lime-400">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 font-semibold text-neutral-900">{title}</h3>
-                <p className="mt-1.5 text-sm text-neutral-600">{description}</p>
+                <h3 className="mt-4 font-semibold text-neutral-900 dark:text-white">
+                  {title}
+                </h3>
+                <p className="mt-1.5 text-sm text-neutral-600 dark:text-neutral-400">
+                  {description}
+                </p>
               </div>
             ))}
           </div>
@@ -186,16 +205,21 @@ export default function Home() {
 
         <PricingPlans />
 
-        <section className="bg-orange-50 py-20">
+        <section className="bg-orange-50 py-20 dark:bg-neutral-900">
           <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
-            <h2 className="text-3xl font-semibold tracking-tight text-neutral-900">
+            <h2 className="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-white">
               Moderniza el menú de tu restaurante hoy
             </h2>
-            <p className="mt-3 text-neutral-600">
+            <p className="mt-3 text-neutral-600 dark:text-neutral-400">
               Únete a los restaurantes que ya dejaron atrás el menú de papel.
             </p>
             <Link href="/signup" className="mt-8 inline-block">
-              <Button size="lg">Crea tu cuenta gratis</Button>
+              <Button
+                size="lg"
+                className="dark:bg-lime-400 dark:text-neutral-950 dark:hover:bg-lime-300"
+              >
+                Crea tu cuenta gratis
+              </Button>
             </Link>
           </div>
         </section>
