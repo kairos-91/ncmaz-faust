@@ -1,11 +1,7 @@
 import Link from "next/link";
 import {
   QrCode,
-  LayoutDashboard,
-  Smartphone,
   Palette,
-  Clock,
-  ImageIcon,
   Store,
   UtensilsCrossed,
   MessageCircle,
@@ -17,45 +13,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { PricingPlans } from "@/components/pricing-plans";
 import { FaqSection } from "@/components/faq-section";
 import { TestimonialsSection } from "@/components/testimonials-section";
-
-const FEATURES = [
-  {
-    icon: QrCode,
-    title: "Menú con código QR",
-    description:
-      "Genera un código QR único para tu restaurante. Tus clientes escanean y ven el menú al instante, sin apps.",
-  },
-  {
-    icon: LayoutDashboard,
-    title: "Panel de administración",
-    description:
-      "Edita platos, precios, fotos y disponibilidad en segundos desde cualquier dispositivo.",
-  },
-  {
-    icon: Palette,
-    title: "A tu estilo",
-    description:
-      "Personaliza el color de marca, logo y portada para que el menú se vea como tu restaurante.",
-  },
-  {
-    icon: Clock,
-    title: "Cambios en tiempo real",
-    description:
-      "Marca un plato como agotado o actualiza el precio y se refleja al instante para todos tus clientes.",
-  },
-  {
-    icon: ImageIcon,
-    title: "Fotos de tus platos",
-    description:
-      "Sube imágenes de cada plato para que tus clientes decidan más rápido y pidan con confianza.",
-  },
-  {
-    icon: Smartphone,
-    title: "Optimizado para celular",
-    description:
-      "Diseñado mobile-first: rápido, liviano y fácil de leer desde cualquier teléfono.",
-  },
-];
 
 const STEPS = [
   {
@@ -135,39 +92,6 @@ export default function Home() {
               </div>
             </div>
             <PhoneMockup />
-          </div>
-        </section>
-
-        <section
-          id="features"
-          className="mx-auto max-w-6xl bg-white px-4 py-20 dark:bg-neutral-950 sm:px-6"
-        >
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-white">
-              Todo lo que necesitas para tu menú digital
-            </h2>
-            <p className="mt-3 text-neutral-600 dark:text-neutral-400">
-              Diseñado para que administrar tu menú sea tan fácil como enviar
-              un mensaje.
-            </p>
-          </div>
-          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map(({ icon: Icon, title, description }) => (
-              <div
-                key={title}
-                className="rounded-2xl border border-neutral-100 p-6 dark:border-neutral-800"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-900 text-white dark:bg-lime-400/10 dark:text-lime-400">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="mt-4 font-semibold text-neutral-900 dark:text-white">
-                  {title}
-                </h3>
-                <p className="mt-1.5 text-sm text-neutral-600 dark:text-neutral-400">
-                  {description}
-                </p>
-              </div>
-            ))}
           </div>
         </section>
 
