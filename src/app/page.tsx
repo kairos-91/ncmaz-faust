@@ -6,6 +6,10 @@ import {
   Palette,
   Clock,
   ImageIcon,
+  Store,
+  UtensilsCrossed,
+  MessageCircle,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
@@ -52,19 +56,40 @@ const FEATURES = [
 
 const STEPS = [
   {
-    step: "1",
-    title: "Crea tu cuenta",
-    description: "Regístrate gratis en menos de un minuto.",
+    icon: Store,
+    title: "Crea tu restaurante",
+    description:
+      "Crea el perfil de tu restaurante y compártelo mediante link o código QR.",
   },
   {
-    step: "2",
-    title: "Arma tu menú",
-    description: "Agrega categorías y platos con fotos y precios.",
+    icon: Palette,
+    title: "Personaliza tu marca",
+    description:
+      "Elige el color y el logo de tu restaurante para que el menú se vea como tuyo.",
   },
   {
-    step: "3",
+    icon: UtensilsCrossed,
+    title: "Crea tu menú",
+    description:
+      "Carga cada plato con fotos, precios, descripciones y etiquetas.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Configura tu WhatsApp",
+    description:
+      "Conecta tu número para recibir los pedidos directo en tu chat.",
+  },
+  {
+    icon: QrCode,
     title: "Comparte tu QR",
-    description: "Imprime el código QR y colócalo en tus mesas.",
+    description:
+      "Tus clientes escanean el código en la mesa y ven el menú al instante.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Actualiza en tiempo real",
+    description:
+      "Marca un plato como agotado o cambia un precio y se refleja al instante.",
   },
 ];
 
@@ -124,19 +149,32 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="how-it-works" className="bg-neutral-900 py-20 text-white">
+        <section id="how-it-works" className="bg-neutral-950 py-20 text-white">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <h2 className="text-center text-3xl font-semibold tracking-tight">
-              Cómo funciona
-            </h2>
-            <div className="mt-14 grid gap-10 sm:grid-cols-3">
-              {STEPS.map(({ step, title, description }) => (
-                <div key={step} className="text-center sm:text-left">
-                  <span className="text-sm font-semibold text-orange-400">
-                    Paso {step}
-                  </span>
-                  <h3 className="mt-2 text-xl font-semibold">{title}</h3>
-                  <p className="mt-1.5 text-sm text-neutral-300">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold uppercase tracking-wide text-white sm:text-4xl">
+                Cómo funciona
+              </h2>
+              <span className="mx-auto mt-3 block h-1 w-16 rounded-full bg-lime-400" />
+              <p className="mx-auto mt-6 max-w-xl text-neutral-400">
+                Crea el menú de tu restaurante de forma fácil y sin
+                complicaciones
+              </p>
+            </div>
+
+            <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {STEPS.map(({ icon: Icon, title, description }) => (
+                <div
+                  key={title}
+                  className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-lime-400/10 text-lime-400">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-white">
+                    {title}
+                  </h3>
+                  <p className="mt-2 text-sm text-neutral-400">
                     {description}
                   </p>
                 </div>
