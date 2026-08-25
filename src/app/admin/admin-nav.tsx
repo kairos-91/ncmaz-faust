@@ -1,0 +1,54 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { signOut } from "./actions";
+
+const links = [
+  { href: "/admin", label: "Resumen" },
+  { href: "/admin/restaurant", label: "Mi restaurante" },
+  { href: "/admin/categories", label: "Categorías" },
+  { href: "/admin/menu", label: "Menú" },
+];
+
+export function AdminNav({ email }: { email: string | null }) {
+  const pathname = usePathname();
+
+  return (
+    <aside className="flex w-full shrink-0 flex-col justify-between border-neutral-200 bg-white md:h-screen md:w-56 md:border-r md:sticky md:top-0">
+      <div>
+        <div className="flex items-center justify-between px-5 py-5 md:block">
+          <Link href="/" className="text-lg font-semibold tracking-tight">
+            levery
+          </Link>
+        </div>
+        <nav className="flex gap-1 overflow-x-auto px-3 pb-2 md:flex-col md:overflow-visible md:pb-0">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100",
+                pathname === link.href && "bg-neutral-900 text-white hover:bg-neutral-900",
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+      <div className="border-t border-neutral-100 px-5 py-4">
+        <p className="mb-2 truncate text-xs text-neutral-400">{email}</p>
+        <form action={signOut}>
+          <button
+            type="submit"
+            className="text-sm font-medium text-neutral-500 hover:text-neutral-900"
+          >
+            Cerrar sesión
+          </button>
+        </form>
+      </div>
+    </aside>
+  );
+}
