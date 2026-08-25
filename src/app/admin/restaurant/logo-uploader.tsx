@@ -30,7 +30,7 @@ export function LogoUploader({ restaurant }: { restaurant: Restaurant }) {
 
   return (
     <div className="flex items-center gap-4">
-      <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100">
+      <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800">
         {logoUrl ? (
           <Image
             src={logoUrl}

@@ -27,13 +27,13 @@ export default async function MenuPage() {
 
   if (!categories || categories.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-8 text-center">
-        <p className="mb-3 text-sm text-neutral-600">
+      <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-8 text-center dark:border-neutral-700 dark:bg-neutral-900">
+        <p className="mb-3 text-sm text-neutral-600 dark:text-neutral-400">
           Crea al menos una categoría antes de agregar platos.
         </p>
         <Link
           href="/admin/categories"
-          className="text-sm font-medium text-neutral-900 underline"
+          className="text-sm font-medium text-neutral-900 underline dark:text-white"
         >
           Ir a categorías
         </Link>
@@ -45,7 +45,7 @@ export default async function MenuPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold">Menú</h1>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Agrega, edita y organiza los platos de tu restaurante.
         </p>
       </div>

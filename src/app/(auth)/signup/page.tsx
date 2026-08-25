@@ -7,13 +7,13 @@ export default function SignupPage() {
   return (
     <>
       <h1 className="mb-1 text-lg font-semibold">Crea tu cuenta</h1>
-      <p className="mb-6 text-sm text-neutral-600">
+      <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
         Publica el menú digital de tu restaurante gratis.
       </p>
       <SignupForm />
-      <p className="mt-6 text-center text-sm text-neutral-600">
+      <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
         ¿Ya tienes cuenta?{" "}
-        <a href="/login" className="font-medium text-neutral-900 underline">
+        <a href="/login" className="font-medium text-neutral-900 underline dark:text-white">
           Inicia sesión
         </a>
       </p>

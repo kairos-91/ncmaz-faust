@@ -54,7 +54,7 @@ export function SignupForm() {
 
   if (checkEmail) {
     return (
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-neutral-600 dark:text-neutral-400">
         Te enviamos un correo de confirmación. Abre el enlace para activar tu
         cuenta y comenzar.
       </p>

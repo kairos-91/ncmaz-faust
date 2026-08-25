@@ -17,7 +17,7 @@ export default async function RestaurantSettingsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-xl font-semibold">Mi restaurante</h1>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Esta información aparece en tu menú público.
         </p>
       </div>

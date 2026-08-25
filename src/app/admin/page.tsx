@@ -18,7 +18,7 @@ export default async function AdminDashboardPage() {
         <h1 className="mb-1 text-xl font-semibold">
           Crea el menú de tu restaurante
         </h1>
-        <p className="mb-6 text-sm text-neutral-600">
+        <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
           Solo toma un minuto. Podrás editar todo después.
         </p>
         <RestaurantForm action={createRestaurant} submitLabel="Crear restaurante" />
@@ -45,7 +45,7 @@ export default async function AdminDashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-xl font-semibold">Hola, {restaurant.name} 👋</h1>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {restaurant.is_published
             ? "Tu menú está publicado y visible al público."
             : "Tu menú aún no está publicado. Actívalo en Mi restaurante."}
@@ -73,9 +73,9 @@ export default async function AdminDashboardPage() {
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-5">
+    <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
       <p className="text-2xl font-semibold">{value}</p>
-      <p className="text-sm text-neutral-600">{label}</p>
+      <p className="text-sm text-neutral-600 dark:text-neutral-400">{label}</p>
     </div>
   );
 }

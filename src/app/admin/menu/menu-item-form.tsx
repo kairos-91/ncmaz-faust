@@ -52,7 +52,7 @@ export function MenuItemForm({
             name="category_id"
             required
             defaultValue={item?.category_id ?? defaultCategoryId}
-            className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
+            className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
           >
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
@@ -104,26 +104,26 @@ export function MenuItemForm({
           name="image"
           type="file"
           accept="image/*"
-          className="block w-full text-sm text-neutral-600 file:mr-3 file:rounded-full file:border-0 file:bg-neutral-900 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white"
+          className="block w-full text-sm text-neutral-600 file:mr-3 file:rounded-full file:border-0 file:bg-neutral-900 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white dark:text-neutral-400 dark:file:bg-white dark:file:text-neutral-900"
         />
       </div>
 
       <div className="flex gap-6">
-        <label className="flex items-center gap-2 text-sm text-neutral-700">
+        <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
           <input
             type="checkbox"
             name="is_available"
             defaultChecked={item?.is_available ?? true}
-            className="h-4 w-4 rounded border-neutral-300"
+            className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
           />
           Disponible
         </label>
-        <label className="flex items-center gap-2 text-sm text-neutral-700">
+        <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
           <input
             type="checkbox"
             name="is_featured"
             defaultChecked={item?.is_featured ?? false}
-            className="h-4 w-4 rounded border-neutral-300"
+            className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
           />
           Destacado
         </label>

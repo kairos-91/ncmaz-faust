@@ -8,11 +8,13 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary:
-    "bg-neutral-900 text-white hover:bg-neutral-700 shadow-sm disabled:bg-neutral-300",
+    "bg-neutral-900 text-white hover:bg-neutral-700 shadow-sm disabled:bg-neutral-300 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-neutral-700",
   secondary:
-    "bg-white text-neutral-900 border border-neutral-200 hover:bg-neutral-50 disabled:text-neutral-300",
-  ghost: "text-neutral-600 hover:bg-neutral-100 disabled:text-neutral-300",
-  danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-200",
+    "bg-white text-neutral-900 border border-neutral-200 hover:bg-neutral-50 disabled:text-neutral-300 dark:bg-neutral-900 dark:text-white dark:border-neutral-700 dark:hover:bg-neutral-800 dark:disabled:text-neutral-600",
+  ghost:
+    "text-neutral-600 hover:bg-neutral-100 disabled:text-neutral-300 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:disabled:text-neutral-600",
+  danger:
+    "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-200 dark:disabled:bg-red-900",
 };
 
 const sizes: Record<NonNullable<ButtonProps["size"]>, string> = {

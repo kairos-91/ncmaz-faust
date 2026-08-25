@@ -25,9 +25,9 @@ export function CategoryManager({
 
   return (
     <div className="space-y-4">
-      <ul className="divide-y divide-neutral-100 rounded-2xl border border-neutral-200 bg-white">
+      <ul className="divide-y divide-neutral-100 rounded-2xl border border-neutral-200 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-neutral-900">
         {categories.length === 0 && (
-          <li className="px-4 py-6 text-center text-sm text-neutral-600">
+          <li className="px-4 py-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
             Aún no tienes categorías.
           </li>
         )}
@@ -109,7 +109,7 @@ function CategoryRow({
           <button
             type="button"
             disabled={isFirst || isPending}
-            className="text-neutral-400 hover:text-neutral-900 disabled:opacity-30"
+            className="text-neutral-400 hover:text-neutral-900 disabled:opacity-30 dark:text-neutral-500 dark:hover:text-white"
             onClick={() =>
               startTransition(() => moveCategory(restaurantId, category.id, "up"))
             }
@@ -120,7 +120,7 @@ function CategoryRow({
           <button
             type="button"
             disabled={isLast || isPending}
-            className="text-neutral-400 hover:text-neutral-900 disabled:opacity-30"
+            className="text-neutral-400 hover:text-neutral-900 disabled:opacity-30 dark:text-neutral-500 dark:hover:text-white"
             onClick={() =>
               startTransition(() => moveCategory(restaurantId, category.id, "down"))
             }
@@ -129,14 +129,14 @@ function CategoryRow({
             <ChevronDown className="h-3.5 w-3.5" />
           </button>
         </div>
-        <span className="text-sm font-medium text-neutral-800">
+        <span className="text-sm font-medium text-neutral-800 dark:text-neutral-100">
           {category.name}
         </span>
       </div>
       <div className="flex gap-3">
         <button
           type="button"
-          className="text-xs font-medium text-neutral-600 hover:text-neutral-900"
+          className="text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
           onClick={() => setEditing(true)}
         >
           Editar

@@ -35,7 +35,7 @@ export function MenuManager({
 
   return (
     <div className="space-y-8">
-      <div className="rounded-2xl border border-neutral-200 bg-white p-5">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
         {adding ? (
           <MenuItemForm
             categories={categories}
@@ -50,13 +50,13 @@ export function MenuManager({
 
       {byCategory.map(({ category, items }) => (
         <div key={category.id}>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-600">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-600 dark:text-neutral-400">
             {category.name}
           </h2>
           {items.length === 0 ? (
-            <p className="text-sm text-neutral-600">Sin platos todavía.</p>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">Sin platos todavía.</p>
           ) : (
-            <ul className="divide-y divide-neutral-100 rounded-2xl border border-neutral-200 bg-white">
+            <ul className="divide-y divide-neutral-100 rounded-2xl border border-neutral-200 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-neutral-900">
               {items.map((item) =>
                 editingId === item.id ? (
                   <li key={item.id} className="p-5">
@@ -68,7 +68,7 @@ export function MenuManager({
                       onSuccess={() => setEditingId(null)}
                     />
                     <button
-                      className="mt-3 text-xs font-medium text-neutral-600 hover:text-neutral-900"
+                      className="mt-3 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                       onClick={() => setEditingId(null)}
                     >
                       Cancelar
@@ -107,7 +107,7 @@ function MenuItemRow({
 
   return (
     <li className="flex items-center gap-4 px-4 py-3">
-      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
+      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
         {item.image_url && (
           <Image
             src={item.image_url}
@@ -122,13 +122,13 @@ function MenuItemRow({
       <div className="min-w-0 flex-1">
         <p
           className={cn(
-            "truncate text-sm font-medium text-neutral-900",
+            "truncate text-sm font-medium text-neutral-900 dark:text-white",
             !item.is_available && "text-neutral-400 line-through",
           )}
         >
           {item.name}
         </p>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {formatPrice(item.price, currency)}
         </p>
       </div>
@@ -144,14 +144,14 @@ function MenuItemRow({
           "shrink-0 rounded-full px-2.5 py-1 text-xs font-medium",
           item.is_available
             ? "bg-green-50 text-green-700"
-            : "bg-neutral-100 text-neutral-600",
+            : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
         )}
       >
         {item.is_available ? "Disponible" : "Agotado"}
       </button>
       <button
         type="button"
-        className="shrink-0 text-xs font-medium text-neutral-600 hover:text-neutral-900"
+        className="shrink-0 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
         onClick={onEdit}
       >
         Editar

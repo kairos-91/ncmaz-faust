@@ -44,8 +44,8 @@ export function RestaurantForm({
 
       <div>
         <Label htmlFor="slug">URL pública</Label>
-        <div className="flex items-center overflow-hidden rounded-lg border border-neutral-200 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-200">
-          <span className="whitespace-nowrap bg-neutral-50 px-3 text-sm text-neutral-600">
+        <div className="flex items-center overflow-hidden rounded-lg border border-neutral-200 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-200 dark:border-neutral-700 dark:focus-within:border-neutral-500 dark:focus-within:ring-neutral-700">
+          <span className="whitespace-nowrap bg-neutral-50 px-3 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
             /r/
           </span>
           <input
@@ -58,7 +58,7 @@ export function RestaurantForm({
               setSlug(slugify(e.target.value));
             }}
             placeholder="la-parrilla-de-juan"
-            className="h-10 w-full border-0 bg-white px-1 text-sm outline-none"
+            className="h-10 w-full border-0 bg-white px-1 text-sm text-neutral-900 outline-none dark:bg-neutral-900 dark:text-white"
           />
         </div>
       </div>
@@ -113,7 +113,7 @@ export function RestaurantForm({
             name="theme_color"
             type="color"
             defaultValue={restaurant?.theme_color ?? "#f97316"}
-            className="h-10 w-full cursor-pointer rounded-lg border border-neutral-200 bg-white p-1"
+            className="h-10 w-full cursor-pointer rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900"
           />
         </div>
         <div>
@@ -122,7 +122,7 @@ export function RestaurantForm({
             id="currency"
             name="currency"
             defaultValue={restaurant?.currency ?? "USD"}
-            className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
+            className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
           >
             {CURRENCIES.map((c) => (
               <option key={c} value={c}>
@@ -133,12 +133,12 @@ export function RestaurantForm({
         </div>
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-neutral-700">
+      <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
         <input
           type="checkbox"
           name="is_published"
           defaultChecked={restaurant?.is_published ?? false}
-          className="h-4 w-4 rounded border-neutral-300"
+          className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
         />
         Publicar menú (visible en tu URL pública)
       </label>
