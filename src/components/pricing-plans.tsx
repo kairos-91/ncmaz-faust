@@ -76,14 +76,20 @@ export function PricingPlans({
   const Heading = headingTag;
 
   return (
-    <section id="pricing" className={cn("bg-neutral-950 py-20 text-white", className)}>
+    <section
+      id="pricing"
+      className={cn(
+        "bg-white py-20 text-neutral-900 dark:bg-black dark:text-white",
+        className,
+      )}
+    >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="text-center">
-          <Heading className="text-3xl font-bold uppercase tracking-wide text-white sm:text-4xl">
+          <Heading className="text-3xl font-bold uppercase tracking-wide text-neutral-900 dark:text-white sm:text-4xl">
             Selecciona tu plan y continúa
           </Heading>
-          <span className="mx-auto mt-3 block h-1 w-16 rounded-full bg-lime-400" />
-          <p className="mx-auto mt-6 max-w-2xl text-neutral-400">
+          <span className="mx-auto mt-3 block h-1 w-16 rounded-full bg-lime-500 dark:bg-lime-400" />
+          <p className="mx-auto mt-6 max-w-2xl text-neutral-600 dark:text-neutral-400">
             Empieza con 15 días gratis o activa de una vez el plan mensual o
             anual, sin tarifas ocultas.
           </p>
@@ -94,19 +100,19 @@ export function PricingPlans({
             <div
               key={plan.name}
               className={cn(
-                "relative flex flex-col rounded-2xl border p-8",
+                "relative flex flex-col rounded-2xl border bg-white p-8 transition-transform duration-200 hover:-translate-y-1.5 hover:shadow-lg dark:bg-neutral-900",
                 plan.highlight
-                  ? "border-lime-400/40 bg-neutral-900"
-                  : "border-neutral-800 bg-neutral-900",
+                  ? "border-lime-500/40 dark:border-lime-400/40"
+                  : "border-neutral-200 dark:border-neutral-800",
               )}
             >
               {plan.highlight && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-lime-400 px-3 py-1 text-xs font-semibold text-neutral-950">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-lime-500 px-3 py-1 text-xs font-semibold text-white dark:bg-lime-400 dark:text-neutral-950">
                   Más popular
                 </span>
               )}
 
-              <p className="text-center text-sm font-semibold uppercase tracking-wide text-neutral-400">
+              <p className="text-center text-sm font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
                 {plan.name}
               </p>
 
@@ -116,10 +122,10 @@ export function PricingPlans({
                     {plan.oldPrice}
                   </span>
                 )}
-                <span className="text-3xl font-bold text-white">
+                <span className="text-3xl font-bold text-neutral-900 dark:text-white">
                   {plan.price}
                 </span>
-                <span className="text-sm text-neutral-400">
+                <span className="text-sm text-neutral-500 dark:text-neutral-400">
                   {plan.period}
                 </span>
               </div>
@@ -127,8 +133,8 @@ export function PricingPlans({
               <ul className="mt-8 flex-1 space-y-3">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-2.5">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-lime-400" />
-                    <span className="text-sm text-neutral-300">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-lime-600 dark:text-lime-400" />
+                    <span className="text-sm text-neutral-600 dark:text-neutral-300">
                       {feature}
                     </span>
                   </li>
@@ -140,8 +146,8 @@ export function PricingPlans({
                   className={cn(
                     "w-full",
                     plan.highlight
-                      ? "bg-lime-400 text-neutral-950 hover:bg-lime-300"
-                      : "bg-white text-neutral-950 hover:bg-neutral-200",
+                      ? "bg-lime-500 text-white hover:bg-lime-600 dark:bg-lime-400 dark:text-neutral-950 dark:hover:bg-lime-300"
+                      : "bg-neutral-900 text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200",
                   )}
                 >
                   {plan.cta}

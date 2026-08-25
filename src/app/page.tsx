@@ -95,14 +95,17 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="how-it-works" className="bg-neutral-950 py-20 text-white">
+        <section
+          id="how-it-works"
+          className="bg-white py-20 text-neutral-900 dark:bg-black dark:text-white"
+        >
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="text-center">
-              <h2 className="text-3xl font-bold uppercase tracking-wide text-white sm:text-4xl">
+              <h2 className="text-3xl font-bold uppercase tracking-wide text-neutral-900 dark:text-white sm:text-4xl">
                 Cómo funciona
               </h2>
-              <span className="mx-auto mt-3 block h-1 w-16 rounded-full bg-lime-400" />
-              <p className="mx-auto mt-6 max-w-xl text-neutral-400">
+              <span className="mx-auto mt-3 block h-1 w-16 rounded-full bg-lime-500 dark:bg-lime-400" />
+              <p className="mx-auto mt-6 max-w-xl text-neutral-600 dark:text-neutral-400">
                 Crea el menú de tu restaurante de forma fácil y sin
                 complicaciones
               </p>
@@ -112,15 +115,15 @@ export default function Home() {
               {STEPS.map(({ icon: Icon, title, description }) => (
                 <div
                   key={title}
-                  className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6"
+                  className="rounded-2xl border border-neutral-200 bg-white p-6 transition-transform duration-200 hover:-translate-y-1.5 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-lime-400/10 text-lime-400">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-lime-100 text-lime-700 dark:bg-lime-400/10 dark:text-lime-400">
                     <Icon className="h-6 w-6" />
                   </div>
-                  <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-white">
+                  <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-neutral-900 dark:text-white">
                     {title}
                   </h3>
-                  <p className="mt-2 text-sm text-neutral-400">
+                  <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                     {description}
                   </p>
                 </div>
