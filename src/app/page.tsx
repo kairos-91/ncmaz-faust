@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   QrCode,
   Palette,
@@ -59,7 +60,18 @@ export default function Home() {
       <SiteHeader />
       <main className="flex-1">
         <section className="relative overflow-hidden bg-neutral-50 dark:bg-neutral-950">
-          <div className="mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2 md:items-center md:py-28">
+          <div className="absolute inset-0 dark:hidden">
+            <Image
+              src="/hero-banner.png"
+              alt=""
+              fill
+              priority
+              className="object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40" />
+          </div>
+
+          <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2 md:items-center md:py-28">
             <div>
               <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
                 Menú digital para restaurantes
