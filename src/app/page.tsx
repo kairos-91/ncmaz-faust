@@ -16,6 +16,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PricingPlans } from "@/components/pricing-plans";
 import { FaqSection } from "@/components/faq-section";
+import { TestimonialsSection } from "@/components/testimonials-section";
 
 const FEATURES = [
   {
@@ -207,6 +208,8 @@ export default function Home() {
         <PricingPlans />
 
         <FaqSection />
+
+        <TestimonialsSection />
 
         <section className="bg-orange-50 py-20 dark:bg-neutral-900">
           <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
