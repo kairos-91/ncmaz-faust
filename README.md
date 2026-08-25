@@ -32,8 +32,11 @@ supabase/migrations/        Esquema SQL + Row Level Security
 ## Configuración
 
 1. Crea un proyecto en [supabase.com](https://supabase.com).
-2. Ejecuta `supabase/migrations/0001_init.sql` en el SQL Editor del proyecto
-   (crea las tablas, las políticas de RLS y el bucket de imágenes `menu-images`).
+2. Ejecuta en orden, en el SQL Editor del proyecto:
+   - `supabase/migrations/0001_init.sql` — crea las tablas, las políticas de
+     RLS y el bucket de imágenes `menu-images`.
+   - `supabase/migrations/0002_restaurant_plan.sql` — agrega la columna
+     `plan` usada por `/admin/subscription`.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

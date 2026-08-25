@@ -24,6 +24,7 @@ export interface Database {
           theme_color: string;
           currency: string;
           is_published: boolean;
+          plan: string;
           created_at: string;
           updated_at: string;
         };
@@ -41,6 +42,7 @@ export interface Database {
           theme_color?: string;
           currency?: string;
           is_published?: boolean;
+          plan?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -58,6 +60,7 @@ export interface Database {
           theme_color?: string;
           currency?: string;
           is_published?: boolean;
+          plan?: string;
           created_at?: string;
           updated_at?: string;
         };

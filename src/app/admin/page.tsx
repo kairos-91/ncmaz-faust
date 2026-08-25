@@ -64,6 +64,9 @@ export default async function AdminDashboardPage() {
         <Link href="/admin/menu">
           <Button variant="secondary">Gestionar menú</Button>
         </Link>
+        <Link href="/admin/subscription">
+          <Button variant="secondary">Ver planes</Button>
+        </Link>
       </div>
 
       <QrCard publicUrl={publicUrl} />
