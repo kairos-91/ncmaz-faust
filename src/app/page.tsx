@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { PricingPlans } from "@/components/pricing-plans";
 
 const FEATURES = [
   {
@@ -183,20 +184,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="pricing" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-semibold tracking-tight text-neutral-900">
-              Precios simples
-            </h2>
-            <p className="mt-3 text-neutral-600">
-              Empieza con 15 días gratis, sin tarjeta de crédito. Luego elige
-              el plan mensual o anual que se ajuste a tu restaurante.
-            </p>
-            <Link href="/pricing" className="mt-8 inline-block">
-              <Button size="lg">Ver planes y precios</Button>
-            </Link>
-          </div>
-        </section>
+        <PricingPlans />
 
         <section className="bg-orange-50 py-20">
           <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">

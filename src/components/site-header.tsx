@@ -15,7 +15,7 @@ export function SiteHeader() {
           <Link href="/#how-it-works" className="hover:text-neutral-900">
             Cómo funciona
           </Link>
-          <Link href="/pricing" className="hover:text-neutral-900">
+          <Link href="/#pricing" className="hover:text-neutral-900">
             Precios
           </Link>
         </nav>
