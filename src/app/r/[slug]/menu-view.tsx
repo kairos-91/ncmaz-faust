@@ -1,28 +1,78 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
+import { Search, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import type { Category, MenuItem } from "@/lib/supabase/database.types";
+
+type Cart = Record<string, number>;
 
 export function MenuView({
   categories,
   items,
   currency,
   themeColor,
+  restaurantName,
+  whatsapp,
 }: {
   categories: Category[];
   items: MenuItem[];
   currency: string;
   themeColor: string;
+  restaurantName: string;
+  whatsapp: string | null;
 }) {
+  const [query, setQuery] = useState("");
+  const [cart, setCart] = useState<Cart>({});
+  const [cartOpen, setCartOpen] = useState(false);
+
+  const filteredItems = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(
+      (item) =>
+        item.name.toLowerCase().includes(q) ||
+        (item.description ?? "").toLowerCase().includes(q),
+    );
+  }, [items, query]);
+
   const nonEmptyCategories = categories.filter((c) =>
-    items.some((i) => i.category_id === c.id),
+    filteredItems.some((i) => i.category_id === c.id),
   );
   const [active, setActive] = useState(nonEmptyCategories[0]?.id);
 
+  const setQty = (itemId: string, qty: number) => {
+    setCart((prev) => {
+      const next = { ...prev };
+      if (qty <= 0) delete next[itemId];
+      else next[itemId] = qty;
+      return next;
+    });
+  };
+
+  const cartLines = Object.entries(cart)
+    .map(([itemId, qty]) => ({
+      item: items.find((i) => i.id === itemId),
+      qty,
+    }))
+    .filter((line): line is { item: MenuItem; qty: number } => Boolean(line.item));
+
+  const total = cartLines.reduce((sum, l) => sum + l.item.price * l.qty, 0);
+  const itemCount = cartLines.reduce((sum, l) => sum + l.qty, 0);
+
   return (
     <div className="mt-6">
+      <div className="relative mb-4">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Buscar en el menú..."
+          className="h-11 w-full rounded-full border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
+        />
+      </div>
+
       <div className="sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto bg-neutral-50/95 px-4 py-3 backdrop-blur">
         {nonEmptyCategories.map((category) => (
           <a
@@ -44,27 +94,65 @@ export function MenuView({
         ))}
       </div>
 
-      <div className="mt-4 space-y-10">
-        {nonEmptyCategories.map((category) => (
-          <section key={category.id} id={`cat-${category.id}`}>
-            <h2 className="mb-3 text-lg font-semibold text-neutral-900">
-              {category.name}
-            </h2>
-            <div className="space-y-3">
-              {items
-                .filter((item) => item.category_id === category.id)
-                .map((item) => (
-                  <MenuItemCard
-                    key={item.id}
-                    item={item}
-                    currency={currency}
-                    themeColor={themeColor}
-                  />
-                ))}
-            </div>
-          </section>
-        ))}
-      </div>
+      {nonEmptyCategories.length === 0 ? (
+        <p className="mt-10 text-center text-sm text-neutral-400">
+          No encontramos platos para &ldquo;{query}&rdquo;.
+        </p>
+      ) : (
+        <div className="mt-4 space-y-10">
+          {nonEmptyCategories.map((category) => (
+            <section key={category.id} id={`cat-${category.id}`}>
+              <h2 className="mb-3 text-lg font-semibold text-neutral-900">
+                {category.name}
+              </h2>
+              <div className="space-y-3">
+                {filteredItems
+                  .filter((item) => item.category_id === category.id)
+                  .map((item) => (
+                    <MenuItemCard
+                      key={item.id}
+                      item={item}
+                      currency={currency}
+                      themeColor={themeColor}
+                      orderingEnabled={Boolean(whatsapp)}
+                      qty={cart[item.id] ?? 0}
+                      onQtyChange={(qty) => setQty(item.id, qty)}
+                    />
+                  ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
+
+      {whatsapp && itemCount > 0 && !cartOpen && (
+        <button
+          type="button"
+          onClick={() => setCartOpen(true)}
+          className="fixed inset-x-4 bottom-4 z-20 mx-auto flex max-w-2xl items-center justify-between rounded-2xl px-5 py-4 text-white shadow-lg"
+          style={{ backgroundColor: themeColor }}
+        >
+          <span className="flex items-center gap-2 text-sm font-medium">
+            <ShoppingBag className="h-4 w-4" />
+            {itemCount} {itemCount === 1 ? "plato" : "platos"}
+          </span>
+          <span className="text-sm font-semibold">
+            Ver pedido · {formatPrice(total, currency)}
+          </span>
+        </button>
+      )}
+
+      {cartOpen && (
+        <CartSheet
+          lines={cartLines}
+          currency={currency}
+          themeColor={themeColor}
+          restaurantName={restaurantName}
+          whatsapp={whatsapp}
+          onQtyChange={setQty}
+          onClose={() => setCartOpen(false)}
+        />
+      )}
     </div>
   );
 }
@@ -73,10 +161,16 @@ function MenuItemCard({
   item,
   currency,
   themeColor,
+  orderingEnabled,
+  qty,
+  onQtyChange,
 }: {
   item: MenuItem;
   currency: string;
   themeColor: string;
+  orderingEnabled: boolean;
+  qty: number;
+  onQtyChange: (qty: number) => void;
 }) {
   return (
     <div className="flex gap-4 rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm">
@@ -119,6 +213,151 @@ function MenuItemCard({
             ))}
           </div>
         )}
+        {orderingEnabled && (
+          <div className="mt-2 flex items-center gap-3">
+            {qty === 0 ? (
+              <button
+                type="button"
+                onClick={() => onQtyChange(1)}
+                className="rounded-full border px-3 py-1 text-xs font-medium"
+                style={{ borderColor: themeColor, color: themeColor }}
+              >
+                + Agregar
+              </button>
+            ) : (
+              <div className="flex items-center gap-3">
+                <QtyButton onClick={() => onQtyChange(qty - 1)}>
+                  <Minus className="h-3.5 w-3.5" />
+                </QtyButton>
+                <span className="w-4 text-center text-sm font-medium">
+                  {qty}
+                </span>
+                <QtyButton onClick={() => onQtyChange(qty + 1)}>
+                  <Plus className="h-3.5 w-3.5" />
+                </QtyButton>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function QtyButton({
+  onClick,
+  children,
+}: {
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex h-7 w-7 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+    >
+      {children}
+    </button>
+  );
+}
+
+function CartSheet({
+  lines,
+  currency,
+  themeColor,
+  restaurantName,
+  whatsapp,
+  onQtyChange,
+  onClose,
+}: {
+  lines: { item: MenuItem; qty: number }[];
+  currency: string;
+  themeColor: string;
+  restaurantName: string;
+  whatsapp: string | null;
+  onQtyChange: (itemId: string, qty: number) => void;
+  onClose: () => void;
+}) {
+  const total = lines.reduce((sum, l) => sum + l.item.price * l.qty, 0);
+
+  const whatsappHref = useMemo(() => {
+    if (!whatsapp) return "#";
+    const lineText = lines
+      .map(
+        (l) =>
+          `${l.qty}x ${l.item.name} - ${formatPrice(l.item.price * l.qty, currency)}`,
+      )
+      .join("\n");
+    const message = `Hola! Quiero hacer un pedido en ${restaurantName}:\n\n${lineText}\n\nTotal: ${formatPrice(total, currency)}`;
+    const phone = whatsapp.replace(/[^0-9]/g, "");
+    return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  }, [lines, whatsapp, restaurantName, currency, total]);
+
+  return (
+    <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 sm:items-center">
+      <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white p-5 sm:rounded-3xl">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-neutral-900">Tu pedido</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1.5 text-neutral-400 hover:bg-neutral-100"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {lines.length === 0 ? (
+          <p className="text-sm text-neutral-400">Tu pedido está vacío.</p>
+        ) : (
+          <div className="space-y-3">
+            {lines.map(({ item, qty }) => (
+              <div key={item.id} className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-neutral-900">
+                    {item.name}
+                  </p>
+                  <p className="text-xs text-neutral-500">
+                    {formatPrice(item.price, currency)} c/u
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-3">
+                  <QtyButton onClick={() => onQtyChange(item.id, qty - 1)}>
+                    <Minus className="h-3.5 w-3.5" />
+                  </QtyButton>
+                  <span className="w-4 text-center text-sm font-medium">
+                    {qty}
+                  </span>
+                  <QtyButton onClick={() => onQtyChange(item.id, qty + 1)}>
+                    <Plus className="h-3.5 w-3.5" />
+                  </QtyButton>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-5 flex items-center justify-between border-t border-neutral-100 pt-4">
+          <span className="text-sm font-medium text-neutral-600">Total</span>
+          <span className="text-lg font-semibold text-neutral-900">
+            {formatPrice(total, currency)}
+          </span>
+        </div>
+
+        <a
+          href={lines.length > 0 ? whatsappHref : undefined}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-disabled={lines.length === 0}
+          className={cn(
+            "mt-4 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white",
+            lines.length === 0 && "pointer-events-none opacity-40",
+          )}
+          style={{ backgroundColor: themeColor }}
+        >
+          Enviar pedido por WhatsApp
+        </a>
       </div>
     </div>
   );

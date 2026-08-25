@@ -192,6 +192,41 @@ export async function deleteCategory(restaurantId: string, categoryId: string) {
   revalidatePath("/admin/menu");
 }
 
+export async function moveCategory(
+  restaurantId: string,
+  categoryId: string,
+  direction: "up" | "down",
+) {
+  const { supabase } = await requireOwnedRestaurant(restaurantId);
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("id, sort_order")
+    .eq("restaurant_id", restaurantId)
+    .order("sort_order");
+  if (!categories) return;
+
+  const index = categories.findIndex((c) => c.id === categoryId);
+  const swapIndex = direction === "up" ? index - 1 : index + 1;
+  if (index === -1 || swapIndex < 0 || swapIndex >= categories.length) return;
+
+  const current = categories[index];
+  const swap = categories[swapIndex];
+
+  await Promise.all([
+    supabase
+      .from("categories")
+      .update({ sort_order: swap.sort_order })
+      .eq("id", current.id),
+    supabase
+      .from("categories")
+      .update({ sort_order: current.sort_order })
+      .eq("id", swap.id),
+  ]);
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/admin/menu");
+}
+
 function parseMenuItemForm(formData: FormData) {
   return menuItemSchema.safeParse({
     category_id: formData.get("category_id"),

@@ -1,11 +1,13 @@
 "use client";
 
 import { useActionState, useState, useTransition } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   createCategory,
   deleteCategory,
+  moveCategory,
   renameCategory,
   type ActionState,
 } from "@/app/admin/actions";
@@ -29,11 +31,13 @@ export function CategoryManager({
             Aún no tienes categorías.
           </li>
         )}
-        {categories.map((category) => (
+        {categories.map((category, index) => (
           <CategoryRow
             key={category.id}
             restaurantId={restaurantId}
             category={category}
+            isFirst={index === 0}
+            isLast={index === categories.length - 1}
           />
         ))}
       </ul>
@@ -52,9 +56,13 @@ export function CategoryManager({
 function CategoryRow({
   restaurantId,
   category,
+  isFirst,
+  isLast,
 }: {
   restaurantId: string;
   category: Category;
+  isFirst: boolean;
+  isLast: boolean;
 }) {
   const [editing, setEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -96,9 +104,35 @@ function CategoryRow({
 
   return (
     <li className="flex items-center justify-between px-4 py-3">
-      <span className="text-sm font-medium text-neutral-800">
-        {category.name}
-      </span>
+      <div className="flex items-center gap-2">
+        <div className="flex flex-col">
+          <button
+            type="button"
+            disabled={isFirst || isPending}
+            className="text-neutral-400 hover:text-neutral-900 disabled:opacity-30"
+            onClick={() =>
+              startTransition(() => moveCategory(restaurantId, category.id, "up"))
+            }
+            aria-label="Mover arriba"
+          >
+            <ChevronUp className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            disabled={isLast || isPending}
+            className="text-neutral-400 hover:text-neutral-900 disabled:opacity-30"
+            onClick={() =>
+              startTransition(() => moveCategory(restaurantId, category.id, "down"))
+            }
+            aria-label="Mover abajo"
+          >
+            <ChevronDown className="h-3.5 w-3.5" />
+          </button>
+        </div>
+        <span className="text-sm font-medium text-neutral-800">
+          {category.name}
+        </span>
+      </div>
       <div className="flex gap-3">
         <button
           type="button"
