@@ -189,22 +189,11 @@ export default function Home() {
               Precios simples
             </h2>
             <p className="mt-3 text-neutral-600">
-              Empieza gratis. Sin tarjeta de crédito.
+              Empieza con 15 días gratis, sin tarjeta de crédito. Luego elige
+              el plan mensual o anual que se ajuste a tu restaurante.
             </p>
-          </div>
-          <div className="mx-auto mt-14 max-w-sm rounded-2xl border-2 border-neutral-900 p-8 text-center">
-            <p className="text-sm font-medium text-neutral-600">Plan gratuito</p>
-            <p className="mt-2 text-4xl font-semibold">$0</p>
-            <ul className="mt-6 space-y-2 text-left text-sm text-neutral-600">
-              <li>✓ Menú digital con código QR</li>
-              <li>✓ Categorías y platos ilimitados</li>
-              <li>✓ Panel de administración</li>
-              <li>✓ Fotos de tus platos</li>
-            </ul>
-            <Link href="/signup" className="mt-8 block">
-              <Button className="w-full" size="lg">
-                Empieza gratis
-              </Button>
+            <Link href="/pricing" className="mt-8 inline-block">
+              <Button size="lg">Ver planes y precios</Button>
             </Link>
           </div>
         </section>

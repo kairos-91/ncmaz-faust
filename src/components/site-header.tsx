@@ -9,15 +9,15 @@ export function SiteHeader() {
           levery
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-neutral-600 md:flex">
-          <a href="#features" className="hover:text-neutral-900">
+          <Link href="/#features" className="hover:text-neutral-900">
             Funciones
-          </a>
-          <a href="#how-it-works" className="hover:text-neutral-900">
+          </Link>
+          <Link href="/#how-it-works" className="hover:text-neutral-900">
             Cómo funciona
-          </a>
-          <a href="#pricing" className="hover:text-neutral-900">
+          </Link>
+          <Link href="/pricing" className="hover:text-neutral-900">
             Precios
-          </a>
+          </Link>
         </nav>
         <div className="flex items-center gap-2">
           <Link href="/login">
