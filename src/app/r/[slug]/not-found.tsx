@@ -6,7 +6,7 @@ export default function RestaurantNotFound() {
       <h1 className="text-xl font-semibold text-neutral-900">
         Menú no encontrado
       </h1>
-      <p className="max-w-sm text-sm text-neutral-500">
+      <p className="max-w-sm text-sm text-neutral-600">
         Este restaurante no existe o todavía no publicó su menú.
       </p>
       <Link href="/" className="text-sm font-medium underline">

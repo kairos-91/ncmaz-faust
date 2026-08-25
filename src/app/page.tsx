@@ -155,7 +155,7 @@ export default function Home() {
             </p>
           </div>
           <div className="mx-auto mt-14 max-w-sm rounded-2xl border-2 border-neutral-900 p-8 text-center">
-            <p className="text-sm font-medium text-neutral-500">Plan gratuito</p>
+            <p className="text-sm font-medium text-neutral-600">Plan gratuito</p>
             <p className="mt-2 text-4xl font-semibold">$0</p>
             <ul className="mt-6 space-y-2 text-left text-sm text-neutral-600">
               <li>✓ Menú digital con código QR</li>
@@ -201,7 +201,7 @@ function PhoneMockup() {
             <p className="mt-3 text-sm font-semibold text-neutral-900">
               La Parrilla de Juan
             </p>
-            <p className="text-xs text-neutral-400">Cocina venezolana</p>
+            <p className="text-xs text-neutral-600">Cocina venezolana</p>
             <div className="mt-4 space-y-2">
               {[
                 ["Pabellón criollo", "$8.50"],

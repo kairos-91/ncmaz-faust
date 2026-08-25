@@ -45,7 +45,7 @@ export function RestaurantForm({
       <div>
         <Label htmlFor="slug">URL pública</Label>
         <div className="flex items-center overflow-hidden rounded-lg border border-neutral-200 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-200">
-          <span className="whitespace-nowrap bg-neutral-50 px-3 text-sm text-neutral-400">
+          <span className="whitespace-nowrap bg-neutral-50 px-3 text-sm text-neutral-600">
             /r/
           </span>
           <input

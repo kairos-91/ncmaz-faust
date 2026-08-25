@@ -95,7 +95,7 @@ export function MenuView({
       </div>
 
       {nonEmptyCategories.length === 0 ? (
-        <p className="mt-10 text-center text-sm text-neutral-400">
+        <p className="mt-10 text-center text-sm text-neutral-600">
           No encontramos platos para &ldquo;{query}&rdquo;.
         </p>
       ) : (
@@ -197,7 +197,7 @@ function MenuItemCard({
           </span>
         </div>
         {item.description && (
-          <p className="mt-0.5 line-clamp-2 text-sm text-neutral-500">
+          <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600">
             {item.description}
           </p>
         )}
@@ -206,7 +206,7 @@ function MenuItemCard({
             {item.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500"
+                className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-600"
               >
                 {tag}
               </span>
@@ -309,7 +309,7 @@ function CartSheet({
         </div>
 
         {lines.length === 0 ? (
-          <p className="text-sm text-neutral-400">Tu pedido está vacío.</p>
+          <p className="text-sm text-neutral-600">Tu pedido está vacío.</p>
         ) : (
           <div className="space-y-3">
             {lines.map(({ item, qty }) => (
@@ -318,7 +318,7 @@ function CartSheet({
                   <p className="truncate text-sm font-medium text-neutral-900">
                     {item.name}
                   </p>
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-xs text-neutral-600">
                     {formatPrice(item.price, currency)} c/u
                   </p>
                 </div>

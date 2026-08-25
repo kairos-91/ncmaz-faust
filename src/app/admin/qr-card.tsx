@@ -16,11 +16,11 @@ export function QrCard({ publicUrl }: { publicUrl: string }) {
         <Link
           href={publicUrl}
           target="_blank"
-          className="break-all text-sm text-neutral-500 underline"
+          className="break-all text-sm text-neutral-600 underline"
         >
           {publicUrl}
         </Link>
-        <p className="mt-1 text-xs text-neutral-400">
+        <p className="mt-1 text-xs text-neutral-600">
           Imprime este código QR y colócalo en tus mesas.
         </p>
       </div>

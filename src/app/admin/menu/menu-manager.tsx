@@ -50,11 +50,11 @@ export function MenuManager({
 
       {byCategory.map(({ category, items }) => (
         <div key={category.id}>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-500">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-600">
             {category.name}
           </h2>
           {items.length === 0 ? (
-            <p className="text-sm text-neutral-400">Sin platos todavía.</p>
+            <p className="text-sm text-neutral-600">Sin platos todavía.</p>
           ) : (
             <ul className="divide-y divide-neutral-100 rounded-2xl border border-neutral-200 bg-white">
               {items.map((item) =>
@@ -68,7 +68,7 @@ export function MenuManager({
                       onSuccess={() => setEditingId(null)}
                     />
                     <button
-                      className="mt-3 text-xs font-medium text-neutral-500 hover:text-neutral-900"
+                      className="mt-3 text-xs font-medium text-neutral-600 hover:text-neutral-900"
                       onClick={() => setEditingId(null)}
                     >
                       Cancelar
@@ -128,7 +128,7 @@ function MenuItemRow({
         >
           {item.name}
         </p>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-600">
           {formatPrice(item.price, currency)}
         </p>
       </div>
@@ -144,14 +144,14 @@ function MenuItemRow({
           "shrink-0 rounded-full px-2.5 py-1 text-xs font-medium",
           item.is_available
             ? "bg-green-50 text-green-700"
-            : "bg-neutral-100 text-neutral-500",
+            : "bg-neutral-100 text-neutral-600",
         )}
       >
         {item.is_available ? "Disponible" : "Agotado"}
       </button>
       <button
         type="button"
-        className="shrink-0 text-xs font-medium text-neutral-500 hover:text-neutral-900"
+        className="shrink-0 text-xs font-medium text-neutral-600 hover:text-neutral-900"
         onClick={onEdit}
       >
         Editar

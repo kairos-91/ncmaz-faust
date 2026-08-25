@@ -21,7 +21,7 @@ export default async function CategoriesPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold">Categorías</h1>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-600">
           Organiza tu menú en secciones: entradas, platos fuertes, postres...
         </p>
       </div>

@@ -39,11 +39,11 @@ export function AdminNav({ email }: { email: string | null }) {
         </nav>
       </div>
       <div className="border-t border-neutral-100 px-5 py-4">
-        <p className="mb-2 truncate text-xs text-neutral-400">{email}</p>
+        <p className="mb-2 truncate text-xs text-neutral-600">{email}</p>
         <form action={signOut}>
           <button
             type="submit"
-            className="text-sm font-medium text-neutral-500 hover:text-neutral-900"
+            className="text-sm font-medium text-neutral-600 hover:text-neutral-900"
           >
             Cerrar sesión
           </button>

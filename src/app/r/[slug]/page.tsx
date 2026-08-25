@@ -105,7 +105,7 @@ export default async function PublicMenuPage({
               {restaurant.description}
             </p>
           )}
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600">
             {restaurant.address && <span>📍 {restaurant.address}</span>}
             {restaurant.phone && <span>📞 {restaurant.phone}</span>}
             {restaurant.whatsapp && (
@@ -121,7 +121,7 @@ export default async function PublicMenuPage({
         </div>
 
         {categories.length === 0 || items.length === 0 ? (
-          <p className="mt-10 text-center text-sm text-neutral-400">
+          <p className="mt-10 text-center text-sm text-neutral-600">
             Este restaurante aún no publicó su menú.
           </p>
         ) : (
@@ -135,7 +135,7 @@ export default async function PublicMenuPage({
           />
         )}
 
-        <p className="mt-12 text-center text-xs text-neutral-300">
+        <p className="mt-12 text-center text-xs text-neutral-400">
           Hecho con{" "}
           <Link href="/" className="underline">
             levery

@@ -27,7 +27,7 @@ export function CategoryManager({
     <div className="space-y-4">
       <ul className="divide-y divide-neutral-100 rounded-2xl border border-neutral-200 bg-white">
         {categories.length === 0 && (
-          <li className="px-4 py-6 text-center text-sm text-neutral-400">
+          <li className="px-4 py-6 text-center text-sm text-neutral-600">
             Aún no tienes categorías.
           </li>
         )}
@@ -136,7 +136,7 @@ function CategoryRow({
       <div className="flex gap-3">
         <button
           type="button"
-          className="text-xs font-medium text-neutral-500 hover:text-neutral-900"
+          className="text-xs font-medium text-neutral-600 hover:text-neutral-900"
           onClick={() => setEditing(true)}
         >
           Editar
