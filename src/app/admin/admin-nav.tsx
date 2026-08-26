@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { signOut } from "./actions";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/logo";
 
 const links = [
   { href: "/admin", label: "Resumen" },
@@ -23,11 +24,8 @@ export function AdminNav({ email }: { email: string | null }) {
       <div>
         <div className="flex items-center justify-between px-5 py-5 md:block">
           <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="text-lg font-semibold tracking-tight dark:text-white"
-            >
-              levery
+            <Link href="/">
+              <Logo height={24} />
             </Link>
             <div className="md:hidden">
               <ThemeToggle />

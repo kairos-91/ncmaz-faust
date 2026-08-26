@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 
@@ -46,16 +47,13 @@ export function SiteFooter() {
     <footer className="bg-neutral-950 text-neutral-400">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="flex flex-col items-center gap-4 text-center">
-          <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-lime-400 text-sm font-extrabold text-neutral-950">
-              L
-            </span>
-            <span className="text-lg font-semibold text-white">
-              LeveryApp
-            </span>
-          </div>
-
-          <p className="text-2xl font-bold text-white">Levery</p>
+          <Image
+            src="/logo-dark.png"
+            alt="Levery"
+            width={135}
+            height={54}
+            className="h-9 w-auto"
+          />
 
           <a
             href="mailto:soporte@levery.app"

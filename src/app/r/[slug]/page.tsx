@@ -10,6 +10,7 @@ import {
   PAYMENT_METHOD_META,
 } from "@/lib/payment-methods";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/logo";
 import { MenuView } from "./menu-view";
 
 type Params = { slug: string };
@@ -156,10 +157,10 @@ export default async function PublicMenuPage({
           />
         )}
 
-        <p className="mt-12 text-center text-xs text-neutral-400 dark:text-neutral-600">
+        <p className="mt-12 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-400 dark:text-neutral-600">
           Hecho con{" "}
-          <Link href="/" className="underline">
-            levery
+          <Link href="/" className="inline-flex">
+            <Logo height={14} />
           </Link>
         </p>
       </div>
