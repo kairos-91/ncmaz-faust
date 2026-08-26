@@ -252,6 +252,10 @@ const es = {
     whatsappLabel: "WhatsApp",
     addressLabel: "Dirección",
     addressPlaceholder: "Av. Bolívar, Maracay",
+    mapsUrlLabel: "Enlace de Google Maps",
+    mapsUrlPlaceholder: "https://maps.app.goo.gl/...",
+    mapsUrlHint:
+      "Pega el enlace para compartir de Google Maps. Se mostrará como \"Ubicación\" en tu menú público y llevará a tus clientes directo al mapa.",
     colorLabel: "Color de marca",
     currencyLabel: "Moneda",
     publishLabel: "Publicar menú (visible en tu URL pública)",
@@ -709,6 +713,10 @@ const en: typeof es = {
     whatsappLabel: "WhatsApp",
     addressLabel: "Address",
     addressPlaceholder: "Av. Bolívar, Maracay",
+    mapsUrlLabel: "Google Maps link",
+    mapsUrlPlaceholder: "https://maps.app.goo.gl/...",
+    mapsUrlHint:
+      "Paste the Google Maps share link. It will show as \"Location\" on your public menu and take customers straight to the map.",
     colorLabel: "Brand color",
     currencyLabel: "Currency",
     publishLabel: "Publish menu (visible at your public URL)",

@@ -116,6 +116,9 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `restaurants.opening_hours` con el horario semanal configurable desde
      `/admin/restaurant`, visible en el menú público (`/r/[slug]`) como un
      indicador de "Abierto ahora" / "Cerrado ahora" y el horario completo.
+   - `supabase/migrations/0011_maps_url.sql` — columna
+     `restaurants.maps_url` con el enlace de Google Maps configurable desde
+     `/admin/restaurant`, mostrado como "Ubicación" en el menú público.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

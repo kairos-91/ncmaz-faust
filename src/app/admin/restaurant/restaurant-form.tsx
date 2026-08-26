@@ -113,6 +113,20 @@ export function RestaurantForm({
       </div>
 
       <div>
+        <Label htmlFor="maps_url">{t.mapsUrlLabel}</Label>
+        <Input
+          id="maps_url"
+          name="maps_url"
+          type="url"
+          defaultValue={restaurant?.maps_url ?? ""}
+          placeholder={t.mapsUrlPlaceholder}
+        />
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.mapsUrlHint}
+        </p>
+      </div>
+
+      <div>
         <Label htmlFor="delivery_zones">{t.deliveryZonesLabel}</Label>
         <Textarea
           id="delivery_zones"

@@ -42,6 +42,7 @@ function parseRestaurantForm(formData: FormData) {
     slug: formData.get("slug"),
     description: formData.get("description") ?? "",
     address: formData.get("address") ?? "",
+    maps_url: formData.get("maps_url") ?? "",
     phone: formData.get("phone") ?? "",
     whatsapp: formData.get("whatsapp") ?? "",
     theme_color: formData.get("theme_color") || "#f97316",

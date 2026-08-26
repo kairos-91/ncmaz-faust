@@ -19,6 +19,7 @@ export interface Database {
           logo_url: string | null;
           cover_url: string | null;
           address: string | null;
+          maps_url: string | null;
           phone: string | null;
           whatsapp: string | null;
           theme_color: string;
@@ -41,6 +42,7 @@ export interface Database {
           logo_url?: string | null;
           cover_url?: string | null;
           address?: string | null;
+          maps_url?: string | null;
           phone?: string | null;
           whatsapp?: string | null;
           theme_color?: string;
@@ -63,6 +65,7 @@ export interface Database {
           logo_url?: string | null;
           cover_url?: string | null;
           address?: string | null;
+          maps_url?: string | null;
           phone?: string | null;
           whatsapp?: string | null;
           theme_color?: string;

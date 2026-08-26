@@ -25,6 +25,7 @@ export const restaurantSchema = z.object({
     ),
   description: z.string().max(500).optional().or(z.literal("")),
   address: z.string().max(200).optional().or(z.literal("")),
+  maps_url: z.string().max(500).optional().or(z.literal("")),
   phone: z.string().max(30).optional().or(z.literal("")),
   whatsapp: z.string().max(30).optional().or(z.literal("")),
   theme_color: z.string().regex(/^#[0-9a-fA-F]{6}$/),

@@ -144,7 +144,24 @@ export default async function PublicMenuPage({
           )}
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
             {restaurant.address && <span>📍 {restaurant.address}</span>}
-            {restaurant.phone && <span>📞 {restaurant.phone}</span>}
+            {restaurant.maps_url && (
+              <a
+                href={restaurant.maps_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-blue-600 dark:text-blue-400"
+              >
+                🗺️ Ubicación
+              </a>
+            )}
+            {restaurant.phone && (
+              <a
+                href={`tel:${restaurant.phone.replace(/[^0-9+]/g, "")}`}
+                className="font-medium hover:underline"
+              >
+                📞 {restaurant.phone}
+              </a>
+            )}
             {restaurant.whatsapp && (
               <a
                 href={`https://wa.me/${restaurant.whatsapp.replace(/[^0-9]/g, "")}`}
