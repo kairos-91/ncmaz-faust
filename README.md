@@ -107,6 +107,11 @@ o recíbelo como prop `t` (client) donde lo necesites.
      superadmin (aparece varias veces en el archivo). Actualiza también
      `SUPERADMIN_EMAILS` en `src/lib/superadmin.ts` con la misma lista —
      ambos deben coincidir.
+   - `supabase/migrations/0009_delivery_zones.sql` — columna
+     `restaurants.delivery_zones` (zonas de envío configurables desde
+     `/admin/restaurant`) y columnas `orders.delivery_zone` /
+     `orders.delivery_fee` para registrar la zona y el costo de envío de
+     cada pedido.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

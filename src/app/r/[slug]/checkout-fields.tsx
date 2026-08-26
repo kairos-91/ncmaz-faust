@@ -13,6 +13,7 @@ import {
 } from "@/lib/payment-methods";
 import { bankLabel } from "@/lib/venezuelan-banks";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
+import type { DeliveryZone } from "@/lib/delivery-zones";
 import { PaymentDetailsCard } from "@/components/payment-details-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,6 +42,7 @@ export function CheckoutFields({
   total,
   paymentMethods,
   bcvRate,
+  deliveryZones,
 }: {
   restaurantId: string;
   restaurantName: string;
@@ -51,12 +53,14 @@ export function CheckoutFields({
   total: number;
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
+  deliveryZones: DeliveryZone[];
 }) {
   const [orderType, setOrderType] = useState<OrderType | null>(null);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [address, setAddress] = useState("");
   const [table, setTable] = useState("");
+  const [deliveryZone, setDeliveryZone] = useState("");
   const [methodId, setMethodId] = useState<PaymentMethodId | null>(null);
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
@@ -67,15 +71,21 @@ export function CheckoutFields({
   });
 
   const methods = enabledPaymentMethods(paymentMethods);
+  const deliveryFee =
+    orderType === "delivery"
+      ? (deliveryZones.find((z) => z.name === deliveryZone)?.fee ?? 0)
+      : 0;
+  const grandTotal = total + deliveryFee;
+
   const activeMeta = methodId ? PAYMENT_METHOD_META[methodId] : null;
   const activeValues = methodId
     ? (paymentMethods[methodId] as unknown as Record<string, string>)
     : null;
   const amountBs =
-    activeMeta?.convertToVes && bcvRate ? formatBs(total, bcvRate.rate) : null;
+    activeMeta?.convertToVes && bcvRate ? formatBs(grandTotal, bcvRate.rate) : null;
   const amountBsRaw =
     activeMeta?.convertToVes && bcvRate
-      ? formatBsAmount(total, bcvRate.rate)
+      ? formatBsAmount(grandTotal, bcvRate.rate)
       : null;
 
   const confirmValues: ConfirmPaymentValues = {
@@ -89,6 +99,9 @@ export function CheckoutFields({
     customerPhone.trim().length > 0 &&
     Boolean(orderType) &&
     (orderType !== "delivery" || address.trim().length > 0) &&
+    (orderType !== "delivery" ||
+      deliveryZones.length === 0 ||
+      deliveryZone.length > 0) &&
     (methods.length === 0 || Boolean(methodId));
 
   const whatsappHref = useMemo(() => {
@@ -110,10 +123,21 @@ export function CheckoutFields({
       "",
       lineText,
       "",
-      `Total: ${formatPrice(total, currency)}${amountBs ? ` (${amountBs})` : ""}`,
+      `Subtotal: ${formatPrice(total, currency)}`,
+    ];
+    if (orderType === "delivery" && deliveryZone) {
+      parts.push(
+        `Envío (${deliveryZone}): ${formatPrice(deliveryFee, currency)}`,
+      );
+    }
+    parts.push(
+      `Total: ${formatPrice(grandTotal, currency)}${amountBs ? ` (${amountBs})` : ""}`,
       "",
       `Tipo de pedido: ${orderTypeLabel}`,
-    ];
+    );
+    if (orderType === "delivery" && deliveryZone) {
+      parts.push(`Zona de envío: ${deliveryZone}`);
+    }
     if (orderType === "delivery" && address.trim()) {
       parts.push(`Dirección: ${address.trim()}`);
     }
@@ -144,6 +168,9 @@ export function CheckoutFields({
     lines,
     currency,
     total,
+    grandTotal,
+    deliveryFee,
+    deliveryZone,
     amountBs,
     address,
     table,
@@ -208,17 +235,44 @@ export function CheckoutFields({
       </div>
 
       {orderType === "delivery" && (
-        <div>
-          <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
-            Dirección de entrega
-          </label>
-          <textarea
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            rows={2}
-            placeholder="Calle, casa/edificio, urbanización..."
-            className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
-          />
+        <div className="space-y-3">
+          {deliveryZones.length > 0 && (
+            <div>
+              <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                Zona de entrega
+              </label>
+              <select
+                value={deliveryZone}
+                onChange={(e) => setDeliveryZone(e.target.value)}
+                className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+              >
+                <option value="">Selecciona tu zona</option>
+                {deliveryZones.map((zone) => (
+                  <option key={zone.name} value={zone.name}>
+                    {zone.name} · {formatPrice(zone.fee, currency)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div>
+            <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+              Dirección de entrega
+            </label>
+            <textarea
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              rows={2}
+              placeholder="Calle, casa/edificio, urbanización..."
+              className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+            />
+          </div>
+          {deliveryFee > 0 && (
+            <p className="text-sm font-medium text-neutral-900 dark:text-white">
+              Envío: {formatPrice(deliveryFee, currency)} · Total con envío:{" "}
+              {formatPrice(grandTotal, currency)}
+            </p>
+          )}
         </div>
       )}
 
@@ -289,14 +343,14 @@ export function CheckoutFields({
                   copyValue: activeValues[field.key],
                 })),
               ...(activeMeta.convertToVes && bcvRate
-                ? [{ label: "Monto (Bs)", value: formatBsAmount(total, bcvRate.rate) }]
+                ? [{ label: "Monto (Bs)", value: formatBsAmount(grandTotal, bcvRate.rate) }]
                 : []),
             ]}
             copyAllText={
               methodId === "pago_movil" && bcvRate
                 ? buildPagoMovilLine(
                     activeValues as { banco: string; cedula: string; telefono: string },
-                    formatBsAmount(total, bcvRate.rate),
+                    formatBsAmount(grandTotal, bcvRate.rate),
                   )
                 : undefined
             }
@@ -322,6 +376,8 @@ export function CheckoutFields({
               customerPhone,
               address: orderType === "delivery" ? address : undefined,
               tableNumber: orderType === "dine_in" ? table : undefined,
+              deliveryZone: orderType === "delivery" ? deliveryZone || undefined : undefined,
+              deliveryFee,
               items: lines.map((l) => ({
                 name: l.item.name,
                 qty: l.qty,
@@ -330,7 +386,7 @@ export function CheckoutFields({
                   extrasTotal(parseExtras(l.item.extras), l.extraNames),
                 extraNames: l.extraNames,
               })),
-              total,
+              total: grandTotal,
               currency,
               paymentMethod: methodId ?? undefined,
               bankPaidFrom: confirmValues.bankPaidFrom || undefined,

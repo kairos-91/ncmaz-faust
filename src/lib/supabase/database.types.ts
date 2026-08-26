@@ -27,6 +27,7 @@ export interface Database {
           plan: string;
           plan_expires_at: string | null;
           payment_methods: Json;
+          delivery_zones: Json;
           created_at: string;
           updated_at: string;
         };
@@ -47,6 +48,7 @@ export interface Database {
           plan?: string;
           plan_expires_at?: string | null;
           payment_methods?: Json;
+          delivery_zones?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -67,6 +69,7 @@ export interface Database {
           plan?: string;
           plan_expires_at?: string | null;
           payment_methods?: Json;
+          delivery_zones?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -165,6 +168,8 @@ export interface Database {
           payment_reference: string | null;
           amount_paid: string | null;
           receipt_url: string | null;
+          delivery_zone: string | null;
+          delivery_fee: number;
           created_at: string;
           updated_at: string;
         };
@@ -185,6 +190,8 @@ export interface Database {
           payment_reference?: string | null;
           amount_paid?: string | null;
           receipt_url?: string | null;
+          delivery_zone?: string | null;
+          delivery_fee?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -205,6 +212,8 @@ export interface Database {
           payment_reference?: string | null;
           amount_paid?: string | null;
           receipt_url?: string | null;
+          delivery_zone?: string | null;
+          delivery_fee?: number;
           created_at?: string;
           updated_at?: string;
         };

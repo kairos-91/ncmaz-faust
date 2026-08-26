@@ -239,6 +239,10 @@ const es = {
     colorLabel: "Color de marca",
     currencyLabel: "Moneda",
     publishLabel: "Publicar menú (visible en tu URL pública)",
+    deliveryZonesLabel: "Zonas de envío",
+    deliveryZonesPlaceholder: "Centro, 2.00\nUrbanización El Bosque, 3.50\nZona rural, 5.00",
+    deliveryZonesHint:
+      "Una zona por línea: nombre, costo de envío. Usa 0 si el envío es gratis. Tus clientes la elegirán al pedir delivery y se sumará al total.",
     saving: "Guardando...",
   },
   categoriesPage: {
@@ -299,6 +303,8 @@ const es = {
     accept: "Aceptar",
     reject: "Rechazar",
     table: "Mesa",
+    deliveryZone: "Zona de envío",
+    deliveryFee: "Costo de envío",
     bankFrom: "Banco",
     reference: "Referencia",
     amountPaid: "Monto pagado",
@@ -674,6 +680,10 @@ const en: typeof es = {
     colorLabel: "Brand color",
     currencyLabel: "Currency",
     publishLabel: "Publish menu (visible at your public URL)",
+    deliveryZonesLabel: "Delivery zones",
+    deliveryZonesPlaceholder: "Downtown, 2.00\nEl Bosque neighborhood, 3.50\nRural area, 5.00",
+    deliveryZonesHint:
+      "One zone per line: name, delivery fee. Use 0 if delivery is free. Customers pick one when ordering delivery and it's added to the total.",
     saving: "Saving...",
   },
   categoriesPage: {
@@ -734,6 +744,8 @@ const en: typeof es = {
     accept: "Accept",
     reject: "Reject",
     table: "Table",
+    deliveryZone: "Delivery zone",
+    deliveryFee: "Delivery fee",
     bankFrom: "Bank",
     reference: "Reference",
     amountPaid: "Amount paid",

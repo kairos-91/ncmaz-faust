@@ -147,6 +147,13 @@ function OrderCard({
           >
             {order.customer_phone}
           </a>
+          {order.order_type === "delivery" && order.delivery_zone && (
+            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+              {t.deliveryZone}: {order.delivery_zone}
+              {order.delivery_fee > 0 &&
+                ` (+${formatPrice(order.delivery_fee, currency)})`}
+            </p>
+          )}
           {order.order_type === "delivery" && order.address && (
             <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
               📍 {order.address}

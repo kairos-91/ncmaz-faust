@@ -7,6 +7,7 @@ import { cn, formatPrice } from "@/lib/utils";
 import type { BcvRate } from "@/lib/bcv-rate";
 import type { PaymentMethodValues } from "@/lib/payment-methods";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
+import type { DeliveryZone } from "@/lib/delivery-zones";
 import type { Category, MenuItem } from "@/lib/supabase/database.types";
 import { CheckoutFields } from "./checkout-fields";
 
@@ -27,6 +28,7 @@ export function MenuView({
   whatsapp,
   paymentMethods,
   bcvRate,
+  deliveryZones,
 }: {
   categories: Category[];
   items: MenuItem[];
@@ -37,6 +39,7 @@ export function MenuView({
   whatsapp: string | null;
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
+  deliveryZones: DeliveryZone[];
 }) {
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<Cart>({});
@@ -203,6 +206,7 @@ export function MenuView({
           whatsapp={whatsapp}
           paymentMethods={paymentMethods}
           bcvRate={bcvRate}
+          deliveryZones={deliveryZones}
           onQtyChange={(itemId, extraNames, qty) =>
             setLineQty(itemId, extraNames, qty)
           }
@@ -424,6 +428,7 @@ function CartSheet({
   whatsapp,
   paymentMethods,
   bcvRate,
+  deliveryZones,
   onQtyChange,
   onClose,
 }: {
@@ -435,6 +440,7 @@ function CartSheet({
   whatsapp: string;
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
+  deliveryZones: DeliveryZone[];
   onQtyChange: (itemId: string, extraNames: string[], qty: number) => void;
   onClose: () => void;
 }) {
@@ -525,6 +531,7 @@ function CartSheet({
             total={total}
             paymentMethods={paymentMethods}
             bcvRate={bcvRate}
+            deliveryZones={deliveryZones}
           />
         )}
       </div>

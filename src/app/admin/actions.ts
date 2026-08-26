@@ -9,6 +9,7 @@ import {
   restaurantSchema,
 } from "@/lib/validations";
 import { parseExtrasText } from "@/lib/menu-item-extras";
+import { parseDeliveryZonesText } from "@/lib/delivery-zones";
 
 export type ActionState = { error?: string } | null;
 
@@ -45,6 +46,7 @@ function parseRestaurantForm(formData: FormData) {
     theme_color: formData.get("theme_color") || "#f97316",
     currency: formData.get("currency") || "USD",
     is_published: formData.get("is_published") === "on",
+    delivery_zones: formData.get("delivery_zones") ?? "",
   });
 }
 
@@ -58,9 +60,11 @@ export async function createRestaurant(
     return { error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
   }
 
-  const { error } = await supabase
-    .from("restaurants")
-    .insert({ ...parsed.data, owner_id: user.id });
+  const { error } = await supabase.from("restaurants").insert({
+    ...parsed.data,
+    delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
+    owner_id: user.id,
+  });
 
   if (error) {
     return {
@@ -85,7 +89,10 @@ export async function updateRestaurant(
 
   const { error } = await supabase
     .from("restaurants")
-    .update(parsed.data)
+    .update({
+      ...parsed.data,
+      delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
+    })
     .eq("id", restaurantId);
 
   if (error) {

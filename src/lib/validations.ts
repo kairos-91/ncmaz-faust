@@ -30,6 +30,7 @@ export const restaurantSchema = z.object({
   theme_color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   currency: z.string().min(3).max(3),
   is_published: z.boolean(),
+  delivery_zones: z.string().max(2000).optional().or(z.literal("")),
 });
 export type RestaurantInput = z.infer<typeof restaurantSchema>;
 

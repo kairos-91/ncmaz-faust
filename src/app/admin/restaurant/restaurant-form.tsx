@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { slugify } from "@/lib/utils";
+import { deliveryZonesToText, parseDeliveryZones } from "@/lib/delivery-zones";
 import type { Restaurant } from "@/lib/supabase/database.types";
 import type { ActionState } from "@/app/admin/actions";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -106,6 +107,20 @@ export function RestaurantForm({
           defaultValue={restaurant?.address ?? ""}
           placeholder={t.addressPlaceholder}
         />
+      </div>
+
+      <div>
+        <Label htmlFor="delivery_zones">{t.deliveryZonesLabel}</Label>
+        <Textarea
+          id="delivery_zones"
+          name="delivery_zones"
+          rows={3}
+          defaultValue={deliveryZonesToText(parseDeliveryZones(restaurant?.delivery_zones))}
+          placeholder={t.deliveryZonesPlaceholder}
+        />
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.deliveryZonesHint}
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

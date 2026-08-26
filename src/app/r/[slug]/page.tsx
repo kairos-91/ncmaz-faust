@@ -9,6 +9,7 @@ import {
   parsePaymentMethods,
   PAYMENT_METHOD_META,
 } from "@/lib/payment-methods";
+import { parseDeliveryZones } from "@/lib/delivery-zones";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 import { MenuView } from "./menu-view";
@@ -154,6 +155,7 @@ export default async function PublicMenuPage({
             whatsapp={restaurant.whatsapp}
             paymentMethods={paymentMethods}
             bcvRate={bcvRate}
+            deliveryZones={parseDeliveryZones(restaurant.delivery_zones)}
           />
         )}
 
