@@ -93,8 +93,8 @@ export default async function PublicMenuPage({
         </div>
       </div>
 
-      <div className="mx-auto max-w-2xl px-4">
-        <div className="-mt-10 flex items-end gap-4">
+      <div className="relative mx-auto max-w-2xl px-4">
+        <div className="relative z-10 -mt-10 flex items-end gap-4">
           <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-neutral-50 bg-white shadow-sm dark:border-neutral-950 dark:bg-neutral-900">
             {restaurant.logo_url ? (
               <Image
