@@ -12,19 +12,21 @@ import {
   type ActionState,
 } from "@/app/admin/actions";
 import type { Category } from "@/lib/supabase/database.types";
-import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 type T = Dictionary["common"] & Dictionary["categoryManager"];
 
 export function CategoryManager({
   restaurantId,
   categories,
-  t,
+  locale,
 }: {
   restaurantId: string;
   categories: Category[];
-  t: T;
+  locale: Locale;
 }) {
+  const dict = getDictionary(locale);
+  const t: T = { ...dict.common, ...dict.categoryManager };
   const boundCreate = createCategory.bind(null, restaurantId);
   const [state, formAction, isPending] = useActionState(boundCreate, null);
 

@@ -5,19 +5,21 @@ import { Button } from "@/components/ui/button";
 import { createPlan, deletePlan, updatePlan } from "../actions";
 import { PlanForm } from "./plan-form";
 import { formatPlanPrice, type SubscriptionPlan } from "@/lib/subscription-plans";
-import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 type T = Dictionary["common"] & Dictionary["superadminPlans"];
 
 export function PlansManager({
   plans,
-  t,
+  locale,
   formT,
 }: {
   plans: SubscriptionPlan[];
-  t: T;
+  locale: Locale;
   formT: Dictionary["superadminPlanForm"];
 }) {
+  const dict = getDictionary(locale);
+  const t: T = { ...dict.common, ...dict.superadminPlans };
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();

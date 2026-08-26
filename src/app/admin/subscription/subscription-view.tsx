@@ -7,7 +7,7 @@ import { PaymentMethods } from "./payment-methods";
 import type { BcvRate } from "@/lib/bcv-rate";
 import type { PaymentMethodValues } from "@/lib/payment-methods";
 import { formatPlanPrice, type SubscriptionPlan } from "@/lib/subscription-plans";
-import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 export function SubscriptionView({
   restaurantId,
@@ -18,9 +18,6 @@ export function SubscriptionView({
   platformPaymentMethods,
   bcvRate,
   locale,
-  t,
-  paymentT,
-  pricingT,
 }: {
   restaurantId: string;
   restaurantName: string;
@@ -30,10 +27,11 @@ export function SubscriptionView({
   platformPaymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
   locale: Locale;
-  t: Dictionary["subscriptionView"];
-  paymentT: Dictionary["subscriptionPaymentMethods"];
-  pricingT: Dictionary["pricingSection"];
 }) {
+  const dict = getDictionary(locale);
+  const t = dict.subscriptionView;
+  const paymentT = dict.subscriptionPaymentMethods;
+  const pricingT = dict.pricingSection;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const currentPlan = plans.find((p) => p.key === currentPlanKey) ?? null;
   const selectedPlan = plans.find((p) => p.id === selectedId) ?? null;

@@ -40,9 +40,6 @@ export default async function SubscriptionPage() {
         platformPaymentMethods={parsePaymentMethods(settings?.payment_methods)}
         bcvRate={bcvRate}
         locale={locale}
-        t={t.subscriptionView}
-        paymentT={t.subscriptionPaymentMethods}
-        pricingT={t.pricingSection}
       />
     </div>
   );

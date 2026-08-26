@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Menú" };
 export default async function MenuPage() {
   const { restaurant } = await getOwnerRestaurant();
   if (!restaurant) redirect("/admin");
-  const { t } = await getT();
+  const { locale, t } = await getT();
 
   const supabase = await createClient();
   const [{ data: categories }, { data: items }] = await Promise.all([
@@ -56,7 +56,7 @@ export default async function MenuPage() {
         currency={restaurant.currency}
         categories={categories}
         items={items ?? []}
-        t={{ ...t.common, ...t.menuManager }}
+        locale={locale}
         formT={t.menuItemForm}
       />
     </div>

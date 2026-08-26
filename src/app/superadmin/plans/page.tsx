@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Planes · Superadmin" };
 
 export default async function SuperadminPlansPage() {
   const supabase = await createClient();
-  const [{ data: plans }, { t }] = await Promise.all([
+  const [{ data: plans }, { locale, t }] = await Promise.all([
     supabase.from("subscription_plans").select("*").order("sort_order"),
     getT(),
   ]);
@@ -23,7 +23,7 @@ export default async function SuperadminPlansPage() {
       </div>
       <PlansManager
         plans={(plans ?? []).map(toSubscriptionPlan)}
-        t={{ ...t.common, ...t.superadminPlans }}
+        locale={locale}
         formT={t.superadminPlanForm}
       />
     </div>

@@ -5,19 +5,21 @@ import { cn } from "@/lib/utils";
 import { daysUntil, type SubscriptionPlan } from "@/lib/subscription-plans";
 import { updateRestaurantPlan } from "../actions";
 import type { Restaurant } from "@/lib/supabase/database.types";
-import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 type T = Dictionary["common"] & Dictionary["superadminRestaurants"];
 
 export function RestaurantsManager({
   restaurants,
   plans,
-  t,
+  locale,
 }: {
   restaurants: Restaurant[];
   plans: SubscriptionPlan[];
-  t: T;
+  locale: Locale;
 }) {
+  const dict = getDictionary(locale);
+  const t: T = { ...dict.common, ...dict.superadminRestaurants };
   const [editingId, setEditingId] = useState<string | null>(null);
 
   if (restaurants.length === 0) {

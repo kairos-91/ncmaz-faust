@@ -12,7 +12,7 @@ import {
 } from "@/app/admin/actions";
 import { MenuItemForm } from "./menu-item-form";
 import type { Category, MenuItem } from "@/lib/supabase/database.types";
-import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 type T = Dictionary["common"] & Dictionary["menuManager"];
 
@@ -21,16 +21,18 @@ export function MenuManager({
   currency,
   categories,
   items,
-  t,
+  locale,
   formT,
 }: {
   restaurantId: string;
   currency: string;
   categories: Category[];
   items: MenuItem[];
-  t: T;
+  locale: Locale;
   formT: Dictionary["menuItemForm"];
 }) {
+  const dict = getDictionary(locale);
+  const t: T = { ...dict.common, ...dict.menuManager };
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const boundCreate = createMenuItem.bind(null, restaurantId);

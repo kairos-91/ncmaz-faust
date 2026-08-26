@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Restaurantes · Superadmin" };
 
 export default async function SuperadminRestaurantsPage() {
   const supabase = await createClient();
-  const [{ data: restaurants }, plans, { t }] = await Promise.all([
+  const [{ data: restaurants }, plans, { locale, t }] = await Promise.all([
     supabase
       .from("restaurants")
       .select("*")
@@ -28,7 +28,7 @@ export default async function SuperadminRestaurantsPage() {
       <RestaurantsManager
         restaurants={restaurants ?? []}
         plans={plans}
-        t={{ ...t.common, ...t.superadminRestaurants }}
+        locale={locale}
       />
     </div>
   );

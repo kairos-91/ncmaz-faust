@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Categorías" };
 export default async function CategoriesPage() {
   const { restaurant } = await getOwnerRestaurant();
   if (!restaurant) redirect("/admin");
-  const { t } = await getT();
+  const { locale, t } = await getT();
 
   const supabase = await createClient();
   const { data: categories } = await supabase
@@ -30,7 +30,7 @@ export default async function CategoriesPage() {
       <CategoryManager
         restaurantId={restaurant.id}
         categories={categories ?? []}
-        t={{ ...t.common, ...t.categoryManager }}
+        locale={locale}
       />
     </div>
   );

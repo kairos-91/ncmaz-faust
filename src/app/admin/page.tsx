@@ -71,7 +71,10 @@ export default async function AdminDashboardPage() {
         </Link>
       </div>
 
-      <QrCard publicUrl={publicUrl} t={t.dashboard} />
+      <QrCard
+        publicUrl={publicUrl}
+        t={{ qrTitle: t.dashboard.qrTitle, qrHint: t.dashboard.qrHint }}
+      />
     </div>
   );
 }
