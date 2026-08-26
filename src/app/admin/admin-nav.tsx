@@ -12,6 +12,7 @@ const links = [
   { href: "/admin/restaurant", label: "Mi restaurante" },
   { href: "/admin/categories", label: "Categorías" },
   { href: "/admin/menu", label: "Menú" },
+  { href: "/admin/orders", label: "Pedidos" },
   { href: "/admin/payment-methods", label: "Métodos de pago" },
   { href: "/admin/subscription", label: "Suscripción" },
 ];

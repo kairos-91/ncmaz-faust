@@ -349,6 +349,21 @@ export async function toggleAvailability(
   revalidatePath("/admin/menu");
 }
 
+export async function updateOrderStatus(
+  restaurantId: string,
+  orderId: string,
+  status: "accepted" | "rejected" | "pending",
+) {
+  const { supabase } = await requireOwnedRestaurant(restaurantId);
+  const { error } = await supabase
+    .from("orders")
+    .update({ status })
+    .eq("id", orderId)
+    .eq("restaurant_id", restaurantId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/orders");
+}
+
 export async function signOut() {
   const { supabase } = await requireUser();
   await supabase.auth.signOut();

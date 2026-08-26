@@ -14,11 +14,13 @@ import {
 import { bankLabel } from "@/lib/venezuelan-banks";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
 import { PaymentDetailsCard } from "@/components/payment-details-card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   ConfirmPaymentFields,
   type ConfirmPaymentValues,
 } from "@/components/confirm-payment-fields";
-import { uploadOrderReceipt } from "./actions";
+import { createOrder, uploadOrderReceipt } from "./actions";
 import type { MenuItem } from "@/lib/supabase/database.types";
 
 type OrderType = "delivery" | "pickup" | "dine_in";
@@ -51,10 +53,13 @@ export function CheckoutFields({
   bcvRate: BcvRate | null;
 }) {
   const [orderType, setOrderType] = useState<OrderType | null>(null);
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [address, setAddress] = useState("");
   const [table, setTable] = useState("");
   const [methodId, setMethodId] = useState<PaymentMethodId | null>(null);
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
     bankPaidFrom: "",
     reference: "",
@@ -80,6 +85,8 @@ export function CheckoutFields({
 
   const canSubmit =
     lines.length > 0 &&
+    customerName.trim().length > 0 &&
+    customerPhone.trim().length > 0 &&
     Boolean(orderType) &&
     (orderType !== "delivery" || address.trim().length > 0) &&
     (methods.length === 0 || Boolean(methodId));
@@ -151,6 +158,28 @@ export function CheckoutFields({
 
   return (
     <div className="mt-5 space-y-4 border-t border-neutral-100 pt-4 dark:border-neutral-800">
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label htmlFor="customerName">Tu nombre</Label>
+          <Input
+            id="customerName"
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value)}
+            placeholder="María Pérez"
+          />
+        </div>
+        <div>
+          <Label htmlFor="customerPhone">Tu teléfono</Label>
+          <Input
+            id="customerPhone"
+            value={customerPhone}
+            onChange={(e) => setCustomerPhone(e.target.value)}
+            placeholder="04120000000"
+            inputMode="tel"
+          />
+        </div>
+      </div>
+
       <div>
         <p className="mb-2 text-sm font-medium text-neutral-900 dark:text-white">
           ¿Cómo lo quieres?
@@ -282,16 +311,42 @@ export function CheckoutFields({
       )}
 
       {canSubmit && (
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white"
+        <button
+          type="button"
+          disabled={sending}
+          onClick={async () => {
+            setSending(true);
+            await createOrder(restaurantId, {
+              orderType: orderType!,
+              customerName,
+              customerPhone,
+              address: orderType === "delivery" ? address : undefined,
+              tableNumber: orderType === "dine_in" ? table : undefined,
+              items: lines.map((l) => ({
+                name: l.item.name,
+                qty: l.qty,
+                unitPrice:
+                  l.item.price +
+                  extrasTotal(parseExtras(l.item.extras), l.extraNames),
+                extraNames: l.extraNames,
+              })),
+              total,
+              currency,
+              paymentMethod: methodId ?? undefined,
+              bankPaidFrom: confirmValues.bankPaidFrom || undefined,
+              reference: confirmValues.reference || undefined,
+              amountPaid: confirmValues.amountPaid || undefined,
+              receiptUrl: receiptUrl ?? undefined,
+            });
+            setSending(false);
+            window.open(whatsappHref, "_blank", "noopener,noreferrer");
+          }}
+          className="flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
           style={{ backgroundColor: themeColor }}
         >
           <Check className="h-4 w-4" />
-          Enviar pedido por WhatsApp
-        </a>
+          {sending ? "Enviando..." : "Enviar pedido por WhatsApp"}
+        </button>
       )}
     </div>
   );
