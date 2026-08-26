@@ -148,7 +148,7 @@ export default async function PublicMenuPage({
                 href={restaurant.maps_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium hover:underline"
+                className="font-medium"
               >
                 📍 {restaurant.address}
               </a>
@@ -161,7 +161,7 @@ export default async function PublicMenuPage({
                 href={restaurant.maps_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium hover:underline"
+                className="font-medium"
               >
                 📍 Ubicación
               </a>
@@ -169,7 +169,7 @@ export default async function PublicMenuPage({
             {restaurant.phone && (
               <a
                 href={`tel:${restaurant.phone.replace(/[^0-9+]/g, "")}`}
-                className="font-medium hover:underline"
+                className="font-medium"
               >
                 📞 {restaurant.phone}
               </a>
