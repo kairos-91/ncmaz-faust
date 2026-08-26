@@ -1,0 +1,234 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { Bike, Check, Store, UtensilsCrossed } from "lucide-react";
+import { cn, formatPrice } from "@/lib/utils";
+import { formatBs, type BcvRate } from "@/lib/bcv-rate";
+import {
+  PAYMENT_METHOD_META,
+  enabledPaymentMethods,
+  type PaymentMethodId,
+  type PaymentMethodValues,
+} from "@/lib/payment-methods";
+import type { MenuItem } from "@/lib/supabase/database.types";
+
+type OrderType = "delivery" | "pickup" | "dine_in";
+
+const ORDER_TYPES: { id: OrderType; label: string; icon: typeof Bike }[] = [
+  { id: "delivery", label: "Delivery", icon: Bike },
+  { id: "pickup", label: "Para retirar", icon: Store },
+  { id: "dine_in", label: "Comer en el local", icon: UtensilsCrossed },
+];
+
+export function CheckoutFields({
+  restaurantName,
+  themeColor,
+  currency,
+  whatsapp,
+  lines,
+  total,
+  paymentMethods,
+  bcvRate,
+}: {
+  restaurantName: string;
+  themeColor: string;
+  currency: string;
+  whatsapp: string;
+  lines: { item: MenuItem; qty: number }[];
+  total: number;
+  paymentMethods: PaymentMethodValues;
+  bcvRate: BcvRate | null;
+}) {
+  const [orderType, setOrderType] = useState<OrderType | null>(null);
+  const [address, setAddress] = useState("");
+  const [table, setTable] = useState("");
+  const [methodId, setMethodId] = useState<PaymentMethodId | null>(null);
+
+  const methods = enabledPaymentMethods(paymentMethods);
+  const activeMeta = methodId ? PAYMENT_METHOD_META[methodId] : null;
+  const activeValues = methodId
+    ? (paymentMethods[methodId] as unknown as Record<string, string>)
+    : null;
+  const amountBs =
+    activeMeta?.convertToVes && bcvRate ? formatBs(total, bcvRate.rate) : null;
+
+  const canSubmit =
+    lines.length > 0 &&
+    Boolean(orderType) &&
+    (orderType !== "delivery" || address.trim().length > 0) &&
+    (methods.length === 0 || Boolean(methodId));
+
+  const whatsappHref = useMemo(() => {
+    if (!canSubmit || !orderType) return "#";
+
+    const orderTypeLabel = ORDER_TYPES.find((o) => o.id === orderType)?.label;
+    const lineText = lines
+      .map(
+        (l) =>
+          `${l.qty}x ${l.item.name} - ${formatPrice(l.item.price * l.qty, currency)}`,
+      )
+      .join("\n");
+
+    const parts = [
+      `Hola! Quiero hacer un pedido en ${restaurantName}:`,
+      "",
+      lineText,
+      "",
+      `Total: ${formatPrice(total, currency)}${amountBs ? ` (${amountBs})` : ""}`,
+      "",
+      `Tipo de pedido: ${orderTypeLabel}`,
+    ];
+    if (orderType === "delivery" && address.trim()) {
+      parts.push(`Dirección: ${address.trim()}`);
+    }
+    if (orderType === "dine_in" && table.trim()) {
+      parts.push(`Mesa: ${table.trim()}`);
+    }
+    if (activeMeta) {
+      parts.push(`Método de pago: ${activeMeta.label}`);
+    }
+
+    const phone = whatsapp.replace(/[^0-9]/g, "");
+    return `https://wa.me/${phone}?text=${encodeURIComponent(parts.join("\n"))}`;
+  }, [
+    canSubmit,
+    orderType,
+    lines,
+    currency,
+    total,
+    amountBs,
+    address,
+    table,
+    activeMeta,
+    restaurantName,
+    whatsapp,
+  ]);
+
+  return (
+    <div className="mt-5 space-y-4 border-t border-neutral-100 pt-4 dark:border-neutral-800">
+      <div>
+        <p className="mb-2 text-sm font-medium text-neutral-900 dark:text-white">
+          ¿Cómo lo quieres?
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          {ORDER_TYPES.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setOrderType(id)}
+              className={cn(
+                "flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-center text-xs font-medium",
+                orderType === id
+                  ? "border-transparent text-white"
+                  : "border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400",
+              )}
+              style={
+                orderType === id ? { backgroundColor: themeColor } : undefined
+              }
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {orderType === "delivery" && (
+        <div>
+          <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+            Dirección de entrega
+          </label>
+          <textarea
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            rows={2}
+            placeholder="Calle, casa/edificio, urbanización..."
+            className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          />
+        </div>
+      )}
+
+      {orderType === "dine_in" && (
+        <div>
+          <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+            Mesa (opcional)
+          </label>
+          <input
+            value={table}
+            onChange={(e) => setTable(e.target.value)}
+            placeholder="Nº de mesa"
+            className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          />
+        </div>
+      )}
+
+      {methods.length > 0 && (
+        <div>
+          <p className="mb-2 text-sm font-medium text-neutral-900 dark:text-white">
+            ¿Cómo vas a pagar?
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {methods.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setMethodId(id)}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-xs font-medium",
+                  methodId === id
+                    ? "border-transparent text-white"
+                    : "border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400",
+                )}
+                style={
+                  methodId === id ? { backgroundColor: themeColor } : undefined
+                }
+              >
+                {PAYMENT_METHOD_META[id].label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeMeta && activeValues && (
+        <div className="space-y-2 rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800/50">
+          {amountBs && (
+            <p className="text-sm font-semibold text-neutral-900 dark:text-white">
+              Monto a pagar: {amountBs}
+              {bcvRate && (
+                <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-400">
+                  (tasa BCV Bs. {bcvRate.rate.toFixed(2)})
+                </span>
+              )}
+            </p>
+          )}
+          {activeMeta.fields.map((field) => {
+            const value = activeValues[field.key];
+            if (!value) return null;
+            return (
+              <p key={field.key} className="text-xs text-neutral-600 dark:text-neutral-400">
+                <span className="font-medium text-neutral-900 dark:text-white">
+                  {field.label}:
+                </span>{" "}
+                {value}
+              </p>
+            );
+          })}
+        </div>
+      )}
+
+      {canSubmit && (
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white"
+          style={{ backgroundColor: themeColor }}
+        >
+          <Check className="h-4 w-4" />
+          Enviar pedido por WhatsApp
+        </a>
+      )}
+    </div>
+  );
+}

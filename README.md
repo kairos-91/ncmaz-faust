@@ -40,6 +40,9 @@ supabase/migrations/        Esquema SQL + Row Level Security
    - `supabase/migrations/0003_payment_proofs_bucket.sql` — bucket
      `payment-proofs` para los comprobantes de pago pegados en
      `/admin/subscription`.
+   - `supabase/migrations/0004_restaurant_payment_methods.sql` — columna
+     `payment_methods` usada por `/admin/payment-methods` y el checkout
+     del menú público.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 
