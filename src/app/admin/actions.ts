@@ -8,6 +8,7 @@ import {
   menuItemSchema,
   restaurantSchema,
 } from "@/lib/validations";
+import { parseExtrasText } from "@/lib/menu-item-extras";
 
 export type ActionState = { error?: string } | null;
 
@@ -236,6 +237,7 @@ function parseMenuItemForm(formData: FormData) {
     is_available: formData.get("is_available") === "on",
     is_featured: formData.get("is_featured") === "on",
     tags: formData.get("tags") ?? "",
+    extras: formData.get("extras") ?? "",
   });
 }
 
@@ -274,6 +276,7 @@ export async function createMenuItem(
     is_available: parsed.data.is_available,
     is_featured: parsed.data.is_featured,
     tags: toTagsArray(parsed.data.tags),
+    extras: parseExtrasText(parsed.data.extras ?? ""),
     image_url,
   });
   if (error) return { error: error.message };
@@ -312,6 +315,7 @@ export async function updateMenuItem(
       is_available: parsed.data.is_available,
       is_featured: parsed.data.is_featured,
       tags: toTagsArray(parsed.data.tags),
+      extras: parseExtrasText(parsed.data.extras ?? ""),
       ...(image_url ? { image_url } : {}),
     })
     .eq("id", itemId);

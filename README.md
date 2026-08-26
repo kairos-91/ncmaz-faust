@@ -46,6 +46,8 @@ supabase/migrations/        Esquema SQL + Row Level Security
    - `supabase/migrations/0005_order_receipts_bucket.sql` — bucket
      `order-receipts` para los comprobantes que suben los clientes al
      pagar su pedido (subida pública, sin sesión).
+   - `supabase/migrations/0006_menu_item_extras.sql` — columna `extras`
+     en `menu_items` para toppings/extras configurables por plato.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

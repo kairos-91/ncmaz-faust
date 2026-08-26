@@ -12,6 +12,7 @@ import {
   type PaymentMethodValues,
 } from "@/lib/payment-methods";
 import { bankLabel } from "@/lib/venezuelan-banks";
+import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
 import { PaymentDetailsCard } from "@/components/payment-details-card";
 import {
   ConfirmPaymentFields,
@@ -44,7 +45,7 @@ export function CheckoutFields({
   themeColor: string;
   currency: string;
   whatsapp: string;
-  lines: { item: MenuItem; qty: number }[];
+  lines: { item: MenuItem; qty: number; extraNames: string[] }[];
   total: number;
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
@@ -88,10 +89,13 @@ export function CheckoutFields({
 
     const orderTypeLabel = ORDER_TYPES.find((o) => o.id === orderType)?.label;
     const lineText = lines
-      .map(
-        (l) =>
-          `${l.qty}x ${l.item.name} - ${formatPrice(l.item.price * l.qty, currency)}`,
-      )
+      .map((l) => {
+        const unitPrice =
+          l.item.price + extrasTotal(parseExtras(l.item.extras), l.extraNames);
+        const extrasText =
+          l.extraNames.length > 0 ? ` (+ ${l.extraNames.join(", ")})` : "";
+        return `${l.qty}x ${l.item.name}${extrasText} - ${formatPrice(unitPrice * l.qty, currency)}`;
+      })
       .join("\n");
 
     const parts = [

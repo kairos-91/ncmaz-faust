@@ -105,6 +105,7 @@ export interface Database {
           is_available: boolean;
           is_featured: boolean;
           tags: string[];
+          extras: Json;
           sort_order: number;
           created_at: string;
           updated_at: string;
@@ -120,6 +121,7 @@ export interface Database {
           is_available?: boolean;
           is_featured?: boolean;
           tags?: string[];
+          extras?: Json;
           sort_order?: number;
           created_at?: string;
           updated_at?: string;
@@ -135,6 +137,7 @@ export interface Database {
           is_available?: boolean;
           is_featured?: boolean;
           tags?: string[];
+          extras?: Json;
           sort_order?: number;
           created_at?: string;
           updated_at?: string;

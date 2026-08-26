@@ -46,5 +46,6 @@ export const menuItemSchema = z.object({
   is_available: z.boolean(),
   is_featured: z.boolean(),
   tags: z.string().max(200).optional().or(z.literal("")),
+  extras: z.string().max(1000).optional().or(z.literal("")),
 });
 export type MenuItemInput = z.infer<typeof menuItemSchema>;

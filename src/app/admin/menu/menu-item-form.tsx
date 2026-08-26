@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import type { Category, MenuItem } from "@/lib/supabase/database.types";
 import type { ActionState } from "@/app/admin/actions";
+import { extrasToText, parseExtras } from "@/lib/menu-item-extras";
 
 export function MenuItemForm({
   categories,
@@ -95,6 +96,20 @@ export function MenuItemForm({
           defaultValue={item?.tags?.join(", ") ?? ""}
           placeholder="vegano, picante, sin gluten"
         />
+      </div>
+
+      <div>
+        <Label htmlFor="extras">Toppings y extras</Label>
+        <Textarea
+          id="extras"
+          name="extras"
+          rows={3}
+          defaultValue={extrasToText(parseExtras(item?.extras))}
+          placeholder={"Queso extra, 1.00\nTocineta, 1.50\nSalsa picante, 0"}
+        />
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          Un extra por línea: nombre, precio. Usa 0 si el extra es gratis.
+        </p>
       </div>
 
       <div>

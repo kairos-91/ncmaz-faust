@@ -6,10 +6,16 @@ import { Search, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import type { BcvRate } from "@/lib/bcv-rate";
 import type { PaymentMethodValues } from "@/lib/payment-methods";
+import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
 import type { Category, MenuItem } from "@/lib/supabase/database.types";
 import { CheckoutFields } from "./checkout-fields";
 
-type Cart = Record<string, number>;
+type CartLine = { itemId: string; extraNames: string[]; qty: number };
+type Cart = Record<string, CartLine>;
+
+function cartKey(itemId: string, extraNames: string[]) {
+  return `${itemId}::${[...extraNames].sort().join("|")}`;
+}
 
 export function MenuView({
   categories,
@@ -51,23 +57,46 @@ export function MenuView({
   );
   const [active, setActive] = useState(nonEmptyCategories[0]?.id);
 
-  const setQty = (itemId: string, qty: number) => {
+  const setLineQty = (itemId: string, extraNames: string[], qty: number) => {
+    const key = cartKey(itemId, extraNames);
     setCart((prev) => {
       const next = { ...prev };
-      if (qty <= 0) delete next[itemId];
-      else next[itemId] = qty;
+      if (qty <= 0) delete next[key];
+      else next[key] = { itemId, extraNames, qty };
       return next;
     });
   };
 
-  const cartLines = Object.entries(cart)
-    .map(([itemId, qty]) => ({
-      item: items.find((i) => i.id === itemId),
-      qty,
-    }))
-    .filter((line): line is { item: MenuItem; qty: number } => Boolean(line.item));
+  const addLine = (itemId: string, extraNames: string[]) => {
+    const key = cartKey(itemId, extraNames);
+    setCart((prev) => ({
+      ...prev,
+      [key]: {
+        itemId,
+        extraNames,
+        qty: (prev[key]?.qty ?? 0) + 1,
+      },
+    }));
+  };
 
-  const total = cartLines.reduce((sum, l) => sum + l.item.price * l.qty, 0);
+  const cartLines = Object.values(cart)
+    .map((line) => ({
+      item: items.find((i) => i.id === line.itemId),
+      qty: line.qty,
+      extraNames: line.extraNames,
+    }))
+    .filter(
+      (line): line is { item: MenuItem; qty: number; extraNames: string[] } =>
+        Boolean(line.item),
+    );
+
+  const lineUnitPrice = (item: MenuItem, extraNames: string[]) =>
+    item.price + extrasTotal(parseExtras(item.extras), extraNames);
+
+  const total = cartLines.reduce(
+    (sum, l) => sum + lineUnitPrice(l.item, l.extraNames) * l.qty,
+    0,
+  );
   const itemCount = cartLines.reduce((sum, l) => sum + l.qty, 0);
 
   return (
@@ -117,17 +146,30 @@ export function MenuView({
               <div className="space-y-3">
                 {filteredItems
                   .filter((item) => item.category_id === category.id)
-                  .map((item) => (
-                    <MenuItemCard
-                      key={item.id}
-                      item={item}
-                      currency={currency}
-                      themeColor={themeColor}
-                      orderingEnabled={Boolean(whatsapp)}
-                      qty={cart[item.id] ?? 0}
-                      onQtyChange={(qty) => setQty(item.id, qty)}
-                    />
-                  ))}
+                  .map((item) => {
+                    const noExtrasQty =
+                      cart[cartKey(item.id, [])]?.qty ?? 0;
+                    const totalQty = Object.values(cart)
+                      .filter((line) => line.itemId === item.id)
+                      .reduce((sum, line) => sum + line.qty, 0);
+                    return (
+                      <MenuItemCard
+                        key={item.id}
+                        item={item}
+                        currency={currency}
+                        themeColor={themeColor}
+                        orderingEnabled={Boolean(whatsapp)}
+                        noExtrasQty={noExtrasQty}
+                        totalQty={totalQty}
+                        onNoExtrasQtyChange={(qty) =>
+                          setLineQty(item.id, [], qty)
+                        }
+                        onAddWithExtras={(extraNames) =>
+                          addLine(item.id, extraNames)
+                        }
+                      />
+                    );
+                  })}
               </div>
             </section>
           ))}
@@ -161,7 +203,9 @@ export function MenuView({
           whatsapp={whatsapp}
           paymentMethods={paymentMethods}
           bcvRate={bcvRate}
-          onQtyChange={setQty}
+          onQtyChange={(itemId, extraNames, qty) =>
+            setLineQty(itemId, extraNames, qty)
+          }
           onClose={() => setCartOpen(false)}
         />
       )}
@@ -174,86 +218,181 @@ function MenuItemCard({
   currency,
   themeColor,
   orderingEnabled,
-  qty,
-  onQtyChange,
+  noExtrasQty,
+  totalQty,
+  onNoExtrasQtyChange,
+  onAddWithExtras,
 }: {
   item: MenuItem;
   currency: string;
   themeColor: string;
   orderingEnabled: boolean;
-  qty: number;
-  onQtyChange: (qty: number) => void;
+  noExtrasQty: number;
+  totalQty: number;
+  onNoExtrasQtyChange: (qty: number) => void;
+  onAddWithExtras: (extraNames: string[]) => void;
 }) {
+  const extras = parseExtras(item.extras);
+  const hasExtras = extras.length > 0;
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+
+  const toggleExtra = (name: string) => {
+    setSelected((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    );
+  };
+
+  const confirmAdd = () => {
+    onAddWithExtras(selected);
+    setSelected([]);
+    setPickerOpen(false);
+  };
+
   return (
-    <div className="flex gap-4 rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-      {item.image_url && (
-        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
-          <Image
-            src={item.image_url}
-            alt={item.name}
-            width={80}
-            height={80}
-            className="h-full w-full object-cover"
-            unoptimized
-          />
-        </div>
-      )}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-medium text-neutral-900 dark:text-white">
-            {item.name}
-          </h3>
-          <span
-            className="shrink-0 font-semibold"
-            style={{ color: themeColor }}
-          >
-            {formatPrice(item.price, currency)}
-          </span>
-        </div>
-        {item.description && (
-          <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
-            {item.description}
-          </p>
-        )}
-        {item.tags.length > 0 && (
-          <div className="mt-1.5 flex flex-wrap gap-1">
-            {item.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
-              >
-                {tag}
-              </span>
-            ))}
+    <div className="rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="flex gap-4">
+        {item.image_url && (
+          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
+            <Image
+              src={item.image_url}
+              alt={item.name}
+              width={80}
+              height={80}
+              className="h-full w-full object-cover"
+              unoptimized
+            />
           </div>
         )}
-        {orderingEnabled && (
-          <div className="mt-2 flex items-center gap-3">
-            {qty === 0 ? (
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-medium text-neutral-900 dark:text-white">
+              {item.name}
+            </h3>
+            <span
+              className="shrink-0 font-semibold"
+              style={{ color: themeColor }}
+            >
+              {formatPrice(item.price, currency)}
+            </span>
+          </div>
+          {item.description && (
+            <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
+              {item.description}
+            </p>
+          )}
+          {item.tags.length > 0 && (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {item.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+          {orderingEnabled && !hasExtras && (
+            <div className="mt-2 flex items-center gap-3">
+              {noExtrasQty === 0 ? (
+                <button
+                  type="button"
+                  onClick={() => onNoExtrasQtyChange(1)}
+                  className="rounded-full border px-3 py-1 text-xs font-medium"
+                  style={{ borderColor: themeColor, color: themeColor }}
+                >
+                  + Agregar
+                </button>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <QtyButton onClick={() => onNoExtrasQtyChange(noExtrasQty - 1)}>
+                    <Minus className="h-3.5 w-3.5" />
+                  </QtyButton>
+                  <span className="w-4 text-center text-sm font-medium text-neutral-900 dark:text-white">
+                    {noExtrasQty}
+                  </span>
+                  <QtyButton onClick={() => onNoExtrasQtyChange(noExtrasQty + 1)}>
+                    <Plus className="h-3.5 w-3.5" />
+                  </QtyButton>
+                </div>
+              )}
+            </div>
+          )}
+          {orderingEnabled && hasExtras && !pickerOpen && (
+            <div className="mt-2 flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => onQtyChange(1)}
+                onClick={() => setPickerOpen(true)}
                 className="rounded-full border px-3 py-1 text-xs font-medium"
                 style={{ borderColor: themeColor, color: themeColor }}
               >
                 + Agregar
               </button>
-            ) : (
-              <div className="flex items-center gap-3">
-                <QtyButton onClick={() => onQtyChange(qty - 1)}>
-                  <Minus className="h-3.5 w-3.5" />
-                </QtyButton>
-                <span className="w-4 text-center text-sm font-medium text-neutral-900 dark:text-white">
-                  {qty}
+              {totalQty > 0 && (
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                  {totalQty} en tu pedido
                 </span>
-                <QtyButton onClick={() => onQtyChange(qty + 1)}>
-                  <Plus className="h-3.5 w-3.5" />
-                </QtyButton>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+        </div>
       </div>
+
+      {orderingEnabled && hasExtras && pickerOpen && (
+        <div className="mt-3 space-y-2 rounded-xl border border-neutral-100 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/50">
+          <p className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
+            Toppings y extras
+          </p>
+          <div className="space-y-1.5">
+            {extras.map((extra) => (
+              <label
+                key={extra.name}
+                className="flex cursor-pointer items-center justify-between gap-2 text-sm text-neutral-700 dark:text-neutral-300"
+              >
+                <span className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(extra.name)}
+                    onChange={() => toggleExtra(extra.name)}
+                    className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
+                  />
+                  {extra.name}
+                </span>
+                {extra.price > 0 && (
+                  <span className="text-neutral-500 dark:text-neutral-400">
+                    +{formatPrice(extra.price, currency)}
+                  </span>
+                )}
+              </label>
+            ))}
+          </div>
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => {
+                setSelected([]);
+                setPickerOpen(false);
+              }}
+              className="text-xs font-medium text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-white"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={confirmAdd}
+              className="rounded-full px-4 py-1.5 text-xs font-semibold text-white"
+              style={{ backgroundColor: themeColor }}
+            >
+              Agregar ·{" "}
+              {formatPrice(
+                item.price + extrasTotal(extras, selected),
+                currency,
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -288,7 +427,7 @@ function CartSheet({
   onQtyChange,
   onClose,
 }: {
-  lines: { item: MenuItem; qty: number }[];
+  lines: { item: MenuItem; qty: number; extraNames: string[] }[];
   currency: string;
   themeColor: string;
   restaurantId: string;
@@ -296,10 +435,15 @@ function CartSheet({
   whatsapp: string;
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
-  onQtyChange: (itemId: string, qty: number) => void;
+  onQtyChange: (itemId: string, extraNames: string[], qty: number) => void;
   onClose: () => void;
 }) {
-  const total = lines.reduce((sum, l) => sum + l.item.price * l.qty, 0);
+  const unitPrice = (item: MenuItem, extraNames: string[]) =>
+    item.price + extrasTotal(parseExtras(item.extras), extraNames);
+  const total = lines.reduce(
+    (sum, l) => sum + unitPrice(l.item, l.extraNames) * l.qty,
+    0,
+  );
 
   return (
     <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 sm:items-center">
@@ -323,24 +467,36 @@ function CartSheet({
           </p>
         ) : (
           <div className="space-y-3">
-            {lines.map(({ item, qty }) => (
-              <div key={item.id} className="flex items-center justify-between gap-3">
+            {lines.map(({ item, qty, extraNames }) => (
+              <div
+                key={`${item.id}::${extraNames.join("|")}`}
+                className="flex items-center justify-between gap-3"
+              >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-neutral-900 dark:text-white">
                     {item.name}
                   </p>
+                  {extraNames.length > 0 && (
+                    <p className="truncate text-xs text-neutral-500 dark:text-neutral-500">
+                      + {extraNames.join(", ")}
+                    </p>
+                  )}
                   <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                    {formatPrice(item.price, currency)} c/u
+                    {formatPrice(unitPrice(item, extraNames), currency)} c/u
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                  <QtyButton onClick={() => onQtyChange(item.id, qty - 1)}>
+                  <QtyButton
+                    onClick={() => onQtyChange(item.id, extraNames, qty - 1)}
+                  >
                     <Minus className="h-3.5 w-3.5" />
                   </QtyButton>
                   <span className="w-4 text-center text-sm font-medium text-neutral-900 dark:text-white">
                     {qty}
                   </span>
-                  <QtyButton onClick={() => onQtyChange(item.id, qty + 1)}>
+                  <QtyButton
+                    onClick={() => onQtyChange(item.id, extraNames, qty + 1)}
+                  >
                     <Plus className="h-3.5 w-3.5" />
                   </QtyButton>
                 </div>
