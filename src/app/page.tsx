@@ -71,7 +71,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40 dark:from-neutral-950 dark:via-neutral-950/90 dark:to-neutral-950/50" />
           </div>
 
-          <div className="relative mx-auto max-w-3xl px-4 py-20 sm:px-6 md:py-28">
+          <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28">
             <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
               Menú digital para restaurantes
             </span>
