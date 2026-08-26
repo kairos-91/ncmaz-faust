@@ -179,7 +179,6 @@ function PhoneMockup() {
     <div className="mx-auto w-full max-w-xs">
       <div className="rounded-[2.5rem] border-8 border-neutral-900 bg-neutral-900 shadow-xl">
         <div className="overflow-hidden rounded-[2rem] bg-white">
-          <div className="h-24 bg-gradient-to-br from-orange-400 to-orange-600" />
           <div className="px-4 pb-5 pt-6">
             <p className="text-sm font-semibold text-neutral-900">
               La Parrilla de Juan
