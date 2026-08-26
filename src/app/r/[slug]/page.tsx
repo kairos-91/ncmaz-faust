@@ -143,15 +143,27 @@ export default async function PublicMenuPage({
             </p>
           )}
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
-            {restaurant.address && <span>📍 {restaurant.address}</span>}
-            {restaurant.maps_url && (
+            {restaurant.address && restaurant.maps_url && (
               <a
                 href={restaurant.maps_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-blue-600 dark:text-blue-400"
+                className="font-medium hover:underline"
               >
-                🗺️ Ubicación
+                📍 {restaurant.address}
+              </a>
+            )}
+            {restaurant.address && !restaurant.maps_url && (
+              <span>📍 {restaurant.address}</span>
+            )}
+            {!restaurant.address && restaurant.maps_url && (
+              <a
+                href={restaurant.maps_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium hover:underline"
+              >
+                📍 Ubicación
               </a>
             )}
             {restaurant.phone && (
