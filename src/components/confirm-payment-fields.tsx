@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { VENEZUELAN_BANKS } from "@/lib/venezuelan-banks";
 import { ReceiptPasteZone } from "./receipt-paste-zone";
 
 export type ConfirmPaymentValues = {
@@ -32,12 +33,19 @@ export function ConfirmPaymentFields({
 
       <div>
         <Label htmlFor="bankPaidFrom">Banco desde el que pagaste</Label>
-        <Input
+        <select
           id="bankPaidFrom"
           value={values.bankPaidFrom}
           onChange={(e) => set({ bankPaidFrom: e.target.value })}
-          placeholder="Banesco"
-        />
+          className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
+        >
+          <option value="">Selecciona tu banco</option>
+          {VENEZUELAN_BANKS.map((bank) => (
+            <option key={bank.code} value={bank.name}>
+              {bank.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

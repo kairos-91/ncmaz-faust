@@ -10,9 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field-error";
+import { GoogleAuthButton } from "@/components/google-auth-button";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
-export function SignupForm({ t }: { t: Dictionary["auth"]["signup"] }) {
+export function SignupForm({ t }: { t: Dictionary["auth"] }) {
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
   const [checkEmail, setCheckEmail] = useState(false);
@@ -37,7 +38,9 @@ export function SignupForm({ t }: { t: Dictionary["auth"]["signup"] }) {
 
     if (error) {
       setFormError(
-        error.message.includes("already registered") ? t.errorExists : t.errorGeneric,
+        error.message.includes("already registered")
+          ? t.signup.errorExists
+          : t.signup.errorGeneric,
       );
       return;
     }
@@ -54,49 +57,61 @@ export function SignupForm({ t }: { t: Dictionary["auth"]["signup"] }) {
   if (checkEmail) {
     return (
       <p className="text-sm text-neutral-600 dark:text-neutral-400">
-        {t.checkEmail}
+        {t.signup.checkEmail}
       </p>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <Label htmlFor="fullName">{t.fullNameLabel}</Label>
-        <Input
-          id="fullName"
-          autoComplete="name"
-          placeholder={t.fullNamePlaceholder}
-          {...register("fullName")}
-        />
-        <FieldError message={errors.fullName?.message} />
+    <div className="space-y-4">
+      <GoogleAuthButton label={t.continueWithGoogle} />
+
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
+        <span className="text-xs uppercase text-neutral-400 dark:text-neutral-500">
+          {t.orDivider}
+        </span>
+        <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
       </div>
-      <div>
-        <Label htmlFor="email">{t.emailLabel}</Label>
-        <Input
-          id="email"
-          type="email"
-          autoComplete="email"
-          placeholder="tu@restaurante.com"
-          {...register("email")}
-        />
-        <FieldError message={errors.email?.message} />
-      </div>
-      <div>
-        <Label htmlFor="password">{t.passwordLabel}</Label>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="new-password"
-          placeholder={t.passwordPlaceholder}
-          {...register("password")}
-        />
-        <FieldError message={errors.password?.message} />
-      </div>
-      {formError && <p className="text-sm text-red-600">{formError}</p>}
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? t.submitting : t.submit}
-      </Button>
-    </form>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <Label htmlFor="fullName">{t.signup.fullNameLabel}</Label>
+          <Input
+            id="fullName"
+            autoComplete="name"
+            placeholder={t.signup.fullNamePlaceholder}
+            {...register("fullName")}
+          />
+          <FieldError message={errors.fullName?.message} />
+        </div>
+        <div>
+          <Label htmlFor="email">{t.signup.emailLabel}</Label>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="tu@restaurante.com"
+            {...register("email")}
+          />
+          <FieldError message={errors.email?.message} />
+        </div>
+        <div>
+          <Label htmlFor="password">{t.signup.passwordLabel}</Label>
+          <Input
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            placeholder={t.signup.passwordPlaceholder}
+            {...register("password")}
+          />
+          <FieldError message={errors.password?.message} />
+        </div>
+        {formError && <p className="text-sm text-red-600">{formError}</p>}
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? t.signup.submitting : t.signup.submit}
+        </Button>
+      </form>
+    </div>
   );
 }

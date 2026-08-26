@@ -119,14 +119,24 @@ o recíbelo como prop `t` (client) donde lo necesites.
    cp .env.example .env.local
    ```
 
-4. Instala dependencias y levanta el servidor de desarrollo:
+4. Para el botón "Continuar con Google" en `/login` y `/signup`, activa el
+   provider de Google en el proyecto de Supabase: **Authentication →
+   Providers → Google**, con un Client ID/Secret de un proyecto en
+   [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+   (OAuth consent screen + credencial "Web application"). En ese
+   credencial de Google, agrega como **Authorized redirect URI** la URL
+   que Supabase muestra en esa misma pantalla
+   (`https://<tu-proyecto>.supabase.co/auth/v1/callback`). Sin esto el
+   botón muestra un error al hacer clic; el resto de la app funciona
+   igual sin configurarlo.
+5. Instala dependencias y levanta el servidor de desarrollo:
 
    ```bash
    npm install
    npm run dev
    ```
 
-5. Abre [http://localhost:3000](http://localhost:3000). Regístrate en
+6. Abre [http://localhost:3000](http://localhost:3000). Regístrate en
    `/signup`, crea tu restaurante desde `/admin` y publica tu menú.
 
 ## Modelo de datos

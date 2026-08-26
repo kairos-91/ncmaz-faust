@@ -180,6 +180,8 @@ const es = {
       checkEmail:
         "Te enviamos un correo de confirmación. Abre el enlace para activar tu cuenta y comenzar.",
     },
+    continueWithGoogle: "Continuar con Google",
+    orDivider: "o",
   },
   adminNav: {
     summary: "Resumen",
@@ -621,6 +623,8 @@ const en: typeof es = {
       checkEmail:
         "We sent you a confirmation email. Open the link to activate your account and get started.",
     },
+    continueWithGoogle: "Continue with Google",
+    orDivider: "or",
   },
   adminNav: {
     summary: "Overview",

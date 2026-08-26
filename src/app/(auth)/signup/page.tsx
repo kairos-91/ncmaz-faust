@@ -13,7 +13,7 @@ export default async function SignupPage() {
       <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
         {t.auth.signup.subtitle}
       </p>
-      <SignupForm t={t.auth.signup} />
+      <SignupForm t={t.auth} />
       <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
         {t.auth.signup.haveAccount}{" "}
         <a href="/login" className="font-medium text-neutral-900 underline dark:text-white">

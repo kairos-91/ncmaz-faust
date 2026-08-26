@@ -10,9 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field-error";
+import { GoogleAuthButton } from "@/components/google-auth-button";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
-export function LoginForm({ t }: { t: Dictionary["auth"]["login"] }) {
+export function LoginForm({ t }: { t: Dictionary["auth"] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formError, setFormError] = useState<string | null>(null);
@@ -28,7 +29,7 @@ export function LoginForm({ t }: { t: Dictionary["auth"]["login"] }) {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword(values);
     if (error) {
-      setFormError(t.errorInvalid);
+      setFormError(t.login.errorInvalid);
       return;
     }
     router.push(searchParams.get("redirect") ?? "/admin");
@@ -36,33 +37,45 @@ export function LoginForm({ t }: { t: Dictionary["auth"]["login"] }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <Label htmlFor="email">{t.emailLabel}</Label>
-        <Input
-          id="email"
-          type="email"
-          autoComplete="email"
-          placeholder="tu@restaurante.com"
-          {...register("email")}
-        />
-        <FieldError message={errors.email?.message} />
+    <div className="space-y-4">
+      <GoogleAuthButton label={t.continueWithGoogle} />
+
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
+        <span className="text-xs uppercase text-neutral-400 dark:text-neutral-500">
+          {t.orDivider}
+        </span>
+        <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
       </div>
-      <div>
-        <Label htmlFor="password">{t.passwordLabel}</Label>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          placeholder="••••••••"
-          {...register("password")}
-        />
-        <FieldError message={errors.password?.message} />
-      </div>
-      {formError && <p className="text-sm text-red-600">{formError}</p>}
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? t.submitting : t.submit}
-      </Button>
-    </form>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <Label htmlFor="email">{t.login.emailLabel}</Label>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="tu@restaurante.com"
+            {...register("email")}
+          />
+          <FieldError message={errors.email?.message} />
+        </div>
+        <div>
+          <Label htmlFor="password">{t.login.passwordLabel}</Label>
+          <Input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            placeholder="••••••••"
+            {...register("password")}
+          />
+          <FieldError message={errors.password?.message} />
+        </div>
+        {formError && <p className="text-sm text-red-600">{formError}</p>}
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? t.login.submitting : t.login.submit}
+        </Button>
+      </form>
+    </div>
   );
 }

@@ -15,7 +15,7 @@ export default async function LoginPage() {
         {t.auth.login.subtitle}
       </p>
       <Suspense fallback={null}>
-        <LoginForm t={t.auth.login} />
+        <LoginForm t={t.auth} />
       </Suspense>
       <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
         {t.auth.login.noAccount}{" "}
