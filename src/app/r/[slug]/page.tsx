@@ -94,14 +94,14 @@ export default async function PublicMenuPage({
 
       <div className="mx-auto max-w-2xl px-4">
         <div className="-mt-10 flex items-end gap-4">
-          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-4 border-neutral-50 bg-white shadow-sm dark:border-neutral-950 dark:bg-neutral-900">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-neutral-50 bg-white shadow-sm dark:border-neutral-950 dark:bg-neutral-900">
             {restaurant.logo_url ? (
               <Image
                 src={restaurant.logo_url}
                 alt={restaurant.name}
                 width={80}
                 height={80}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain p-1.5"
                 unoptimized
               />
             ) : (
