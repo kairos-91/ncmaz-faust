@@ -13,16 +13,18 @@ export function SuperadminNav({
   email,
   locale,
   t,
+  pendingPayments = 0,
 }: {
   email: string | null;
   locale: Locale;
   t: Dictionary["superadminNav"];
+  pendingPayments?: number;
 }) {
   const pathname = usePathname();
 
   const links = [
     { href: "/superadmin/restaurants", label: t.restaurants },
-    { href: "/superadmin/payments", label: t.payments },
+    { href: "/superadmin/payments", label: t.payments, badge: pendingPayments },
     { href: "/superadmin/plans", label: t.plans },
     { href: "/superadmin/payment-methods", label: t.paymentMethods },
   ];
@@ -50,12 +52,17 @@ export function SuperadminNav({
               key={link.href}
               href={link.href}
               className={cn(
-                "whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800",
+                "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800",
                 pathname.startsWith(link.href) &&
                   "bg-neutral-900 text-white hover:bg-neutral-900 dark:bg-white dark:text-neutral-900 dark:hover:bg-white",
               )}
             >
               {link.label}
+              {!!link.badge && (
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-semibold text-white">
+                  {link.badge > 99 ? "99+" : link.badge}
+                </span>
+              )}
             </Link>
           ))}
           <Link

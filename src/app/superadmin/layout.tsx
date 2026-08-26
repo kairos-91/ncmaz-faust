@@ -17,9 +17,19 @@ export default async function SuperadminLayout({
   if (!isSuperadmin(user.email)) redirect("/admin");
   const { locale, t } = await getT();
 
+  const { count } = await supabase
+    .from("subscription_payments")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+
   return (
     <div className="flex min-h-screen flex-1 flex-col bg-neutral-50 dark:bg-neutral-950 md:flex-row">
-      <SuperadminNav email={user.email ?? null} locale={locale} t={t.superadminNav} />
+      <SuperadminNav
+        email={user.email ?? null}
+        locale={locale}
+        t={t.superadminNav}
+        pendingPayments={count ?? 0}
+      />
       <main className="flex-1 px-4 py-8 md:px-10">
         <div className="mx-auto max-w-4xl">{children}</div>
       </main>
