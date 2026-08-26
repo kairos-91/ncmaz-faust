@@ -5,8 +5,15 @@ import Image from "next/image";
 import { updateRestaurantLogo } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
 import type { Restaurant } from "@/lib/supabase/database.types";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
-export function CoverUploader({ restaurant }: { restaurant: Restaurant }) {
+export function CoverUploader({
+  restaurant,
+  t,
+}: {
+  restaurant: Restaurant;
+  t: Dictionary["coverUploader"];
+}) {
   const [coverUrl, setCoverUrl] = useState(restaurant.cover_url);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -39,13 +46,13 @@ export function CoverUploader({ restaurant }: { restaurant: Restaurant }) {
         {coverUrl ? (
           <Image
             src={coverUrl}
-            alt="Portada"
+            alt={t.alt}
             fill
             className="object-cover"
             unoptimized
           />
         ) : (
-          <span className="text-xs text-white/80">Sin portada</span>
+          <span className="text-xs text-white/80">{t.noCover}</span>
         )}
       </div>
       <div className="mt-2 flex items-center gap-3">
@@ -63,7 +70,7 @@ export function CoverUploader({ restaurant }: { restaurant: Restaurant }) {
           disabled={isPending}
           onClick={() => inputRef.current?.click()}
         >
-          {isPending ? "Subiendo..." : "Cambiar portada"}
+          {isPending ? t.uploading : t.change}
         </Button>
         {error && <p className="text-xs text-red-600">{error}</p>}
       </div>

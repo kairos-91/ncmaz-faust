@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
 import { formatPlanPrice, toSubscriptionPlan } from "@/lib/subscription-plans";
+import { getT } from "@/lib/i18n/locale";
 
 export async function getActivePlans() {
   const supabase = await createClient();
@@ -23,7 +24,7 @@ export async function PricingPlans({
   className?: string;
 }) {
   const Heading = headingTag;
-  const plans = await getActivePlans();
+  const [plans, { t }] = await Promise.all([getActivePlans(), getT()]);
 
   return (
     <section
@@ -36,12 +37,11 @@ export async function PricingPlans({
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="text-center">
           <Heading className="text-3xl font-bold uppercase tracking-wide text-neutral-900 dark:text-white sm:text-4xl">
-            Selecciona tu plan y continúa
+            {t.pricingSection.heading}
           </Heading>
           <span className="mx-auto mt-3 block h-1 w-16 rounded-full bg-lime-500 dark:bg-lime-400" />
           <p className="mx-auto mt-6 max-w-2xl text-neutral-600 dark:text-neutral-400">
-            Empieza con 15 días gratis o activa de una vez el plan mensual o
-            anual, sin tarifas ocultas.
+            {t.pricingSection.subheading}
           </p>
         </div>
 
@@ -58,7 +58,7 @@ export async function PricingPlans({
             >
               {plan.highlight && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-lime-500 px-3 py-1 text-xs font-semibold text-white dark:bg-lime-400 dark:text-neutral-950">
-                  Más popular
+                  {t.pricingSection.mostPopular}
                 </span>
               )}
 

@@ -5,8 +5,19 @@ import { Button } from "@/components/ui/button";
 import { createPlan, deletePlan, updatePlan } from "../actions";
 import { PlanForm } from "./plan-form";
 import { formatPlanPrice, type SubscriptionPlan } from "@/lib/subscription-plans";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
-export function PlansManager({ plans }: { plans: SubscriptionPlan[] }) {
+type T = Dictionary["common"] & Dictionary["superadminPlans"];
+
+export function PlansManager({
+  plans,
+  t,
+  formT,
+}: {
+  plans: SubscriptionPlan[];
+  t: T;
+  formT: Dictionary["superadminPlanForm"];
+}) {
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -18,18 +29,19 @@ export function PlansManager({ plans }: { plans: SubscriptionPlan[] }) {
           <>
             <PlanForm
               action={createPlan}
-              submitLabel="Crear plan"
+              submitLabel={formT.createSubmit}
               onSuccess={() => setAdding(false)}
+              t={formT}
             />
             <button
               className="mt-3 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
               onClick={() => setAdding(false)}
             >
-              Cancelar
+              {t.cancel}
             </button>
           </>
         ) : (
-          <Button onClick={() => setAdding(true)}>+ Nuevo plan</Button>
+          <Button onClick={() => setAdding(true)}>{t.newPlan}</Button>
         )}
       </div>
 
@@ -43,14 +55,15 @@ export function PlansManager({ plans }: { plans: SubscriptionPlan[] }) {
               <PlanForm
                 plan={plan}
                 action={updatePlan.bind(null, plan.id)}
-                submitLabel="Guardar cambios"
+                submitLabel={formT.saveSubmit}
                 onSuccess={() => setEditingId(null)}
+                t={formT}
               />
               <button
                 className="mt-3 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                 onClick={() => setEditingId(null)}
               >
-                Cancelar
+                {t.cancel}
               </button>
             </div>
           ) : (
@@ -63,18 +76,18 @@ export function PlansManager({ plans }: { plans: SubscriptionPlan[] }) {
                   {plan.name}
                   {!plan.isActive && (
                     <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-normal text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
-                      Inactivo
+                      {t.inactiveBadge}
                     </span>
                   )}
                   {plan.highlight && (
                     <span className="rounded-full bg-lime-100 px-2 py-0.5 text-[11px] font-normal text-lime-700 dark:bg-lime-400/10 dark:text-lime-400">
-                      Destacado
+                      {t.highlightBadge}
                     </span>
                   )}
                 </p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-500">
                   key: {plan.key} · {formatPlanPrice(plan.priceUsd)} {plan.period} ·{" "}
-                  {plan.durationDays} días
+                  {plan.durationDays} {t.daysUnit}
                 </p>
               </div>
               <div className="flex shrink-0 gap-3">
@@ -83,18 +96,18 @@ export function PlansManager({ plans }: { plans: SubscriptionPlan[] }) {
                   className="text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                   onClick={() => setEditingId(plan.id)}
                 >
-                  Editar
+                  {t.edit}
                 </button>
                 <button
                   type="button"
                   disabled={isPending}
                   className="text-xs font-medium text-red-500 hover:text-red-700"
                   onClick={() => {
-                    if (!confirm(`¿Eliminar el plan "${plan.name}"?`)) return;
+                    if (!confirm(t.deleteConfirm(plan.name))) return;
                     startTransition(() => deletePlan(plan.id));
                   }}
                 >
-                  Eliminar
+                  {t.delete}
                 </button>
               </div>
             </div>

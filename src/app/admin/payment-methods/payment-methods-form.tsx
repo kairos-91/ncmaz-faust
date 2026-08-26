@@ -9,14 +9,17 @@ import {
   PAYMENT_METHOD_META,
   type PaymentMethodValues,
 } from "@/lib/payment-methods";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { updatePaymentMethods } from "./actions";
 
 export function PaymentMethodsForm({
   restaurantId,
   values,
+  t,
 }: {
   restaurantId: string;
   values: PaymentMethodValues;
+  t: Dictionary["paymentMethodsForm"];
 }) {
   const boundAction = updatePaymentMethods.bind(null, restaurantId);
   const [state, formAction, isPending] = useActionState(boundAction, null);
@@ -41,7 +44,7 @@ export function PaymentMethodsForm({
               {meta.label}
               {meta.convertToVes && (
                 <span className="rounded-full bg-lime-100 px-2 py-0.5 text-[11px] font-normal text-lime-700 dark:bg-lime-400/10 dark:text-lime-400">
-                  Se cobra en Bs a tasa BCV
+                  {t.convertNotice}
                 </span>
               )}
             </label>
@@ -61,7 +64,7 @@ export function PaymentMethodsForm({
                         defaultValue={value}
                         className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
                       >
-                        <option value="">Selecciona tu banco</option>
+                        <option value="">{t.selectBank}</option>
                         {field.options.map((opt) => (
                           <option key={opt.value} value={opt.value}>
                             {opt.label}
@@ -87,7 +90,7 @@ export function PaymentMethodsForm({
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" disabled={isPending}>
-        {isPending ? "Guardando..." : "Guardar métodos de pago"}
+        {isPending ? t.saving : t.save}
       </Button>
     </form>
   );

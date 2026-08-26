@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
+import { getT } from "@/lib/i18n/locale";
 import { MenuManager } from "./menu-manager";
 
 export const metadata: Metadata = { title: "Menú" };
@@ -10,6 +11,7 @@ export const metadata: Metadata = { title: "Menú" };
 export default async function MenuPage() {
   const { restaurant } = await getOwnerRestaurant();
   if (!restaurant) redirect("/admin");
+  const { t } = await getT();
 
   const supabase = await createClient();
   const [{ data: categories }, { data: items }] = await Promise.all([
@@ -29,13 +31,13 @@ export default async function MenuPage() {
     return (
       <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-8 text-center dark:border-neutral-700 dark:bg-neutral-900">
         <p className="mb-3 text-sm text-neutral-600 dark:text-neutral-400">
-          Crea al menos una categoría antes de agregar platos.
+          {t.menuPage.noCategories}
         </p>
         <Link
           href="/admin/categories"
           className="text-sm font-medium text-neutral-900 underline dark:text-white"
         >
-          Ir a categorías
+          {t.menuPage.goToCategories}
         </Link>
       </div>
     );
@@ -44,9 +46,9 @@ export default async function MenuPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Menú</h1>
+        <h1 className="text-xl font-semibold">{t.menuPage.title}</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Agrega, edita y organiza los platos de tu restaurante.
+          {t.menuPage.subtitle}
         </p>
       </div>
       <MenuManager
@@ -54,6 +56,8 @@ export default async function MenuPage() {
         currency={restaurant.currency}
         categories={categories}
         items={items ?? []}
+        t={{ ...t.common, ...t.menuManager }}
+        formT={t.menuItemForm}
       />
     </div>
   );

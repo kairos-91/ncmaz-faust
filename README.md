@@ -52,6 +52,31 @@ en `src/lib/superadmin.ts` (`SUPERADMIN_EMAILS`). Desde ahí se puede:
 Un usuario con sesión que visite `/admin` y sea superadmin verá un enlace
 "Panel superadmin" en el menú lateral.
 
+## Idioma (Español / English)
+
+El home y todo el panel de administración (`/admin`, auth, `/superadmin`)
+tienen un selector ES/EN junto al botón de modo oscuro. No usa rutas por
+idioma (`/en`, `/es`) — guarda el idioma elegido en una cookie
+(`levery-locale`) y renderiza todo el texto de la app desde
+`src/lib/i18n/dictionaries.ts` según esa cookie, tanto en componentes de
+servidor (`getT()` en `src/lib/i18n/locale.ts`) como pasando el diccionario
+como prop a los componentes de cliente.
+
+Fuera de este alcance, intencionalmente:
+- El menú público del cliente (`/r/[slug]`, carrito, checkout) — el
+  restaurante suele cargar sus platos en español, así que no se tradujo.
+- Los mensajes de validación de formularios que vienen de
+  `src/lib/validations.ts` (zod), que corren en los Server Actions sin
+  acceso directo a la cookie de idioma.
+- Términos bancarios/financieros venezolanos (Pago Móvil, nombres de
+  bancos, etc. en `src/lib/payment-methods.ts` y
+  `src/lib/venezuelan-banks.ts`) — se dejaron igual en ambos idiomas, como
+  cualquier producto financiero local.
+
+Para agregar un nuevo texto: agrégalo en ambos objetos (`es` y `en`) de
+`src/lib/i18n/dictionaries.ts` con la misma clave, y usa `getT()` (server)
+o recíbelo como prop `t` (client) donde lo necesites.
+
 ## Configuración
 
 1. Crea un proyecto en [supabase.com](https://supabase.com).

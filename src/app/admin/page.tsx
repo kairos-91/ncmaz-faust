@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
+import { getT } from "@/lib/i18n/locale";
 import { createRestaurant } from "./actions";
 import { RestaurantForm } from "./restaurant/restaurant-form";
 import { QrCard } from "./qr-card";
@@ -11,17 +12,20 @@ export const metadata: Metadata = { title: "Resumen" };
 
 export default async function AdminDashboardPage() {
   const { restaurant } = await getOwnerRestaurant();
+  const { t } = await getT();
 
   if (!restaurant) {
     return (
       <div>
-        <h1 className="mb-1 text-xl font-semibold">
-          Crea el menú de tu restaurante
-        </h1>
+        <h1 className="mb-1 text-xl font-semibold">{t.dashboard.createTitle}</h1>
         <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
-          Solo toma un minuto. Podrás editar todo después.
+          {t.dashboard.createSubtitle}
         </p>
-        <RestaurantForm action={createRestaurant} submitLabel="Crear restaurante" />
+        <RestaurantForm
+          action={createRestaurant}
+          submitLabel={t.dashboard.createSubmitLabel}
+          t={t.restaurantForm}
+        />
       </div>
     );
   }
@@ -44,32 +48,30 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-xl font-semibold">Hola, {restaurant.name} 👋</h1>
+        <h1 className="text-xl font-semibold">{t.dashboard.greeting(restaurant.name)}</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          {restaurant.is_published
-            ? "Tu menú está publicado y visible al público."
-            : "Tu menú aún no está publicado. Actívalo en Mi restaurante."}
+          {restaurant.is_published ? t.dashboard.published : t.dashboard.unpublished}
         </p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <StatCard label="Categorías" value={categoryCount ?? 0} />
-        <StatCard label="Platos" value={itemCount ?? 0} />
+        <StatCard label={t.dashboard.categoriesLabel} value={categoryCount ?? 0} />
+        <StatCard label={t.dashboard.dishesLabel} value={itemCount ?? 0} />
       </div>
 
       <div className="flex flex-wrap gap-3">
         <Link href="/admin/categories">
-          <Button variant="secondary">Gestionar categorías</Button>
+          <Button variant="secondary">{t.dashboard.manageCategories}</Button>
         </Link>
         <Link href="/admin/menu">
-          <Button variant="secondary">Gestionar menú</Button>
+          <Button variant="secondary">{t.dashboard.manageMenu}</Button>
         </Link>
         <Link href="/admin/subscription">
-          <Button variant="secondary">Ver planes</Button>
+          <Button variant="secondary">{t.dashboard.viewPlans}</Button>
         </Link>
       </div>
 
-      <QrCard publicUrl={publicUrl} />
+      <QrCard publicUrl={publicUrl} t={t.dashboard} />
     </div>
   );
 }

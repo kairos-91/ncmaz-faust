@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { slugify } from "@/lib/utils";
 import type { Restaurant } from "@/lib/supabase/database.types";
 import type { ActionState } from "@/app/admin/actions";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 const CURRENCIES = ["USD", "VES", "EUR", "MXN", "COP", "ARS", "PEN"];
 
@@ -15,10 +16,12 @@ export function RestaurantForm({
   restaurant,
   action,
   submitLabel,
+  t,
 }: {
   restaurant?: Restaurant | null;
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
   submitLabel: string;
+  t: Dictionary["restaurantForm"];
 }) {
   const [state, formAction, isPending] = useActionState(action, null);
   const [name, setName] = useState(restaurant?.name ?? "");
@@ -28,7 +31,7 @@ export function RestaurantForm({
   return (
     <form action={formAction} className="space-y-5">
       <div>
-        <Label htmlFor="name">Nombre del restaurante</Label>
+        <Label htmlFor="name">{t.nameLabel}</Label>
         <Input
           id="name"
           name="name"
@@ -38,12 +41,12 @@ export function RestaurantForm({
             setName(e.target.value);
             if (!slugTouched) setSlug(slugify(e.target.value));
           }}
-          placeholder="La Parrilla de Juan"
+          placeholder={t.namePlaceholder}
         />
       </div>
 
       <div>
-        <Label htmlFor="slug">URL pública</Label>
+        <Label htmlFor="slug">{t.urlLabel}</Label>
         <div className="flex items-center overflow-hidden rounded-lg border border-neutral-200 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-200 dark:border-neutral-700 dark:focus-within:border-neutral-500 dark:focus-within:ring-neutral-700">
           <span className="whitespace-nowrap bg-neutral-50 px-3 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
             /r/
@@ -57,26 +60,26 @@ export function RestaurantForm({
               setSlugTouched(true);
               setSlug(slugify(e.target.value));
             }}
-            placeholder="la-parrilla-de-juan"
+            placeholder={t.urlPlaceholder}
             className="h-10 w-full border-0 bg-white px-1 text-sm text-neutral-900 outline-none dark:bg-neutral-900 dark:text-white"
           />
         </div>
       </div>
 
       <div>
-        <Label htmlFor="description">Descripción</Label>
+        <Label htmlFor="description">{t.descriptionLabel}</Label>
         <Textarea
           id="description"
           name="description"
           rows={3}
           defaultValue={restaurant?.description ?? ""}
-          placeholder="Cocina venezolana casera, especialidad en parrillas."
+          placeholder={t.descriptionPlaceholder}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="phone">Teléfono</Label>
+          <Label htmlFor="phone">{t.phoneLabel}</Label>
           <Input
             id="phone"
             name="phone"
@@ -85,7 +88,7 @@ export function RestaurantForm({
           />
         </div>
         <div>
-          <Label htmlFor="whatsapp">WhatsApp</Label>
+          <Label htmlFor="whatsapp">{t.whatsappLabel}</Label>
           <Input
             id="whatsapp"
             name="whatsapp"
@@ -96,18 +99,18 @@ export function RestaurantForm({
       </div>
 
       <div>
-        <Label htmlFor="address">Dirección</Label>
+        <Label htmlFor="address">{t.addressLabel}</Label>
         <Input
           id="address"
           name="address"
           defaultValue={restaurant?.address ?? ""}
-          placeholder="Av. Bolívar, Maracay"
+          placeholder={t.addressPlaceholder}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="theme_color">Color de marca</Label>
+          <Label htmlFor="theme_color">{t.colorLabel}</Label>
           <input
             id="theme_color"
             name="theme_color"
@@ -117,7 +120,7 @@ export function RestaurantForm({
           />
         </div>
         <div>
-          <Label htmlFor="currency">Moneda</Label>
+          <Label htmlFor="currency">{t.currencyLabel}</Label>
           <select
             id="currency"
             name="currency"
@@ -140,13 +143,13 @@ export function RestaurantForm({
           defaultChecked={restaurant?.is_published ?? false}
           className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
         />
-        Publicar menú (visible en tu URL pública)
+        {t.publishLabel}
       </label>
 
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" disabled={isPending}>
-        {isPending ? "Guardando..." : submitLabel}
+        {isPending ? t.saving : submitLabel}
       </Button>
     </form>
   );

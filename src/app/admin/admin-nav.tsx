@@ -5,21 +5,31 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { signOut } from "./actions";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
 import { Logo } from "@/components/logo";
 import { isSuperadmin } from "@/lib/superadmin";
+import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 
-const links = [
-  { href: "/admin", label: "Resumen" },
-  { href: "/admin/restaurant", label: "Mi restaurante" },
-  { href: "/admin/categories", label: "Categorías" },
-  { href: "/admin/menu", label: "Menú" },
-  { href: "/admin/orders", label: "Pedidos" },
-  { href: "/admin/payment-methods", label: "Métodos de pago" },
-  { href: "/admin/subscription", label: "Suscripción" },
-];
-
-export function AdminNav({ email }: { email: string | null }) {
+export function AdminNav({
+  email,
+  locale,
+  t,
+}: {
+  email: string | null;
+  locale: Locale;
+  t: Dictionary["adminNav"];
+}) {
   const pathname = usePathname();
+
+  const links = [
+    { href: "/admin", label: t.summary },
+    { href: "/admin/restaurant", label: t.myRestaurant },
+    { href: "/admin/categories", label: t.categories },
+    { href: "/admin/menu", label: t.menu },
+    { href: "/admin/orders", label: t.orders },
+    { href: "/admin/payment-methods", label: t.paymentMethods },
+    { href: "/admin/subscription", label: t.subscription },
+  ];
 
   return (
     <aside className="flex w-full shrink-0 flex-col justify-between border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 md:h-screen md:w-56 md:border-r md:sticky md:top-0">
@@ -29,7 +39,8 @@ export function AdminNav({ email }: { email: string | null }) {
             <Link href="/">
               <Logo height={36} />
             </Link>
-            <div className="md:hidden">
+            <div className="flex items-center gap-1 md:hidden">
+              <LanguageToggle locale={locale} />
               <ThemeToggle />
             </div>
           </div>
@@ -53,7 +64,7 @@ export function AdminNav({ email }: { email: string | null }) {
               href="/superadmin"
               className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-lime-700 hover:bg-lime-50 dark:text-lime-400 dark:hover:bg-lime-400/10"
             >
-              Panel superadmin
+              {t.superadminPanel}
             </Link>
           )}
         </nav>
@@ -61,9 +72,12 @@ export function AdminNav({ email }: { email: string | null }) {
       <div className="border-t border-neutral-100 px-5 py-4 dark:border-neutral-800">
         <div className="mb-2 hidden items-center justify-between md:flex">
           <span className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
-            Tema
+            {t.theme}
           </span>
-          <ThemeToggle />
+          <div className="flex items-center gap-1">
+            <LanguageToggle locale={locale} />
+            <ThemeToggle />
+          </div>
         </div>
         <p className="mb-2 truncate text-xs text-neutral-600 dark:text-neutral-500">
           {email}
@@ -73,7 +87,7 @@ export function AdminNav({ email }: { email: string | null }) {
             type="submit"
             className="text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
           >
-            Cerrar sesión
+            {t.logout}
           </button>
         </form>
       </div>

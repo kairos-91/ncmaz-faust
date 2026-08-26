@@ -12,17 +12,24 @@ import {
 } from "@/app/admin/actions";
 import { MenuItemForm } from "./menu-item-form";
 import type { Category, MenuItem } from "@/lib/supabase/database.types";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+
+type T = Dictionary["common"] & Dictionary["menuManager"];
 
 export function MenuManager({
   restaurantId,
   currency,
   categories,
   items,
+  t,
+  formT,
 }: {
   restaurantId: string;
   currency: string;
   categories: Category[];
   items: MenuItem[];
+  t: T;
+  formT: Dictionary["menuItemForm"];
 }) {
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -40,11 +47,12 @@ export function MenuManager({
           <MenuItemForm
             categories={categories}
             action={boundCreate}
-            submitLabel="Agregar plato"
+            submitLabel={formT.addSubmit}
             onSuccess={() => setAdding(false)}
+            t={formT}
           />
         ) : (
-          <Button onClick={() => setAdding(true)}>+ Agregar plato</Button>
+          <Button onClick={() => setAdding(true)}>{t.addDish}</Button>
         )}
       </div>
 
@@ -54,7 +62,7 @@ export function MenuManager({
             {category.name}
           </h2>
           {items.length === 0 ? (
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">Sin platos todavía.</p>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">{t.noItems}</p>
           ) : (
             <ul className="divide-y divide-neutral-100 rounded-2xl border border-neutral-200 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-neutral-900">
               {items.map((item) =>
@@ -64,14 +72,15 @@ export function MenuManager({
                       categories={categories}
                       item={item}
                       action={updateMenuItem.bind(null, restaurantId, item.id)}
-                      submitLabel="Guardar cambios"
+                      submitLabel={t.saveChanges}
                       onSuccess={() => setEditingId(null)}
+                      t={formT}
                     />
                     <button
                       className="mt-3 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                       onClick={() => setEditingId(null)}
                     >
-                      Cancelar
+                      {t.cancel}
                     </button>
                   </li>
                 ) : (
@@ -81,6 +90,7 @@ export function MenuManager({
                     item={item}
                     currency={currency}
                     onEdit={() => setEditingId(item.id)}
+                    t={t}
                   />
                 ),
               )}
@@ -97,11 +107,13 @@ function MenuItemRow({
   item,
   currency,
   onEdit,
+  t,
 }: {
   restaurantId: string;
   item: MenuItem;
   currency: string;
   onEdit: () => void;
+  t: T;
 }) {
   const [isPending, startTransition] = useTransition();
 
@@ -147,25 +159,25 @@ function MenuItemRow({
             : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
         )}
       >
-        {item.is_available ? "Disponible" : "Agotado"}
+        {item.is_available ? t.available : t.soldOut}
       </button>
       <button
         type="button"
         className="shrink-0 text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
         onClick={onEdit}
       >
-        Editar
+        {t.edit}
       </button>
       <button
         type="button"
         disabled={isPending}
         className="shrink-0 text-xs font-medium text-red-500 hover:text-red-700"
         onClick={() => {
-          if (!confirm(`¿Eliminar "${item.name}"?`)) return;
+          if (!confirm(t.deleteConfirm(item.name))) return;
           startTransition(() => deleteMenuItem(restaurantId, item.id));
         }}
       >
-        Eliminar
+        {t.delete}
       </button>
     </li>
   );

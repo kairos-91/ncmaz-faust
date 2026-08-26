@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field-error";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
-export function SignupForm() {
+export function SignupForm({ t }: { t: Dictionary["auth"]["signup"] }) {
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
   const [checkEmail, setCheckEmail] = useState(false);
@@ -36,9 +37,7 @@ export function SignupForm() {
 
     if (error) {
       setFormError(
-        error.message.includes("already registered")
-          ? "Ese correo ya tiene una cuenta."
-          : "No pudimos crear tu cuenta. Intenta de nuevo.",
+        error.message.includes("already registered") ? t.errorExists : t.errorGeneric,
       );
       return;
     }
@@ -55,8 +54,7 @@ export function SignupForm() {
   if (checkEmail) {
     return (
       <p className="text-sm text-neutral-600 dark:text-neutral-400">
-        Te enviamos un correo de confirmación. Abre el enlace para activar tu
-        cuenta y comenzar.
+        {t.checkEmail}
       </p>
     );
   }
@@ -64,17 +62,17 @@ export function SignupForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <Label htmlFor="fullName">Nombre completo</Label>
+        <Label htmlFor="fullName">{t.fullNameLabel}</Label>
         <Input
           id="fullName"
           autoComplete="name"
-          placeholder="María Pérez"
+          placeholder={t.fullNamePlaceholder}
           {...register("fullName")}
         />
         <FieldError message={errors.fullName?.message} />
       </div>
       <div>
-        <Label htmlFor="email">Correo</Label>
+        <Label htmlFor="email">{t.emailLabel}</Label>
         <Input
           id="email"
           type="email"
@@ -85,19 +83,19 @@ export function SignupForm() {
         <FieldError message={errors.email?.message} />
       </div>
       <div>
-        <Label htmlFor="password">Contraseña</Label>
+        <Label htmlFor="password">{t.passwordLabel}</Label>
         <Input
           id="password"
           type="password"
           autoComplete="new-password"
-          placeholder="Mínimo 8 caracteres"
+          placeholder={t.passwordPlaceholder}
           {...register("password")}
         />
         <FieldError message={errors.password?.message} />
       </div>
       {formError && <p className="text-sm text-red-600">{formError}</p>}
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Creando cuenta..." : "Crear cuenta"}
+        {isSubmitting ? t.submitting : t.submit}
       </Button>
     </form>
   );

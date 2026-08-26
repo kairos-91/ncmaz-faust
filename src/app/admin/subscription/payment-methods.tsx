@@ -20,6 +20,7 @@ import {
   ConfirmPaymentFields,
   type ConfirmPaymentValues,
 } from "@/components/confirm-payment-fields";
+import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 import { createSubscriptionPayment, uploadPaymentProof } from "./actions";
 
 const SUPPORT_WHATSAPP = "584120000000";
@@ -30,12 +31,16 @@ export function PaymentMethods({
   plan,
   platformPaymentMethods,
   bcvRate,
+  locale,
+  t,
 }: {
   restaurantId: string;
   restaurantName: string;
   plan: SubscriptionPlan;
   platformPaymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
+  locale: Locale;
+  t: Dictionary["subscriptionPaymentMethods"];
 }) {
   const methods = enabledPaymentMethods(platformPaymentMethods);
   const [methodId, setMethodId] = useState<PaymentMethodId | null>(
@@ -84,7 +89,7 @@ export function PaymentMethods({
               copyValue: activeValues[field.key],
             })),
           ...(activeMeta.convertToVes && amountBsRaw
-            ? [{ label: "Monto (Bs)", value: amountBsRaw }]
+            ? [{ label: t.amountBsFieldLabel, value: amountBsRaw }]
             : []),
         ]
       : [];
@@ -98,13 +103,12 @@ export function PaymentMethods({
       : undefined;
 
   const message = [
-    `Hola! Soy ${restaurantName} y ya realicé el pago del plan ${plan.name} (${planPrice}${amountBs ? ` · ${amountBs}` : ""}).`,
-    activeMeta && `Método de pago: ${activeMeta.label}.`,
-    confirmValues.bankPaidFrom &&
-      `Banco desde el que pagué: ${confirmValues.bankPaidFrom}.`,
-    confirmValues.reference && `Referencia: ${confirmValues.reference}.`,
-    confirmValues.amountPaid && `Monto pagado: Bs ${confirmValues.amountPaid}.`,
-    receiptUrl ? `Comprobante: ${receiptUrl}` : "Adjunto el comprobante.",
+    t.messageIntro(restaurantName, plan.name, planPrice, amountBs ? ` · ${amountBs}` : ""),
+    activeMeta && t.messageMethod(activeMeta.label),
+    confirmValues.bankPaidFrom && t.messageBankFrom(confirmValues.bankPaidFrom),
+    confirmValues.reference && t.messageReference(confirmValues.reference),
+    confirmValues.amountPaid && t.messageAmountPaid(confirmValues.amountPaid),
+    receiptUrl ? t.messageReceipt(receiptUrl) : t.messageReceiptPending,
   ]
     .filter(Boolean)
     .join(" ");
@@ -114,8 +118,7 @@ export function PaymentMethods({
     return (
       <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Levery todavía no configuró sus métodos de pago. Escríbenos por
-          WhatsApp para coordinar el pago de tu plan {plan.name}.
+          {t.noMethodsTitle(plan.name)}
         </p>
         <a
           href={`https://wa.me/${SUPPORT_WHATSAPP}`}
@@ -123,7 +126,7 @@ export function PaymentMethods({
           rel="noopener noreferrer"
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700"
         >
-          Escribir por WhatsApp
+          {t.whatsappSupport}
         </a>
       </div>
     );
@@ -132,11 +135,10 @@ export function PaymentMethods({
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
       <p className="text-sm font-medium text-neutral-900 dark:text-white">
-        Paga tu plan {plan.name} ({planPrice})
+        {t.payPlan(plan.name, planPrice)}
       </p>
       <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-        Elige tu método de pago preferido, realiza el pago y notifícanos por
-        WhatsApp para activar tu suscripción.
+        {t.instructions}
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -162,21 +164,24 @@ export function PaymentMethods({
           {bcvRate ? (
             <>
               <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                Monto a pagar (tasa BCV)
+                {t.bcvAmountLabel}
               </p>
               <p className="mt-0.5 text-2xl font-bold text-neutral-900 dark:text-white">
                 {amountBs}
               </p>
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
-                Tasa BCV: Bs {bcvRate.rate.toFixed(2)} por USD
+                {t.bcvRateLabel(bcvRate.rate.toFixed(2))}
                 {bcvRate.updatedAt &&
-                  ` · actualizada ${new Date(bcvRate.updatedAt).toLocaleDateString("es-VE")}`}
+                  ` · ${t.bcvUpdatedAt(
+                    new Date(bcvRate.updatedAt).toLocaleDateString(
+                      locale === "en" ? "en-US" : "es-VE",
+                    ),
+                  )}`}
               </p>
             </>
           ) : (
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              No pudimos obtener la tasa BCV del día. Paga el equivalente en
-              bolívares a la tasa oficial vigente y notifícanos el monto.
+              {t.bcvUnavailable}
             </p>
           )}
         </div>
@@ -217,7 +222,7 @@ export function PaymentMethods({
         }}
         className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"
       >
-        {sending ? "Enviando..." : "Ya realicé el pago, notificar por WhatsApp"}
+        {sending ? t.notifying : t.notify}
       </button>
     </div>
   );

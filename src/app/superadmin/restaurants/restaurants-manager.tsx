@@ -5,20 +5,25 @@ import { cn } from "@/lib/utils";
 import { daysUntil, type SubscriptionPlan } from "@/lib/subscription-plans";
 import { updateRestaurantPlan } from "../actions";
 import type { Restaurant } from "@/lib/supabase/database.types";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+
+type T = Dictionary["common"] & Dictionary["superadminRestaurants"];
 
 export function RestaurantsManager({
   restaurants,
   plans,
+  t,
 }: {
   restaurants: Restaurant[];
   plans: SubscriptionPlan[];
+  t: T;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   if (restaurants.length === 0) {
     return (
       <p className="rounded-2xl border border-dashed border-neutral-300 bg-white p-8 text-center text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400">
-        No hay restaurantes todavía.
+        {t.empty}
       </p>
     );
   }
@@ -34,6 +39,7 @@ export function RestaurantsManager({
           onToggleEdit={() =>
             setEditingId(editingId === restaurant.id ? null : restaurant.id)
           }
+          t={t}
         />
       ))}
     </div>
@@ -45,11 +51,13 @@ function RestaurantRow({
   plans,
   editing,
   onToggleEdit,
+  t,
 }: {
   restaurant: Restaurant;
   plans: SubscriptionPlan[];
   editing: boolean;
   onToggleEdit: () => void;
+  t: T;
 }) {
   const [isPending, startTransition] = useTransition();
   const [planKey, setPlanKey] = useState(restaurant.plan);
@@ -83,11 +91,12 @@ function RestaurantRow({
     );
   };
 
-  const alertMessage = `Hola ${restaurant.name}! Te escribimos de Levery: tu plan ${plan?.name ?? restaurant.plan} ${
-    days !== null && days >= 0
-      ? `vence en ${days} ${days === 1 ? "día" : "días"}`
-      : "ya venció"
-  }. Escríbenos para renovarlo y seguir recibiendo pedidos por WhatsApp sin interrupciones.`;
+  const alertMessage = t.alertMessage(
+    restaurant.name,
+    `${plan?.name ?? restaurant.plan} ${
+      days !== null && days >= 0 ? t.daysRemainingShort(days) : t.expiredGeneric
+    }`,
+  );
 
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
@@ -113,9 +122,7 @@ function RestaurantRow({
                   : "text-neutral-500 dark:text-neutral-400",
               )}
             >
-              {days >= 0
-                ? `${days} día${days === 1 ? "" : "s"} restantes`
-                : `venció hace ${Math.abs(days)} día${Math.abs(days) === 1 ? "" : "s"}`}
+              {days >= 0 ? t.daysRemaining(days) : t.expiredDaysAgo(Math.abs(days))}
             </span>
           )}
         </div>
@@ -127,7 +134,7 @@ function RestaurantRow({
           onClick={onToggleEdit}
           className="text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
         >
-          {editing ? "Cancelar" : "Editar plan"}
+          {editing ? t.cancel : t.editPlan}
         </button>
         {restaurant.whatsapp && (
           <a
@@ -136,7 +143,7 @@ function RestaurantRow({
             rel="noopener noreferrer"
             className="text-xs font-medium text-green-600 hover:text-green-700 dark:text-green-400"
           >
-            Enviar alerta de vencimiento
+            {t.sendAlert}
           </a>
         )}
       </div>
@@ -145,7 +152,7 @@ function RestaurantRow({
         <div className="mt-4 grid gap-3 border-t border-neutral-100 pt-4 dark:border-neutral-800 sm:grid-cols-3">
           <div>
             <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
-              Plan
+              {t.planLabel}
             </label>
             <select
               value={planKey}
@@ -164,7 +171,7 @@ function RestaurantRow({
           </div>
           <div>
             <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
-              Vence el
+              {t.expiresLabel}
             </label>
             <input
               type="date"
@@ -179,7 +186,7 @@ function RestaurantRow({
               onClick={fillFromPlanDuration}
               className="h-10 flex-1 rounded-lg border border-neutral-200 px-3 text-xs font-medium text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
             >
-              Usar duración del plan
+              {t.useDuration}
             </button>
             <button
               type="button"
@@ -187,7 +194,7 @@ function RestaurantRow({
               onClick={save}
               className="h-10 flex-1 rounded-lg bg-neutral-900 px-3 text-xs font-semibold text-white hover:bg-neutral-700 disabled:opacity-60 dark:bg-white dark:text-neutral-900"
             >
-              {isPending ? "Guardando..." : "Guardar"}
+              {isPending ? t.saving : t.save}
             </button>
           </div>
         </div>

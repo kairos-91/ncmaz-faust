@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
 import { Logo } from "@/components/logo";
+import { getT } from "@/lib/i18n/locale";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const { locale, t } = await getT();
+
   return (
     <header className="sticky top-0 z-20 border-b border-neutral-100 bg-white/80 backdrop-blur dark:border-neutral-800 dark:bg-neutral-950/80">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
@@ -15,16 +19,17 @@ export function SiteHeader() {
             href="/#how-it-works"
             className="hover:text-neutral-900 dark:hover:text-white"
           >
-            Cómo funciona
+            {t.nav.howItWorks}
           </Link>
           <Link
             href="/#pricing"
             className="hover:text-neutral-900 dark:hover:text-white"
           >
-            Precios
+            {t.nav.pricing}
           </Link>
         </nav>
         <div className="flex items-center gap-1 sm:gap-2">
+          <LanguageToggle locale={locale} />
           <ThemeToggle />
           <Link href="/login">
             <Button
@@ -32,7 +37,7 @@ export function SiteHeader() {
               size="sm"
               className="dark:text-neutral-300 dark:hover:bg-neutral-800"
             >
-              Inicia sesión
+              {t.nav.login}
             </Button>
           </Link>
           <Link href="/signup">
@@ -40,7 +45,7 @@ export function SiteHeader() {
               size="sm"
               className="dark:bg-lime-400 dark:text-neutral-950 dark:hover:bg-lime-300"
             >
-              Empieza gratis
+              {t.nav.startFree}
             </Button>
           </Link>
         </div>

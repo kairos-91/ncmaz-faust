@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field-error";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
-export function LoginForm() {
+export function LoginForm({ t }: { t: Dictionary["auth"]["login"] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formError, setFormError] = useState<string | null>(null);
@@ -27,7 +28,7 @@ export function LoginForm() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword(values);
     if (error) {
-      setFormError("Correo o contraseña incorrectos.");
+      setFormError(t.errorInvalid);
       return;
     }
     router.push(searchParams.get("redirect") ?? "/admin");
@@ -37,7 +38,7 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <Label htmlFor="email">Correo</Label>
+        <Label htmlFor="email">{t.emailLabel}</Label>
         <Input
           id="email"
           type="email"
@@ -48,7 +49,7 @@ export function LoginForm() {
         <FieldError message={errors.email?.message} />
       </div>
       <div>
-        <Label htmlFor="password">Contraseña</Label>
+        <Label htmlFor="password">{t.passwordLabel}</Label>
         <Input
           id="password"
           type="password"
@@ -60,7 +61,7 @@ export function LoginForm() {
       </div>
       {formError && <p className="text-sm text-red-600">{formError}</p>}
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Entrando..." : "Entrar"}
+        {isSubmitting ? t.submitting : t.submit}
       </Button>
     </form>
   );

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
+import { getT } from "@/lib/i18n/locale";
 import { OrdersManager } from "./orders-manager";
 
 export const metadata: Metadata = { title: "Pedidos" };
@@ -9,6 +10,7 @@ export const metadata: Metadata = { title: "Pedidos" };
 export default async function OrdersPage() {
   const { restaurant } = await getOwnerRestaurant();
   if (!restaurant) redirect("/admin");
+  const { locale, t } = await getT();
 
   const supabase = await createClient();
   const { data: orders } = await supabase
@@ -20,15 +22,17 @@ export default async function OrdersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Pedidos</h1>
+        <h1 className="text-xl font-semibold">{t.ordersPage.title}</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Pedidos hechos desde tu menú público. Acepta o rechaza cada uno.
+          {t.ordersPage.subtitle}
         </p>
       </div>
       <OrdersManager
         restaurantId={restaurant.id}
         currency={restaurant.currency}
         orders={orders ?? []}
+        locale={locale}
+        t={t.ordersManager}
       />
     </div>
   );

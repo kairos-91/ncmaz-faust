@@ -7,17 +7,20 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import type { SubscriptionPlan } from "@/lib/subscription-plans";
 import type { ActionState } from "../actions";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 export function PlanForm({
   plan,
   action,
   submitLabel,
   onSuccess,
+  t,
 }: {
   plan?: SubscriptionPlan;
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
   submitLabel: string;
   onSuccess?: () => void;
+  t: Dictionary["superadminPlanForm"];
 }) {
   const [state, formAction, isPending] = useActionState(
     async (prev: ActionState, formData: FormData) => {
@@ -32,15 +35,15 @@ export function PlanForm({
     <form action={formAction} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="name">Nombre</Label>
+          <Label htmlFor="name">{t.nameLabel}</Label>
           <Input id="name" name="name" required defaultValue={plan?.name} placeholder="Pro" />
         </div>
         <div>
-          <Label htmlFor="key">Key (identificador único)</Label>
+          <Label htmlFor="key">{t.keyLabel}</Label>
           <Input id="key" name="key" required defaultValue={plan?.key} placeholder="pro" />
         </div>
         <div>
-          <Label htmlFor="price_usd">Precio (USD)</Label>
+          <Label htmlFor="price_usd">{t.priceLabel}</Label>
           <Input
             id="price_usd"
             name="price_usd"
@@ -51,7 +54,7 @@ export function PlanForm({
           />
         </div>
         <div>
-          <Label htmlFor="old_price_usd">Precio anterior (USD, opcional)</Label>
+          <Label htmlFor="old_price_usd">{t.oldPriceLabel}</Label>
           <Input
             id="old_price_usd"
             name="old_price_usd"
@@ -62,11 +65,11 @@ export function PlanForm({
           />
         </div>
         <div>
-          <Label htmlFor="period">Periodo (texto)</Label>
+          <Label htmlFor="period">{t.periodLabel}</Label>
           <Input id="period" name="period" required defaultValue={plan?.period ?? "/ mes"} placeholder="/ mes" />
         </div>
         <div>
-          <Label htmlFor="duration_days">Duración (días)</Label>
+          <Label htmlFor="duration_days">{t.durationLabel}</Label>
           <Input
             id="duration_days"
             name="duration_days"
@@ -77,23 +80,23 @@ export function PlanForm({
           />
         </div>
         <div>
-          <Label htmlFor="cta_label">Texto del botón</Label>
+          <Label htmlFor="cta_label">{t.ctaLabel}</Label>
           <Input id="cta_label" name="cta_label" required defaultValue={plan?.ctaLabel ?? "Elegir plan"} />
         </div>
         <div>
-          <Label htmlFor="sort_order">Orden</Label>
+          <Label htmlFor="sort_order">{t.sortOrderLabel}</Label>
           <Input id="sort_order" name="sort_order" type="number" defaultValue={plan?.sortOrder ?? 0} />
         </div>
       </div>
 
       <div>
-        <Label htmlFor="features">Características (una por línea)</Label>
+        <Label htmlFor="features">{t.featuresLabel}</Label>
         <Textarea
           id="features"
           name="features"
           rows={6}
           defaultValue={plan?.features.join("\n") ?? ""}
-          placeholder={"Menú ilimitado\nCódigo QR\nPedidos por WhatsApp"}
+          placeholder={t.featuresPlaceholder}
         />
       </div>
 
@@ -105,7 +108,7 @@ export function PlanForm({
             defaultChecked={plan?.highlight ?? false}
             className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
           />
-          Destacado (&quot;Más popular&quot;)
+          {t.highlightLabel}
         </label>
         <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
           <input
@@ -114,14 +117,14 @@ export function PlanForm({
             defaultChecked={plan?.isActive ?? true}
             className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
           />
-          Activo (visible públicamente)
+          {t.activeLabel}
         </label>
       </div>
 
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" disabled={isPending}>
-        {isPending ? "Guardando..." : submitLabel}
+        {isPending ? t.saving : submitLabel}
       </Button>
     </form>
   );

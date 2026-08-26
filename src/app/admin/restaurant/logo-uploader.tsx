@@ -5,8 +5,15 @@ import Image from "next/image";
 import { updateRestaurantLogo } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
 import type { Restaurant } from "@/lib/supabase/database.types";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
-export function LogoUploader({ restaurant }: { restaurant: Restaurant }) {
+export function LogoUploader({
+  restaurant,
+  t,
+}: {
+  restaurant: Restaurant;
+  t: Dictionary["logoUploader"];
+}) {
   const [logoUrl, setLogoUrl] = useState(restaurant.logo_url);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -41,7 +48,7 @@ export function LogoUploader({ restaurant }: { restaurant: Restaurant }) {
             unoptimized
           />
         ) : (
-          <span className="text-xs text-neutral-400">Logo</span>
+          <span className="text-xs text-neutral-400">{t.placeholder}</span>
         )}
       </div>
       <div>
@@ -59,7 +66,7 @@ export function LogoUploader({ restaurant }: { restaurant: Restaurant }) {
           disabled={isPending}
           onClick={() => inputRef.current?.click()}
         >
-          {isPending ? "Subiendo..." : "Cambiar logo"}
+          {isPending ? t.uploading : t.change}
         </Button>
         {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
       </div>

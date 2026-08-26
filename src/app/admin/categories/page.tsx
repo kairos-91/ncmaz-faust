@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
+import { getT } from "@/lib/i18n/locale";
 import { CategoryManager } from "./category-manager";
 
 export const metadata: Metadata = { title: "Categorías" };
@@ -9,6 +10,7 @@ export const metadata: Metadata = { title: "Categorías" };
 export default async function CategoriesPage() {
   const { restaurant } = await getOwnerRestaurant();
   if (!restaurant) redirect("/admin");
+  const { t } = await getT();
 
   const supabase = await createClient();
   const { data: categories } = await supabase
@@ -20,12 +22,16 @@ export default async function CategoriesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Categorías</h1>
+        <h1 className="text-xl font-semibold">{t.categoriesPage.title}</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Organiza tu menú en secciones: entradas, platos fuertes, postres...
+          {t.categoriesPage.subtitle}
         </p>
       </div>
-      <CategoryManager restaurantId={restaurant.id} categories={categories ?? []} />
+      <CategoryManager
+        restaurantId={restaurant.id}
+        categories={categories ?? []}
+        t={{ ...t.common, ...t.categoryManager }}
+      />
     </div>
   );
 }

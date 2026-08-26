@@ -12,13 +12,18 @@ import {
   type ActionState,
 } from "@/app/admin/actions";
 import type { Category } from "@/lib/supabase/database.types";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+
+type T = Dictionary["common"] & Dictionary["categoryManager"];
 
 export function CategoryManager({
   restaurantId,
   categories,
+  t,
 }: {
   restaurantId: string;
   categories: Category[];
+  t: T;
 }) {
   const boundCreate = createCategory.bind(null, restaurantId);
   const [state, formAction, isPending] = useActionState(boundCreate, null);
@@ -28,7 +33,7 @@ export function CategoryManager({
       <ul className="divide-y divide-neutral-100 rounded-2xl border border-neutral-200 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-neutral-900">
         {categories.length === 0 && (
           <li className="px-4 py-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
-            Aún no tienes categorías.
+            {t.empty}
           </li>
         )}
         {categories.map((category, index) => (
@@ -38,14 +43,15 @@ export function CategoryManager({
             category={category}
             isFirst={index === 0}
             isLast={index === categories.length - 1}
+            t={t}
           />
         ))}
       </ul>
 
       <form action={formAction} className="flex gap-2">
-        <Input name="name" placeholder="Nueva categoría (ej. Postres)" required />
+        <Input name="name" placeholder={t.newPlaceholder} required />
         <Button type="submit" disabled={isPending}>
-          Agregar
+          {t.add}
         </Button>
       </form>
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
@@ -58,11 +64,13 @@ function CategoryRow({
   category,
   isFirst,
   isLast,
+  t,
 }: {
   restaurantId: string;
   category: Category;
   isFirst: boolean;
   isLast: boolean;
+  t: T;
 }) {
   const [editing, setEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -86,7 +94,7 @@ function CategoryRow({
         <form action={formAction} className="flex flex-1 gap-2">
           <Input name="name" defaultValue={category.name} autoFocus />
           <Button type="submit" size="sm" variant="secondary">
-            Guardar
+            {t.save}
           </Button>
           <Button
             type="button"
@@ -94,7 +102,7 @@ function CategoryRow({
             variant="ghost"
             onClick={() => setEditing(false)}
           >
-            Cancelar
+            {t.cancel}
           </Button>
         </form>
         {state?.error && <span className="text-xs text-red-600">{state.error}</span>}
@@ -113,7 +121,7 @@ function CategoryRow({
             onClick={() =>
               startTransition(() => moveCategory(restaurantId, category.id, "up"))
             }
-            aria-label="Mover arriba"
+            aria-label={t.moveUp}
           >
             <ChevronUp className="h-3.5 w-3.5" />
           </button>
@@ -124,7 +132,7 @@ function CategoryRow({
             onClick={() =>
               startTransition(() => moveCategory(restaurantId, category.id, "down"))
             }
-            aria-label="Mover abajo"
+            aria-label={t.moveDown}
           >
             <ChevronDown className="h-3.5 w-3.5" />
           </button>
@@ -139,18 +147,18 @@ function CategoryRow({
           className="text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
           onClick={() => setEditing(true)}
         >
-          Editar
+          {t.edit}
         </button>
         <button
           type="button"
           disabled={isPending}
           className="text-xs font-medium text-red-500 hover:text-red-700"
           onClick={() => {
-            if (!confirm(`¿Eliminar "${category.name}" y sus platos?`)) return;
+            if (!confirm(t.deleteConfirm(category.name))) return;
             startTransition(() => deleteCategory(restaurantId, category.id));
           }}
         >
-          Eliminar
+          {t.delete}
         </button>
       </div>
     </li>

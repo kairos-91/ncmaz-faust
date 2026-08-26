@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail } from "lucide-react";
+import { getT } from "@/lib/i18n/locale";
 
 function FacebookIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -42,7 +43,9 @@ const SOCIAL_LINKS = [
   { icon: TikTokIcon, href: "#", label: "TikTok", className: "text-red-500 hover:text-red-400" },
 ];
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const { t } = await getT();
+
   return (
     <footer className="bg-neutral-950 text-neutral-400">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
@@ -82,7 +85,7 @@ export function SiteFooter() {
 
       <div className="border-t border-neutral-900">
         <p className="mx-auto max-w-6xl px-4 py-6 text-center text-sm text-neutral-500 sm:px-6">
-          © {new Date().getFullYear()} - Desarrollado por{" "}
+          © {new Date().getFullYear()} - {t.footer.developedBy}{" "}
           <Link href="/" className="hover:text-neutral-300">
             ALT Agencia de Marketing
           </Link>
