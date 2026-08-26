@@ -62,7 +62,7 @@ export default function Home() {
         <section className="relative overflow-hidden bg-neutral-50 dark:bg-neutral-950">
           <div className="absolute inset-0 dark:hidden">
             <Image
-              src="/hero-banner.png"
+              src="/hero-banner.jpg"
               alt=""
               fill
               priority
