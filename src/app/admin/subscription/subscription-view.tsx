@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PLANS } from "@/components/pricing-plans";
 import { PaymentMethods } from "./payment-methods";
+import type { BcvRate } from "@/lib/bcv-rate";
 
 const PLAN_KEYS = ["trial", "pro", "annual"] as const;
 type PlanKey = (typeof PLAN_KEYS)[number];
@@ -18,9 +19,11 @@ const CURRENT_PLAN_LABEL: Record<PlanKey, string> = {
 export function SubscriptionView({
   restaurantName,
   currentPlan,
+  bcvRate,
 }: {
   restaurantName: string;
   currentPlan: string;
+  bcvRate: BcvRate | null;
 }) {
   const normalizedPlan = (
     PLAN_KEYS.includes(currentPlan as PlanKey) ? currentPlan : "trial"
@@ -107,6 +110,8 @@ export function SubscriptionView({
           restaurantName={restaurantName}
           planLabel={PLANS[PLAN_KEYS.indexOf(selected)].name}
           planPrice={`${PLANS[PLAN_KEYS.indexOf(selected)].price} ${PLANS[PLAN_KEYS.indexOf(selected)].period}`}
+          planPriceUsd={PLANS[PLAN_KEYS.indexOf(selected)].priceUsd}
+          bcvRate={bcvRate}
         />
       )}
     </div>

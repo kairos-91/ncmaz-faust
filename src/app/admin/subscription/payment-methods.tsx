@@ -3,12 +3,15 @@
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatBs, type BcvRate } from "@/lib/bcv-rate";
+import { ReceiptPasteZone } from "./receipt-paste-zone";
 
 const SUPPORT_WHATSAPP = "584120000000";
 
 type Method = {
   id: string;
   label: string;
+  convertToVes?: boolean;
   fields: { label: string; value: string }[];
 };
 
@@ -16,6 +19,7 @@ const METHODS: Method[] = [
   {
     id: "pago-movil",
     label: "Pago Móvil",
+    convertToVes: true,
     fields: [
       { label: "Banco", value: "Banco Nacional de Crédito (BNC)" },
       { label: "Teléfono", value: "0412-0000000" },
@@ -25,6 +29,7 @@ const METHODS: Method[] = [
   {
     id: "transferencia",
     label: "Transferencia",
+    convertToVes: true,
     fields: [
       { label: "Banco", value: "Banco Nacional de Crédito (BNC)" },
       { label: "Nº de cuenta", value: "0000-0000-00-0000000000" },
@@ -64,15 +69,28 @@ export function PaymentMethods({
   restaurantName,
   planLabel,
   planPrice,
+  planPriceUsd,
+  bcvRate,
 }: {
   restaurantName: string;
   planLabel: string;
   planPrice: string;
+  planPriceUsd: number;
+  bcvRate: BcvRate | null;
 }) {
   const [activeId, setActiveId] = useState(METHODS[0].id);
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const active = METHODS.find((m) => m.id === activeId)!;
 
-  const message = `Hola! Soy ${restaurantName} y ya realicé el pago del plan ${planLabel} (${planPrice}) por ${active.label}. Adjunto el comprobante.`;
+  const amountBs =
+    active.convertToVes && bcvRate
+      ? formatBs(planPriceUsd, bcvRate.rate)
+      : null;
+
+  const message = [
+    `Hola! Soy ${restaurantName} y ya realicé el pago del plan ${planLabel} (${planPrice}${amountBs ? ` · ${amountBs}` : ""}) por ${active.label}.`,
+    receiptUrl ? `Comprobante: ${receiptUrl}` : "Adjunto el comprobante.",
+  ].join(" ");
   const whatsappHref = `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`;
 
   return (
@@ -103,10 +121,39 @@ export function PaymentMethods({
         ))}
       </div>
 
+      {active.convertToVes && (
+        <div className="mt-4 rounded-xl border border-lime-200 bg-lime-50 p-4 dark:border-lime-400/20 dark:bg-lime-400/5">
+          {bcvRate ? (
+            <>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400">
+                Monto a pagar (tasa BCV)
+              </p>
+              <p className="mt-0.5 text-2xl font-bold text-neutral-900 dark:text-white">
+                {amountBs}
+              </p>
+              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+                Tasa BCV: Bs. {bcvRate.rate.toFixed(2)} por USD
+                {bcvRate.updatedAt &&
+                  ` · actualizada ${new Date(bcvRate.updatedAt).toLocaleDateString("es-VE")}`}
+              </p>
+            </>
+          ) : (
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              No pudimos obtener la tasa BCV del día. Paga el equivalente en
+              bolívares a la tasa oficial vigente y notifícanos el monto.
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="mt-4 space-y-2 rounded-xl bg-neutral-50 p-4 dark:bg-neutral-800/50">
         {active.fields.map((field) => (
           <CopyField key={field.label} {...field} />
         ))}
+      </div>
+
+      <div className="mt-4">
+        <ReceiptPasteZone onUploaded={setReceiptUrl} />
       </div>
 
       <a

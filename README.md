@@ -37,6 +37,9 @@ supabase/migrations/        Esquema SQL + Row Level Security
      RLS y el bucket de imágenes `menu-images`.
    - `supabase/migrations/0002_restaurant_plan.sql` — agrega la columna
      `plan` usada por `/admin/subscription`.
+   - `supabase/migrations/0003_payment_proofs_bucket.sql` — bucket
+     `payment-proofs` para los comprobantes de pago pegados en
+     `/admin/subscription`.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

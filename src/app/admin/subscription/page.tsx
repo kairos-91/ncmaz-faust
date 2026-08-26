@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
+import { getBcvRate } from "@/lib/bcv-rate";
 import { SubscriptionView } from "./subscription-view";
 
 export const metadata: Metadata = { title: "Suscripción" };
@@ -8,6 +9,8 @@ export const metadata: Metadata = { title: "Suscripción" };
 export default async function SubscriptionPage() {
   const { restaurant } = await getOwnerRestaurant();
   if (!restaurant) redirect("/admin");
+
+  const bcvRate = await getBcvRate();
 
   return (
     <div className="space-y-6">
@@ -21,6 +24,7 @@ export default async function SubscriptionPage() {
       <SubscriptionView
         restaurantName={restaurant.name}
         currentPlan={restaurant.plan}
+        bcvRate={bcvRate}
       />
     </div>
   );
