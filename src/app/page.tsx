@@ -60,7 +60,7 @@ export default function Home() {
       <SiteHeader />
       <main className="flex-1">
         <section className="relative overflow-hidden bg-neutral-50 dark:bg-neutral-950">
-          <div className="absolute inset-0 dark:hidden">
+          <div className="absolute inset-0">
             <Image
               src="/hero-banner.jpg"
               alt=""
@@ -68,7 +68,7 @@ export default function Home() {
               priority
               className="object-cover object-center"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40" />
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40 dark:from-neutral-950 dark:via-neutral-950/90 dark:to-neutral-950/50" />
           </div>
 
           <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2 md:items-center md:py-28">
@@ -180,9 +180,8 @@ function PhoneMockup() {
       <div className="rounded-[2.5rem] border-8 border-neutral-900 bg-neutral-900 shadow-xl">
         <div className="overflow-hidden rounded-[2rem] bg-white">
           <div className="h-24 bg-gradient-to-br from-orange-400 to-orange-600" />
-          <div className="px-4 pb-5 pt-8">
-            <div className="-mt-14 h-14 w-14 rounded-2xl border-4 border-white bg-orange-500" />
-            <p className="mt-3 text-sm font-semibold text-neutral-900">
+          <div className="px-4 pb-5 pt-6">
+            <p className="text-sm font-semibold text-neutral-900">
               La Parrilla de Juan
             </p>
             <p className="text-xs text-neutral-600">Cocina venezolana</p>
