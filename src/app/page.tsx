@@ -71,39 +71,36 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40 dark:from-neutral-950 dark:via-neutral-950/90 dark:to-neutral-950/50" />
           </div>
 
-          <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2 md:items-center md:py-28">
-            <div>
-              <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
-                Menú digital para restaurantes
-              </span>
-              <h1 className="mt-4 text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white sm:text-5xl">
-                El menú de tu restaurante, siempre actualizado.
-              </h1>
-              <p className="mt-4 max-w-md text-lg text-neutral-600 dark:text-neutral-400">
-                Crea una landing y un menú digital con código QR en minutos.
-                Edita platos y precios desde tu panel, sin reimprimir nada.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/signup">
-                  <Button
-                    size="lg"
-                    className="dark:bg-lime-400 dark:text-neutral-950 dark:hover:bg-lime-300"
-                  >
-                    Crea tu menú gratis
-                  </Button>
-                </Link>
-                <Link href="#how-it-works">
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    className="dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
-                  >
-                    Cómo funciona
-                  </Button>
-                </Link>
-              </div>
+          <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 md:py-28">
+            <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
+              Menú digital para restaurantes
+            </span>
+            <h1 className="mx-auto mt-4 max-w-2xl text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white sm:text-5xl">
+              El menú de tu restaurante, siempre actualizado.
+            </h1>
+            <p className="mx-auto mt-4 max-w-md text-lg text-neutral-600 dark:text-neutral-400">
+              Crea una landing y un menú digital con código QR en minutos.
+              Edita platos y precios desde tu panel, sin reimprimir nada.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link href="/signup">
+                <Button
+                  size="lg"
+                  className="dark:bg-lime-400 dark:text-neutral-950 dark:hover:bg-lime-300"
+                >
+                  Crea tu menú gratis
+                </Button>
+              </Link>
+              <Link href="#how-it-works">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
+                >
+                  Cómo funciona
+                </Button>
+              </Link>
             </div>
-            <PhoneMockup />
           </div>
         </section>
 
@@ -171,41 +168,5 @@ export default function Home() {
       </main>
       <SiteFooter />
     </>
-  );
-}
-
-function PhoneMockup() {
-  return (
-    <div className="mx-auto w-full max-w-xs">
-      <div className="rounded-[2.5rem] border-8 border-neutral-900 bg-neutral-900 shadow-xl">
-        <div className="overflow-hidden rounded-[2rem] bg-white">
-          <div className="px-4 pb-5 pt-6">
-            <p className="text-sm font-semibold text-neutral-900">
-              La Parrilla de Juan
-            </p>
-            <p className="text-xs text-neutral-600">Cocina venezolana</p>
-            <div className="mt-4 space-y-2">
-              {[
-                ["Pabellón criollo", "$8.50"],
-                ["Cachapa con queso", "$5.00"],
-                ["Tequeños (6u)", "$4.00"],
-              ].map(([name, price]) => (
-                <div
-                  key={name}
-                  className="flex items-center justify-between rounded-xl border border-neutral-100 px-3 py-2"
-                >
-                  <span className="text-xs font-medium text-neutral-800">
-                    {name}
-                  </span>
-                  <span className="text-xs font-semibold text-orange-600">
-                    {price}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
