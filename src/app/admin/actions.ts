@@ -10,6 +10,7 @@ import {
 } from "@/lib/validations";
 import { parseExtrasText } from "@/lib/menu-item-extras";
 import { parseDeliveryZonesText } from "@/lib/delivery-zones";
+import { DAY_KEYS, type DayHours } from "@/lib/opening-hours";
 
 export type ActionState = { error?: string } | null;
 
@@ -50,6 +51,15 @@ function parseRestaurantForm(formData: FormData) {
   });
 }
 
+function parseOpeningHoursForm(formData: FormData): DayHours[] {
+  return DAY_KEYS.map((day) => ({
+    day,
+    open: String(formData.get(`hours.${day}.open`) ?? "08:00"),
+    close: String(formData.get(`hours.${day}.close`) ?? "18:00"),
+    closed: formData.get(`hours.${day}.closed`) === "on",
+  }));
+}
+
 export async function createRestaurant(
   _prev: ActionState,
   formData: FormData,
@@ -63,6 +73,7 @@ export async function createRestaurant(
   const { error } = await supabase.from("restaurants").insert({
     ...parsed.data,
     delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
+    opening_hours: parseOpeningHoursForm(formData),
     owner_id: user.id,
   });
 
@@ -92,6 +103,7 @@ export async function updateRestaurant(
     .update({
       ...parsed.data,
       delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
+      opening_hours: parseOpeningHoursForm(formData),
     })
     .eq("id", restaurantId);
 

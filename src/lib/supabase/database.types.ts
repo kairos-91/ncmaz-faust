@@ -28,6 +28,7 @@ export interface Database {
           plan_expires_at: string | null;
           payment_methods: Json;
           delivery_zones: Json;
+          opening_hours: Json;
           created_at: string;
           updated_at: string;
         };
@@ -49,6 +50,7 @@ export interface Database {
           plan_expires_at?: string | null;
           payment_methods?: Json;
           delivery_zones?: Json;
+          opening_hours?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -70,6 +72,7 @@ export interface Database {
           plan_expires_at?: string | null;
           payment_methods?: Json;
           delivery_zones?: Json;
+          opening_hours?: Json;
           created_at?: string;
           updated_at?: string;
         };

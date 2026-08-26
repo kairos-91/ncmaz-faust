@@ -45,6 +45,7 @@ export default async function RestaurantSettingsPage() {
         action={boundUpdate}
         submitLabel={t.common.save}
         t={t.restaurantForm}
+        hoursT={t.openingHours}
       />
     </div>
   );

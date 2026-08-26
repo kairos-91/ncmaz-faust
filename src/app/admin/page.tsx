@@ -25,6 +25,7 @@ export default async function AdminDashboardPage() {
           action={createRestaurant}
           submitLabel={t.dashboard.createSubmitLabel}
           t={t.restaurantForm}
+          hoursT={t.openingHours}
         />
       </div>
     );

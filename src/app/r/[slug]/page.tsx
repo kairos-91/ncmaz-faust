@@ -10,11 +10,22 @@ import {
   PAYMENT_METHOD_META,
 } from "@/lib/payment-methods";
 import { parseDeliveryZones } from "@/lib/delivery-zones";
+import { parseOpeningHours, isOpenNow, getDayKey, type DayKey } from "@/lib/opening-hours";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 import { MenuView } from "./menu-view";
 
 type Params = { slug: string };
+
+const DAY_LABELS: Record<DayKey, string> = {
+  mon: "Lunes",
+  tue: "Martes",
+  wed: "Miércoles",
+  thu: "Jueves",
+  fri: "Viernes",
+  sat: "Sábado",
+  sun: "Domingo",
+};
 
 async function getRestaurant(slug: string) {
   const supabase = await createClient();
@@ -74,6 +85,12 @@ export default async function PublicMenuPage({
     (id) => PAYMENT_METHOD_META[id].convertToVes,
   );
   const bcvRate = needsBcvRate ? await getBcvRate() : null;
+
+  const hasOpeningHours =
+    Array.isArray(restaurant.opening_hours) && restaurant.opening_hours.length > 0;
+  const openingHours = parseOpeningHours(restaurant.opening_hours);
+  const openNow = hasOpeningHours ? isOpenNow(openingHours) : null;
+  const todayKey = getDayKey(new Date());
 
   return (
     <div className="min-h-screen bg-neutral-50 pb-16 dark:bg-neutral-950">
@@ -138,6 +155,45 @@ export default async function PublicMenuPage({
               </a>
             )}
           </div>
+
+          {hasOpeningHours && (
+            <div className="mt-2">
+              <details className="group">
+                <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 text-xs">
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${
+                      openNow
+                        ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                        : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
+                    }`}
+                  >
+                    ● {openNow ? "Abierto ahora" : "Cerrado ahora"}
+                  </span>
+                  <span className="text-neutral-500 underline-offset-2 group-open:hidden dark:text-neutral-500">
+                    Ver horario
+                  </span>
+                  <span className="hidden text-neutral-500 group-open:inline dark:text-neutral-500">
+                    Ocultar horario
+                  </span>
+                </summary>
+                <ul className="mt-2 space-y-0.5 rounded-lg border border-neutral-200 p-3 text-xs dark:border-neutral-800">
+                  {openingHours.map((h) => (
+                    <li
+                      key={h.day}
+                      className={`flex justify-between gap-4 ${
+                        h.day === todayKey
+                          ? "font-semibold text-neutral-900 dark:text-white"
+                          : "text-neutral-600 dark:text-neutral-400"
+                      }`}
+                    >
+                      <span>{DAY_LABELS[h.day]}</span>
+                      <span>{h.closed ? "Cerrado" : `${h.open} – ${h.close}`}</span>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </div>
+          )}
         </div>
 
         {categories.length === 0 || items.length === 0 ? (

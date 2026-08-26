@@ -227,6 +227,20 @@ const es = {
     change: "Cambiar portada",
     uploading: "Subiendo...",
   },
+  openingHours: {
+    title: "Horario de atención",
+    hint: "Se muestra en tu menú público. Desmarca un día para indicar que ese día está cerrado.",
+    closedLabel: "Cerrado",
+    days: {
+      mon: "Lunes",
+      tue: "Martes",
+      wed: "Miércoles",
+      thu: "Jueves",
+      fri: "Viernes",
+      sat: "Sábado",
+      sun: "Domingo",
+    },
+  },
   restaurantForm: {
     nameLabel: "Nombre del restaurante",
     namePlaceholder: "La Parrilla de Juan",
@@ -669,6 +683,20 @@ const en: typeof es = {
     noCover: "No cover",
     change: "Change cover",
     uploading: "Uploading...",
+  },
+  openingHours: {
+    title: "Opening hours",
+    hint: "Shown on your public menu. Uncheck a day to mark it as closed.",
+    closedLabel: "Closed",
+    days: {
+      mon: "Monday",
+      tue: "Tuesday",
+      wed: "Wednesday",
+      thu: "Thursday",
+      fri: "Friday",
+      sat: "Saturday",
+      sun: "Sunday",
+    },
   },
   restaurantForm: {
     nameLabel: "Restaurant name",

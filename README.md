@@ -112,6 +112,10 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `/admin/restaurant`) y columnas `orders.delivery_zone` /
      `orders.delivery_fee` para registrar la zona y el costo de envío de
      cada pedido.
+   - `supabase/migrations/0010_opening_hours.sql` — columna
+     `restaurants.opening_hours` con el horario semanal configurable desde
+     `/admin/restaurant`, visible en el menú público (`/r/[slug]`) como un
+     indicador de "Abierto ahora" / "Cerrado ahora" y el horario completo.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

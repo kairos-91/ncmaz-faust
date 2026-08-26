@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { slugify } from "@/lib/utils";
 import { deliveryZonesToText, parseDeliveryZones } from "@/lib/delivery-zones";
+import { OpeningHoursFields } from "./opening-hours-fields";
 import type { Restaurant } from "@/lib/supabase/database.types";
 import type { ActionState } from "@/app/admin/actions";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -18,11 +19,13 @@ export function RestaurantForm({
   action,
   submitLabel,
   t,
+  hoursT,
 }: {
   restaurant?: Restaurant | null;
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
   submitLabel: string;
   t: Dictionary["restaurantForm"];
+  hoursT: Dictionary["openingHours"];
 }) {
   const [state, formAction, isPending] = useActionState(action, null);
   const [name, setName] = useState(restaurant?.name ?? "");
@@ -122,6 +125,8 @@ export function RestaurantForm({
           {t.deliveryZonesHint}
         </p>
       </div>
+
+      <OpeningHoursFields openingHours={restaurant?.opening_hours} t={hoursT} />
 
       <div className="grid grid-cols-2 gap-4">
         <div>
