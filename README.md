@@ -43,6 +43,9 @@ supabase/migrations/        Esquema SQL + Row Level Security
    - `supabase/migrations/0004_restaurant_payment_methods.sql` — columna
      `payment_methods` usada por `/admin/payment-methods` y el checkout
      del menú público.
+   - `supabase/migrations/0005_order_receipts_bucket.sql` — bucket
+     `order-receipts` para los comprobantes que suben los clientes al
+     pagar su pedido (subida pública, sin sesión).
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

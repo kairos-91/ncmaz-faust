@@ -13,6 +13,11 @@ import {
 } from "@/lib/payment-methods";
 import { bankLabel } from "@/lib/venezuelan-banks";
 import { PaymentDetailsCard } from "@/components/payment-details-card";
+import {
+  ConfirmPaymentFields,
+  type ConfirmPaymentValues,
+} from "@/components/confirm-payment-fields";
+import { uploadOrderReceipt } from "./actions";
 import type { MenuItem } from "@/lib/supabase/database.types";
 
 type OrderType = "delivery" | "pickup" | "dine_in";
@@ -24,6 +29,7 @@ const ORDER_TYPES: { id: OrderType; label: string; icon: typeof Bike }[] = [
 ];
 
 export function CheckoutFields({
+  restaurantId,
   restaurantName,
   themeColor,
   currency,
@@ -33,6 +39,7 @@ export function CheckoutFields({
   paymentMethods,
   bcvRate,
 }: {
+  restaurantId: string;
   restaurantName: string;
   themeColor: string;
   currency: string;
@@ -46,6 +53,12 @@ export function CheckoutFields({
   const [address, setAddress] = useState("");
   const [table, setTable] = useState("");
   const [methodId, setMethodId] = useState<PaymentMethodId | null>(null);
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
+    bankPaidFrom: "",
+    reference: "",
+    amountPaid: "",
+  });
 
   const methods = enabledPaymentMethods(paymentMethods);
   const activeMeta = methodId ? PAYMENT_METHOD_META[methodId] : null;
@@ -54,6 +67,15 @@ export function CheckoutFields({
     : null;
   const amountBs =
     activeMeta?.convertToVes && bcvRate ? formatBs(total, bcvRate.rate) : null;
+  const amountBsRaw =
+    activeMeta?.convertToVes && bcvRate
+      ? formatBsAmount(total, bcvRate.rate)
+      : null;
+
+  const confirmValues: ConfirmPaymentValues = {
+    ...confirm,
+    amountPaid: confirm.amountPaid || amountBsRaw || "",
+  };
 
   const canSubmit =
     lines.length > 0 &&
@@ -89,6 +111,18 @@ export function CheckoutFields({
     }
     if (activeMeta) {
       parts.push(`Método de pago: ${activeMeta.label}`);
+      if (confirmValues.bankPaidFrom) {
+        parts.push(`Banco desde el que pagó: ${confirmValues.bankPaidFrom}`);
+      }
+      if (confirmValues.reference) {
+        parts.push(`Referencia: ${confirmValues.reference}`);
+      }
+      if (confirmValues.amountPaid) {
+        parts.push(`Monto pagado: Bs ${confirmValues.amountPaid}`);
+      }
+      parts.push(
+        receiptUrl ? `Comprobante: ${receiptUrl}` : "Adjunto el comprobante.",
+      );
     }
 
     const phone = whatsapp.replace(/[^0-9]/g, "");
@@ -103,6 +137,10 @@ export function CheckoutFields({
     address,
     table,
     activeMeta,
+    confirmValues.bankPaidFrom,
+    confirmValues.reference,
+    confirmValues.amountPaid,
+    receiptUrl,
     restaurantName,
     whatsapp,
   ]);
@@ -229,6 +267,12 @@ export function CheckoutFields({
                   )
                 : undefined
             }
+          />
+          <ConfirmPaymentFields
+            values={confirmValues}
+            onChange={setConfirm}
+            upload={uploadOrderReceipt.bind(null, restaurantId)}
+            onReceiptUploaded={setReceiptUrl}
           />
         </div>
       )}

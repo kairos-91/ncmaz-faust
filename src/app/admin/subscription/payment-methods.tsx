@@ -9,7 +9,11 @@ import {
   PaymentDetailsCard,
   type PaymentDetailRow,
 } from "@/components/payment-details-card";
-import { ReceiptPasteZone } from "./receipt-paste-zone";
+import {
+  ConfirmPaymentFields,
+  type ConfirmPaymentValues,
+} from "@/components/confirm-payment-fields";
+import { uploadPaymentProof } from "./actions";
 
 const SUPPORT_WHATSAPP = "584120000000";
 
@@ -94,6 +98,11 @@ export function PaymentMethods({
 }) {
   const [activeId, setActiveId] = useState(METHODS[0].id);
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
+    bankPaidFrom: "",
+    reference: "",
+    amountPaid: "",
+  });
   const active = METHODS.find((m) => m.id === activeId)!;
 
   const amountBs =
@@ -104,6 +113,11 @@ export function PaymentMethods({
     active.convertToVes && bcvRate
       ? formatBsAmount(planPriceUsd, bcvRate.rate)
       : null;
+
+  const confirmValues: ConfirmPaymentValues = {
+    ...confirm,
+    amountPaid: confirm.amountPaid || amountBsRaw || "",
+  };
 
   const detailRows: PaymentDetailRow[] =
     active.convertToVes && amountBsRaw
@@ -124,8 +138,13 @@ export function PaymentMethods({
 
   const message = [
     `Hola! Soy ${restaurantName} y ya realicé el pago del plan ${planLabel} (${planPrice}${amountBs ? ` · ${amountBs}` : ""}) por ${active.label}.`,
+    confirmValues.bankPaidFrom && `Banco desde el que pagué: ${confirmValues.bankPaidFrom}.`,
+    confirmValues.reference && `Referencia: ${confirmValues.reference}.`,
+    confirmValues.amountPaid && `Monto pagado: Bs ${confirmValues.amountPaid}.`,
     receiptUrl ? `Comprobante: ${receiptUrl}` : "Adjunto el comprobante.",
-  ].join(" ");
+  ]
+    .filter(Boolean)
+    .join(" ");
   const whatsappHref = `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`;
 
   return (
@@ -186,7 +205,12 @@ export function PaymentMethods({
       </div>
 
       <div className="mt-4">
-        <ReceiptPasteZone onUploaded={setReceiptUrl} />
+        <ConfirmPaymentFields
+          values={confirmValues}
+          onChange={setConfirm}
+          upload={uploadPaymentProof}
+          onReceiptUploaded={setReceiptUrl}
+        />
       </div>
 
       <a

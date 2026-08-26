@@ -148,6 +148,7 @@ export default async function PublicMenuPage({
             items={items}
             currency={restaurant.currency}
             themeColor={restaurant.theme_color}
+            restaurantId={restaurant.id}
             restaurantName={restaurant.name}
             whatsapp={restaurant.whatsapp}
             paymentMethods={paymentMethods}

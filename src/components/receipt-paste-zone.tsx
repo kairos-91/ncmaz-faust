@@ -3,11 +3,14 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Check, Clipboard, Loader2, X } from "lucide-react";
-import { uploadPaymentProof } from "./actions";
+
+type UploadResult = { url?: string; error?: string };
 
 export function ReceiptPasteZone({
+  upload,
   onUploaded,
 }: {
+  upload: (formData: FormData) => Promise<UploadResult>;
   onUploaded: (url: string | null) => void;
 }) {
   const [status, setStatus] = useState<"idle" | "uploading" | "done">("idle");
@@ -22,9 +25,9 @@ export function ReceiptPasteZone({
 
     const formData = new FormData();
     formData.set("file", file);
-    const result = await uploadPaymentProof(formData);
+    const result = await upload(formData);
 
-    if ("error" in result && result.error) {
+    if (result.error) {
       setError(result.error);
       setStatus("idle");
       setPreview(null);

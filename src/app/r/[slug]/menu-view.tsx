@@ -16,6 +16,7 @@ export function MenuView({
   items,
   currency,
   themeColor,
+  restaurantId,
   restaurantName,
   whatsapp,
   paymentMethods,
@@ -25,6 +26,7 @@ export function MenuView({
   items: MenuItem[];
   currency: string;
   themeColor: string;
+  restaurantId: string;
   restaurantName: string;
   whatsapp: string | null;
   paymentMethods: PaymentMethodValues;
@@ -154,6 +156,7 @@ export function MenuView({
           lines={cartLines}
           currency={currency}
           themeColor={themeColor}
+          restaurantId={restaurantId}
           restaurantName={restaurantName}
           whatsapp={whatsapp}
           paymentMethods={paymentMethods}
@@ -277,6 +280,7 @@ function CartSheet({
   lines,
   currency,
   themeColor,
+  restaurantId,
   restaurantName,
   whatsapp,
   paymentMethods,
@@ -287,6 +291,7 @@ function CartSheet({
   lines: { item: MenuItem; qty: number }[];
   currency: string;
   themeColor: string;
+  restaurantId: string;
   restaurantName: string;
   whatsapp: string;
   paymentMethods: PaymentMethodValues;
@@ -355,6 +360,7 @@ function CartSheet({
 
         {lines.length > 0 && (
           <CheckoutFields
+            restaurantId={restaurantId}
             restaurantName={restaurantName}
             themeColor={themeColor}
             currency={currency}
