@@ -25,7 +25,7 @@ export function AdminNav({ email }: { email: string | null }) {
         <div className="flex items-center justify-between px-5 py-5 md:block">
           <div className="flex items-center justify-between">
             <Link href="/">
-              <Logo height={24} />
+              <Logo height={36} />
             </Link>
             <div className="md:hidden">
               <ThemeToggle />
