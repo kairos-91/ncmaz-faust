@@ -71,18 +71,18 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40 dark:from-neutral-950 dark:via-neutral-950/90 dark:to-neutral-950/50" />
           </div>
 
-          <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 md:py-28">
+          <div className="relative mx-auto max-w-3xl px-4 py-20 sm:px-6 md:py-28">
             <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
               Menú digital para restaurantes
             </span>
-            <h1 className="mx-auto mt-4 max-w-2xl text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white sm:text-5xl">
+            <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white sm:text-5xl">
               El menú de tu restaurante, siempre actualizado.
             </h1>
-            <p className="mx-auto mt-4 max-w-md text-lg text-neutral-600 dark:text-neutral-400">
+            <p className="mt-4 max-w-md text-lg text-neutral-600 dark:text-neutral-400">
               Crea una landing y un menú digital con código QR en minutos.
               Edita platos y precios desde tu panel, sin reimprimir nada.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/signup">
                 <Button
                   size="lg"
