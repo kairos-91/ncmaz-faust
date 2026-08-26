@@ -3,13 +3,27 @@
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 
-export type PaymentDetailRow = { label: string; value: string };
+export type PaymentDetailRow = {
+  label: string;
+  value: string;
+  /** Texto a copiar si difiere del que se muestra (ej. código de banco vs. nombre). */
+  copyValue?: string;
+};
 
-export function PaymentDetailsCard({ rows }: { rows: PaymentDetailRow[] }) {
+export function PaymentDetailsCard({
+  rows,
+  copyAllText,
+}: {
+  rows: PaymentDetailRow[];
+  /** Si se pasa, "Copiar todo" copia este texto en vez de armar uno con label: value. */
+  copyAllText?: string;
+}) {
   const [copiedAll, setCopiedAll] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = rows.map((r) => `${r.label}: ${r.value}`).join("\n");
+    const text =
+      copyAllText ??
+      rows.map((r) => `${r.label}: ${r.copyValue ?? r.value}`).join("\n");
     try {
       await navigator.clipboard.writeText(text);
       setCopiedAll(true);
@@ -40,12 +54,12 @@ export function PaymentDetailsCard({ rows }: { rows: PaymentDetailRow[] }) {
   );
 }
 
-function CopyRow({ label, value }: PaymentDetailRow) {
+function CopyRow({ label, value, copyValue }: PaymentDetailRow) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(value);
+      await navigator.clipboard.writeText(copyValue ?? value);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {

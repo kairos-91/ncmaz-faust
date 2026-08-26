@@ -47,19 +47,38 @@ export function PaymentMethodsForm({
             </label>
 
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              {meta.fields.map((field) => (
-                <div key={field.key}>
-                  <Label htmlFor={`${id}.${field.key}`}>{field.label}</Label>
-                  <Input
-                    id={`${id}.${field.key}`}
-                    name={`${id}.${field.key}`}
-                    defaultValue={
-                      (current as unknown as Record<string, string>)[field.key]
-                    }
-                    placeholder={field.placeholder}
-                  />
-                </div>
-              ))}
+              {meta.fields.map((field) => {
+                const value = (current as unknown as Record<string, string>)[
+                  field.key
+                ];
+                return (
+                  <div key={field.key}>
+                    <Label htmlFor={`${id}.${field.key}`}>{field.label}</Label>
+                    {field.options ? (
+                      <select
+                        id={`${id}.${field.key}`}
+                        name={`${id}.${field.key}`}
+                        defaultValue={value}
+                        className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
+                      >
+                        <option value="">Selecciona tu banco</option>
+                        {field.options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <Input
+                        id={`${id}.${field.key}`}
+                        name={`${id}.${field.key}`}
+                        defaultValue={value}
+                        placeholder={field.placeholder}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         );

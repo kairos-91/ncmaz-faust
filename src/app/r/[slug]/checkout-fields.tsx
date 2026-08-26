@@ -6,10 +6,12 @@ import { cn, formatPrice } from "@/lib/utils";
 import { formatBs, formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
 import {
   PAYMENT_METHOD_META,
+  buildPagoMovilLine,
   enabledPaymentMethods,
   type PaymentMethodId,
   type PaymentMethodValues,
 } from "@/lib/payment-methods";
+import { bankLabel } from "@/lib/venezuelan-banks";
 import { PaymentDetailsCard } from "@/components/payment-details-card";
 import type { MenuItem } from "@/lib/supabase/database.types";
 
@@ -209,12 +211,24 @@ export function CheckoutFields({
                 .filter((field) => activeValues[field.key])
                 .map((field) => ({
                   label: field.label,
-                  value: activeValues[field.key],
+                  value:
+                    methodId === "pago_movil" && field.key === "banco"
+                      ? bankLabel(activeValues[field.key])
+                      : activeValues[field.key],
+                  copyValue: activeValues[field.key],
                 })),
               ...(activeMeta.convertToVes && bcvRate
                 ? [{ label: "Monto (Bs)", value: formatBsAmount(total, bcvRate.rate) }]
                 : []),
             ]}
+            copyAllText={
+              methodId === "pago_movil" && bcvRate
+                ? buildPagoMovilLine(
+                    activeValues as { banco: string; cedula: string; telefono: string },
+                    formatBsAmount(total, bcvRate.rate),
+                  )
+                : undefined
+            }
           />
         </div>
       )}

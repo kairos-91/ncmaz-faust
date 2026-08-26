@@ -1,3 +1,5 @@
+import { VENEZUELAN_BANKS } from "./venezuelan-banks";
+
 export type PaymentMethodId =
   | "pago_movil"
   | "transferencia"
@@ -39,21 +41,35 @@ export const PAYMENT_METHOD_IDS: PaymentMethodId[] = [
   "wally",
 ];
 
+type FieldMeta = {
+  key: string;
+  label: string;
+  placeholder?: string;
+  options?: { value: string; label: string }[];
+};
+
 export const PAYMENT_METHOD_META: Record<
   PaymentMethodId,
   {
     label: string;
     convertToVes: boolean;
-    fields: { key: string; label: string; placeholder?: string }[];
+    fields: FieldMeta[];
   }
 > = {
   pago_movil: {
     label: "Pago Móvil",
     convertToVes: true,
     fields: [
-      { key: "banco", label: "Banco", placeholder: "Banco Nacional de Crédito" },
-      { key: "telefono", label: "Teléfono", placeholder: "0412-0000000" },
-      { key: "cedula", label: "Cédula/RIF", placeholder: "V-12345678" },
+      {
+        key: "banco",
+        label: "Banco",
+        options: VENEZUELAN_BANKS.map((b) => ({
+          value: b.code,
+          label: `${b.name} (${b.code})`,
+        })),
+      },
+      { key: "telefono", label: "Teléfono", placeholder: "04120000000" },
+      { key: "cedula", label: "Cédula/RIF", placeholder: "20108180" },
     ],
   },
   transferencia: {
@@ -112,4 +128,18 @@ export function parsePaymentMethods(json: unknown): PaymentMethodValues {
 
 export function enabledPaymentMethods(values: PaymentMethodValues) {
   return PAYMENT_METHOD_IDS.filter((id) => values[id].enabled);
+}
+
+/**
+ * Formato interbancario estándar de Pago Móvil en Venezuela: código del
+ * banco, cédula/RIF, teléfono y monto, separados por espacio y sin
+ * etiquetas — así se pega directo en la app del banco.
+ */
+export function buildPagoMovilLine(
+  values: { banco: string; cedula: string; telefono: string },
+  amountBs: string,
+) {
+  return [values.banco, values.cedula, values.telefono, amountBs]
+    .filter(Boolean)
+    .join(" ");
 }

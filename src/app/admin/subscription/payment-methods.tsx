@@ -3,16 +3,26 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { formatBs, formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
-import { PaymentDetailsCard } from "@/components/payment-details-card";
+import { buildPagoMovilLine } from "@/lib/payment-methods";
+import { bankLabel } from "@/lib/venezuelan-banks";
+import {
+  PaymentDetailsCard,
+  type PaymentDetailRow,
+} from "@/components/payment-details-card";
 import { ReceiptPasteZone } from "./receipt-paste-zone";
 
 const SUPPORT_WHATSAPP = "584120000000";
+
+// Placeholders — reemplaza con los datos reales de Levery.
+const PAGO_MOVIL_BANK_CODE = "0191"; // Banco Nacional de Crédito (BNC)
+const PAGO_MOVIL_CEDULA = "12345678";
+const PAGO_MOVIL_TELEFONO = "04120000000";
 
 type Method = {
   id: string;
   label: string;
   convertToVes?: boolean;
-  fields: { label: string; value: string }[];
+  fields: PaymentDetailRow[];
 };
 
 const METHODS: Method[] = [
@@ -21,9 +31,13 @@ const METHODS: Method[] = [
     label: "Pago Móvil",
     convertToVes: true,
     fields: [
-      { label: "Banco", value: "Banco Nacional de Crédito (BNC)" },
-      { label: "Teléfono", value: "0412-0000000" },
-      { label: "Cédula/RIF", value: "J-00000000-0" },
+      {
+        label: "Banco",
+        value: bankLabel(PAGO_MOVIL_BANK_CODE),
+        copyValue: PAGO_MOVIL_BANK_CODE,
+      },
+      { label: "Teléfono", value: PAGO_MOVIL_TELEFONO },
+      { label: "Cédula/RIF", value: PAGO_MOVIL_CEDULA },
     ],
   },
   {
@@ -86,14 +100,27 @@ export function PaymentMethods({
     active.convertToVes && bcvRate
       ? formatBs(planPriceUsd, bcvRate.rate)
       : null;
-
-  const detailRows =
+  const amountBsRaw =
     active.convertToVes && bcvRate
-      ? [
-          ...active.fields,
-          { label: "Monto (Bs)", value: formatBsAmount(planPriceUsd, bcvRate.rate) },
-        ]
+      ? formatBsAmount(planPriceUsd, bcvRate.rate)
+      : null;
+
+  const detailRows: PaymentDetailRow[] =
+    active.convertToVes && amountBsRaw
+      ? [...active.fields, { label: "Monto (Bs)", value: amountBsRaw }]
       : active.fields;
+
+  const copyAllText =
+    active.id === "pago-movil" && amountBsRaw
+      ? buildPagoMovilLine(
+          {
+            banco: PAGO_MOVIL_BANK_CODE,
+            cedula: PAGO_MOVIL_CEDULA,
+            telefono: PAGO_MOVIL_TELEFONO,
+          },
+          amountBsRaw,
+        )
+      : undefined;
 
   const message = [
     `Hola! Soy ${restaurantName} y ya realicé el pago del plan ${planLabel} (${planPrice}${amountBs ? ` · ${amountBs}` : ""}) por ${active.label}.`,
@@ -155,7 +182,7 @@ export function PaymentMethods({
       )}
 
       <div className="mt-4">
-        <PaymentDetailsCard rows={detailRows} />
+        <PaymentDetailsCard rows={detailRows} copyAllText={copyAllText} />
       </div>
 
       <div className="mt-4">
