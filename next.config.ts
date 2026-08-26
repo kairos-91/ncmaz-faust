@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   experimental: {
     serverActions: {
       // Los comprobantes de pago pegados y las fotos de platos/logos se
