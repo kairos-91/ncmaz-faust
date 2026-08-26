@@ -3,32 +3,31 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PLANS } from "@/components/pricing-plans";
 import { PaymentMethods } from "./payment-methods";
 import type { BcvRate } from "@/lib/bcv-rate";
-
-const PLAN_KEYS = ["trial", "pro", "annual"] as const;
-type PlanKey = (typeof PLAN_KEYS)[number];
-
-const CURRENT_PLAN_LABEL: Record<PlanKey, string> = {
-  trial: "Prueba gratis",
-  pro: "Pro",
-  annual: "Anual",
-};
+import type { PaymentMethodValues } from "@/lib/payment-methods";
+import { formatPlanPrice, type SubscriptionPlan } from "@/lib/subscription-plans";
 
 export function SubscriptionView({
+  restaurantId,
   restaurantName,
-  currentPlan,
+  currentPlanKey,
+  daysLeft,
+  plans,
+  platformPaymentMethods,
   bcvRate,
 }: {
+  restaurantId: string;
   restaurantName: string;
-  currentPlan: string;
+  currentPlanKey: string;
+  daysLeft: number | null;
+  plans: SubscriptionPlan[];
+  platformPaymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
 }) {
-  const normalizedPlan = (
-    PLAN_KEYS.includes(currentPlan as PlanKey) ? currentPlan : "trial"
-  ) as PlanKey;
-  const [selected, setSelected] = useState<PlanKey | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const currentPlan = plans.find((p) => p.key === currentPlanKey) ?? null;
+  const selectedPlan = plans.find((p) => p.id === selectedId) ?? null;
 
   return (
     <div className="space-y-6">
@@ -37,17 +36,32 @@ export function SubscriptionView({
           Tu plan actual
         </p>
         <p className="mt-1 text-xl font-semibold text-neutral-900 dark:text-white">
-          {CURRENT_PLAN_LABEL[normalizedPlan]}
+          {currentPlan?.name ?? currentPlanKey}
         </p>
+        {daysLeft !== null && (
+          <p
+            className={cn(
+              "mt-1 text-sm font-medium",
+              daysLeft <= 3
+                ? "text-red-600 dark:text-red-400"
+                : "text-neutral-500 dark:text-neutral-400",
+            )}
+          >
+            {daysLeft > 0
+              ? `Vence en ${daysLeft} ${daysLeft === 1 ? "día" : "días"}`
+              : daysLeft === 0
+                ? "Tu plan vence hoy"
+                : `Tu plan venció hace ${Math.abs(daysLeft)} ${Math.abs(daysLeft) === 1 ? "día" : "días"}`}
+          </p>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        {PLANS.map((plan, index) => {
-          const key = PLAN_KEYS[index];
-          const isCurrent = key === normalizedPlan;
+        {plans.map((plan) => {
+          const isCurrent = plan.key === currentPlanKey;
           return (
             <div
-              key={plan.name}
+              key={plan.id}
               className={cn(
                 "relative flex flex-col rounded-2xl border p-6",
                 plan.highlight
@@ -65,13 +79,13 @@ export function SubscriptionView({
                 {plan.name}
               </p>
               <div className="mt-2 flex items-baseline justify-center gap-1.5">
-                {plan.oldPrice && (
+                {plan.oldPriceUsd && (
                   <span className="text-sm text-red-500 line-through">
-                    {plan.oldPrice}
+                    {formatPlanPrice(plan.oldPriceUsd)}
                   </span>
                 )}
                 <span className="text-2xl font-bold text-neutral-900 dark:text-white">
-                  {plan.price}
+                  {formatPlanPrice(plan.priceUsd)}
                 </span>
                 <span className="text-xs text-neutral-500 dark:text-neutral-400">
                   {plan.period}
@@ -82,22 +96,26 @@ export function SubscriptionView({
                 <span className="mt-5 flex items-center justify-center gap-1.5 rounded-full bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
                   <Check className="h-4 w-4" /> Plan actual
                 </span>
-              ) : key === "trial" ? (
+              ) : plan.priceUsd === 0 ? (
                 <span className="mt-5 flex items-center justify-center rounded-full px-4 py-2 text-sm text-neutral-400 dark:text-neutral-600">
-                  Ya usaste tu prueba
+                  Plan gratuito
                 </span>
               ) : (
                 <button
                   type="button"
-                  onClick={() => setSelected(selected === key ? null : key)}
+                  onClick={() =>
+                    setSelectedId(selectedId === plan.id ? null : plan.id)
+                  }
                   className={cn(
                     "mt-5 rounded-full px-4 py-2 text-sm font-semibold",
-                    selected === key
+                    selectedId === plan.id
                       ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
                       : "bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700",
                   )}
                 >
-                  {selected === key ? "Ocultar formas de pago" : `Elegir ${plan.name}`}
+                  {selectedId === plan.id
+                    ? "Ocultar formas de pago"
+                    : plan.ctaLabel}
                 </button>
               )}
             </div>
@@ -105,12 +123,12 @@ export function SubscriptionView({
         })}
       </div>
 
-      {selected && (
+      {selectedPlan && (
         <PaymentMethods
+          restaurantId={restaurantId}
           restaurantName={restaurantName}
-          planLabel={PLANS[PLAN_KEYS.indexOf(selected)].name}
-          planPrice={`${PLANS[PLAN_KEYS.indexOf(selected)].price} ${PLANS[PLAN_KEYS.indexOf(selected)].period}`}
-          planPriceUsd={PLANS[PLAN_KEYS.indexOf(selected)].priceUsd}
+          plan={selectedPlan}
+          platformPaymentMethods={platformPaymentMethods}
           bcvRate={bcvRate}
         />
       )}

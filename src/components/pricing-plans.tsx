@@ -2,74 +2,20 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/server";
+import { formatPlanPrice, toSubscriptionPlan } from "@/lib/subscription-plans";
 
-export const PLANS = [
-  {
-    name: "Prueba gratis",
-    oldPrice: null,
-    price: "Gratis",
-    priceUsd: 0,
-    period: "/ 15 días",
-    cta: "Empezar gratis",
-    highlight: false,
-    features: [
-      "Página de bienvenida y menú público",
-      "Menú (hasta 30 platos)",
-      "Categorías ilimitadas",
-      "Etiquetas y platos destacados",
-      "Código QR para tus mesas",
-      "Pedidos por WhatsApp (limitados)",
-      "Fotos en cada plato",
-      "Reordenar categorías y platos",
-      "Datos de contacto y ubicación",
-      "Optimizado para celular",
-    ],
-  },
-  {
-    name: "Pro",
-    oldPrice: "$24.99",
-    price: "$11.99",
-    priceUsd: 11.99,
-    period: "/ mes",
-    cta: "Elegir Pro",
-    highlight: true,
-    features: [
-      "Página de bienvenida y menú público",
-      "Menú (platos ilimitados)",
-      "Categorías ilimitadas",
-      "Etiquetas y platos destacados",
-      "Código QR para tus mesas",
-      "Pedidos por WhatsApp (ilimitados)",
-      "Fotos en cada plato",
-      "Reordenar categorías y platos",
-      "Datos de contacto y ubicación",
-      "Optimizado para celular",
-    ],
-  },
-  {
-    name: "Anual",
-    oldPrice: "$143.88",
-    price: "$109.99",
-    priceUsd: 109.99,
-    period: "/ año",
-    cta: "Elegir Anual",
-    highlight: false,
-    features: [
-      "Página de bienvenida y menú público",
-      "Menú (platos ilimitados)",
-      "Categorías ilimitadas",
-      "Etiquetas y platos destacados",
-      "Código QR para tus mesas",
-      "Pedidos por WhatsApp (ilimitados)",
-      "Fotos en cada plato",
-      "Reordenar categorías y platos",
-      "Datos de contacto y ubicación",
-      "Optimizado para celular",
-    ],
-  },
-];
+export async function getActivePlans() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("subscription_plans")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order");
+  return (data ?? []).map(toSubscriptionPlan);
+}
 
-export function PricingPlans({
+export async function PricingPlans({
   headingTag = "h2",
   className,
 }: {
@@ -77,6 +23,7 @@ export function PricingPlans({
   className?: string;
 }) {
   const Heading = headingTag;
+  const plans = await getActivePlans();
 
   return (
     <section
@@ -99,9 +46,9 @@ export function PricingPlans({
         </div>
 
         <div className="mt-14 grid gap-8 lg:grid-cols-3">
-          {PLANS.map((plan) => (
+          {plans.map((plan) => (
             <div
-              key={plan.name}
+              key={plan.id}
               className={cn(
                 "relative flex flex-col rounded-2xl border bg-white p-8 transition-transform duration-200 hover:-translate-y-1.5 hover:shadow-lg dark:bg-neutral-900",
                 plan.highlight
@@ -120,13 +67,13 @@ export function PricingPlans({
               </p>
 
               <div className="mt-3 flex items-baseline justify-center gap-2">
-                {plan.oldPrice && (
+                {plan.oldPriceUsd && (
                   <span className="text-lg text-red-500 line-through">
-                    {plan.oldPrice}
+                    {formatPlanPrice(plan.oldPriceUsd)}
                   </span>
                 )}
                 <span className="text-3xl font-bold text-neutral-900 dark:text-white">
-                  {plan.price}
+                  {formatPlanPrice(plan.priceUsd)}
                 </span>
                 <span className="text-sm text-neutral-500 dark:text-neutral-400">
                   {plan.period}
@@ -153,7 +100,7 @@ export function PricingPlans({
                       : "bg-neutral-900 text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200",
                   )}
                 >
-                  {plan.cta}
+                  {plan.ctaLabel}
                 </Button>
               </Link>
             </div>

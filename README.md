@@ -25,9 +25,32 @@ src/app/
     categories/              CRUD de categorías
     menu/                     CRUD de platos
   r/[slug]/                Menú público del restaurante (el que ve el cliente)
+  superadmin/              Panel de Levery (requiere email superadmin)
+    restaurants/            Plan y vencimiento de cada restaurante
+    payments/                Pagos de suscripción recibidos, con comprobante
+    plans/                    CRUD de los planes de suscripción
+    payment-methods/          Métodos de pago propios de Levery
 src/lib/supabase/          Clientes de Supabase (browser, server, middleware)
 supabase/migrations/        Esquema SQL + Row Level Security
 ```
+
+## Superadmin
+
+`/superadmin` es un panel aparte, solo accesible para los correos listados
+en `src/lib/superadmin.ts` (`SUPERADMIN_EMAILS`). Desde ahí se puede:
+
+- Ver y cambiar el plan y la fecha de vencimiento de cualquier restaurante,
+  y enviarle una alerta de vencimiento por WhatsApp.
+- Revisar los pagos de suscripción que hacen los restaurantes, con su
+  comprobante, y aprobarlos o rechazarlos — al aprobar uno se extiende
+  automáticamente el vencimiento del plan del restaurante.
+- Crear, editar y desactivar los planes de suscripción (los que se ven en
+  la landing y en `/admin/subscription`).
+- Configurar los métodos de pago propios de Levery (Pago Móvil,
+  Transferencia, Zelle, etc.) que los restaurantes ven al pagar su plan.
+
+Un usuario con sesión que visite `/admin` y sea superadmin verá un enlace
+"Panel superadmin" en el menú lateral.
 
 ## Configuración
 
@@ -51,6 +74,14 @@ supabase/migrations/        Esquema SQL + Row Level Security
    - `supabase/migrations/0007_orders.sql` — tabla `orders` con los
      pedidos hechos desde el menú público, gestionables desde
      `/admin/orders`.
+   - `supabase/migrations/0008_superadmin.sql` — columna
+     `restaurants.plan_expires_at`, tablas `subscription_plans`,
+     `subscription_payments` y `platform_settings`, y las políticas RLS
+     del panel `/superadmin`. **Antes de ejecutarla**, reemplaza el email
+     `joseph.ro.silva@gmail.com` por el o los correos que deban ser
+     superadmin (aparece varias veces en el archivo). Actualiza también
+     `SUPERADMIN_EMAILS` en `src/lib/superadmin.ts` con la misma lista —
+     ambos deben coincidir.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

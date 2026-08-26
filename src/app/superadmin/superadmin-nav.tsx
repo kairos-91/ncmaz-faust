@@ -3,22 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { signOut } from "./actions";
+import { signOut } from "@/app/admin/actions";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
-import { isSuperadmin } from "@/lib/superadmin";
 
 const links = [
-  { href: "/admin", label: "Resumen" },
-  { href: "/admin/restaurant", label: "Mi restaurante" },
-  { href: "/admin/categories", label: "Categorías" },
-  { href: "/admin/menu", label: "Menú" },
-  { href: "/admin/orders", label: "Pedidos" },
-  { href: "/admin/payment-methods", label: "Métodos de pago" },
-  { href: "/admin/subscription", label: "Suscripción" },
+  { href: "/superadmin/restaurants", label: "Restaurantes" },
+  { href: "/superadmin/payments", label: "Pagos" },
+  { href: "/superadmin/plans", label: "Planes" },
+  { href: "/superadmin/payment-methods", label: "Métodos de pago" },
 ];
 
-export function AdminNav({ email }: { email: string | null }) {
+export function SuperadminNav({ email }: { email: string | null }) {
   const pathname = usePathname();
 
   return (
@@ -26,13 +22,16 @@ export function AdminNav({ email }: { email: string | null }) {
       <div>
         <div className="flex items-center justify-between px-5 py-5 md:block">
           <div className="flex items-center justify-between">
-            <Link href="/">
+            <Link href="/admin">
               <Logo height={36} />
             </Link>
             <div className="md:hidden">
               <ThemeToggle />
             </div>
           </div>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-lime-600 dark:text-lime-400">
+            Superadmin
+          </p>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-2 md:flex-col md:overflow-visible md:pb-0">
           {links.map((link) => (
@@ -41,21 +40,19 @@ export function AdminNav({ email }: { email: string | null }) {
               href={link.href}
               className={cn(
                 "whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800",
-                pathname === link.href &&
+                pathname.startsWith(link.href) &&
                   "bg-neutral-900 text-white hover:bg-neutral-900 dark:bg-white dark:text-neutral-900 dark:hover:bg-white",
               )}
             >
               {link.label}
             </Link>
           ))}
-          {isSuperadmin(email) && (
-            <Link
-              href="/superadmin"
-              className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-lime-700 hover:bg-lime-50 dark:text-lime-400 dark:hover:bg-lime-400/10"
-            >
-              Panel superadmin
-            </Link>
-          )}
+          <Link
+            href="/admin"
+            className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+          >
+            ← Volver a mi restaurante
+          </Link>
         </nav>
       </div>
       <div className="border-t border-neutral-100 px-5 py-4 dark:border-neutral-800">

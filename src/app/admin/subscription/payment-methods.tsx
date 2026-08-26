@@ -3,8 +3,15 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { formatBs, formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
-import { buildPagoMovilLine } from "@/lib/payment-methods";
+import {
+  PAYMENT_METHOD_META,
+  buildPagoMovilLine,
+  enabledPaymentMethods,
+  type PaymentMethodId,
+  type PaymentMethodValues,
+} from "@/lib/payment-methods";
 import { bankLabel } from "@/lib/venezuelan-banks";
+import { formatPlanPrice, type SubscriptionPlan } from "@/lib/subscription-plans";
 import {
   PaymentDetailsCard,
   type PaymentDetailRow,
@@ -13,105 +20,47 @@ import {
   ConfirmPaymentFields,
   type ConfirmPaymentValues,
 } from "@/components/confirm-payment-fields";
-import { uploadPaymentProof } from "./actions";
+import { createSubscriptionPayment, uploadPaymentProof } from "./actions";
 
 const SUPPORT_WHATSAPP = "584120000000";
 
-// Placeholders — reemplaza con los datos reales de Levery.
-const PAGO_MOVIL_BANK_CODE = "0191"; // Banco Nacional de Crédito (BNC)
-const PAGO_MOVIL_CEDULA = "12345678";
-const PAGO_MOVIL_TELEFONO = "04120000000";
-
-type Method = {
-  id: string;
-  label: string;
-  convertToVes?: boolean;
-  fields: PaymentDetailRow[];
-};
-
-const METHODS: Method[] = [
-  {
-    id: "pago-movil",
-    label: "Pago Móvil",
-    convertToVes: true,
-    fields: [
-      {
-        label: "Banco",
-        value: bankLabel(PAGO_MOVIL_BANK_CODE),
-        copyValue: PAGO_MOVIL_BANK_CODE,
-      },
-      { label: "Teléfono", value: PAGO_MOVIL_TELEFONO },
-      { label: "Cédula/RIF", value: PAGO_MOVIL_CEDULA },
-    ],
-  },
-  {
-    id: "transferencia",
-    label: "Transferencia",
-    convertToVes: true,
-    fields: [
-      { label: "Banco", value: "Banco Nacional de Crédito (BNC)" },
-      { label: "Nº de cuenta", value: "0000-0000-00-0000000000" },
-      { label: "Titular", value: "Levery, C.A." },
-      { label: "RIF", value: "J-00000000-0" },
-    ],
-  },
-  {
-    id: "zelle",
-    label: "Zelle",
-    fields: [
-      { label: "Correo", value: "pagos@levery.app" },
-      { label: "Titular", value: "Levery LLC" },
-    ],
-  },
-  {
-    id: "binance",
-    label: "Binance",
-    fields: [
-      { label: "Binance Pay ID", value: "000000000" },
-      { label: "Red", value: "USDT (BEP20)" },
-    ],
-  },
-  {
-    id: "zinli",
-    label: "Zinli",
-    fields: [{ label: "Usuario/Teléfono", value: "+58 412-0000000" }],
-  },
-  {
-    id: "wally",
-    label: "Wally",
-    fields: [{ label: "Usuario/Teléfono", value: "+58 412-0000000" }],
-  },
-];
-
 export function PaymentMethods({
+  restaurantId,
   restaurantName,
-  planLabel,
-  planPrice,
-  planPriceUsd,
+  plan,
+  platformPaymentMethods,
   bcvRate,
 }: {
+  restaurantId: string;
   restaurantName: string;
-  planLabel: string;
-  planPrice: string;
-  planPriceUsd: number;
+  plan: SubscriptionPlan;
+  platformPaymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
 }) {
-  const [activeId, setActiveId] = useState(METHODS[0].id);
+  const methods = enabledPaymentMethods(platformPaymentMethods);
+  const [methodId, setMethodId] = useState<PaymentMethodId | null>(
+    methods[0] ?? null,
+  );
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
     bankPaidFrom: "",
     reference: "",
     amountPaid: "",
   });
-  const active = METHODS.find((m) => m.id === activeId)!;
+
+  const activeMeta = methodId ? PAYMENT_METHOD_META[methodId] : null;
+  const activeValues = methodId
+    ? (platformPaymentMethods[methodId] as unknown as Record<string, string>)
+    : null;
 
   const amountBs =
-    active.convertToVes && bcvRate
-      ? formatBs(planPriceUsd, bcvRate.rate)
+    activeMeta?.convertToVes && bcvRate
+      ? formatBs(plan.priceUsd, bcvRate.rate)
       : null;
   const amountBsRaw =
-    active.convertToVes && bcvRate
-      ? formatBsAmount(planPriceUsd, bcvRate.rate)
+    activeMeta?.convertToVes && bcvRate
+      ? formatBsAmount(plan.priceUsd, bcvRate.rate)
       : null;
 
   const confirmValues: ConfirmPaymentValues = {
@@ -119,26 +68,40 @@ export function PaymentMethods({
     amountPaid: confirm.amountPaid || amountBsRaw || "",
   };
 
+  const planPrice = `${formatPlanPrice(plan.priceUsd)} ${plan.period}`;
+
   const detailRows: PaymentDetailRow[] =
-    active.convertToVes && amountBsRaw
-      ? [...active.fields, { label: "Monto (Bs)", value: amountBsRaw }]
-      : active.fields;
+    activeMeta && activeValues
+      ? [
+          ...activeMeta.fields
+            .filter((field) => activeValues[field.key])
+            .map((field) => ({
+              label: field.label,
+              value:
+                methodId === "pago_movil" && field.key === "banco"
+                  ? bankLabel(activeValues[field.key])
+                  : activeValues[field.key],
+              copyValue: activeValues[field.key],
+            })),
+          ...(activeMeta.convertToVes && amountBsRaw
+            ? [{ label: "Monto (Bs)", value: amountBsRaw }]
+            : []),
+        ]
+      : [];
 
   const copyAllText =
-    active.id === "pago-movil" && amountBsRaw
+    methodId === "pago_movil" && activeValues && amountBsRaw
       ? buildPagoMovilLine(
-          {
-            banco: PAGO_MOVIL_BANK_CODE,
-            cedula: PAGO_MOVIL_CEDULA,
-            telefono: PAGO_MOVIL_TELEFONO,
-          },
+          activeValues as { banco: string; cedula: string; telefono: string },
           amountBsRaw,
         )
       : undefined;
 
   const message = [
-    `Hola! Soy ${restaurantName} y ya realicé el pago del plan ${planLabel} (${planPrice}${amountBs ? ` · ${amountBs}` : ""}) por ${active.label}.`,
-    confirmValues.bankPaidFrom && `Banco desde el que pagué: ${confirmValues.bankPaidFrom}.`,
+    `Hola! Soy ${restaurantName} y ya realicé el pago del plan ${plan.name} (${planPrice}${amountBs ? ` · ${amountBs}` : ""}).`,
+    activeMeta && `Método de pago: ${activeMeta.label}.`,
+    confirmValues.bankPaidFrom &&
+      `Banco desde el que pagué: ${confirmValues.bankPaidFrom}.`,
     confirmValues.reference && `Referencia: ${confirmValues.reference}.`,
     confirmValues.amountPaid && `Monto pagado: Bs ${confirmValues.amountPaid}.`,
     receiptUrl ? `Comprobante: ${receiptUrl}` : "Adjunto el comprobante.",
@@ -147,10 +110,29 @@ export function PaymentMethods({
     .join(" ");
   const whatsappHref = `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`;
 
+  if (methods.length === 0) {
+    return (
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          Levery todavía no configuró sus métodos de pago. Escríbenos por
+          WhatsApp para coordinar el pago de tu plan {plan.name}.
+        </p>
+        <a
+          href={`https://wa.me/${SUPPORT_WHATSAPP}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700"
+        >
+          Escribir por WhatsApp
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
       <p className="text-sm font-medium text-neutral-900 dark:text-white">
-        Paga tu plan {planLabel} ({planPrice})
+        Paga tu plan {plan.name} ({planPrice})
       </p>
       <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
         Elige tu método de pago preferido, realiza el pago y notifícanos por
@@ -158,24 +140,24 @@ export function PaymentMethods({
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        {METHODS.map((method) => (
+        {methods.map((id) => (
           <button
-            key={method.id}
+            key={id}
             type="button"
-            onClick={() => setActiveId(method.id)}
+            onClick={() => setMethodId(id)}
             className={cn(
               "rounded-full border px-3 py-1.5 text-xs font-medium",
-              activeId === method.id
+              methodId === id
                 ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
                 : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
             )}
           >
-            {method.label}
+            {PAYMENT_METHOD_META[id].label}
           </button>
         ))}
       </div>
 
-      {active.convertToVes && (
+      {activeMeta?.convertToVes && (
         <div className="mt-4 rounded-xl border border-lime-200 bg-lime-50 p-4 dark:border-lime-400/20 dark:bg-lime-400/5">
           {bcvRate ? (
             <>
@@ -200,9 +182,11 @@ export function PaymentMethods({
         </div>
       )}
 
-      <div className="mt-4">
-        <PaymentDetailsCard rows={detailRows} copyAllText={copyAllText} />
-      </div>
+      {activeMeta && (
+        <div className="mt-4">
+          <PaymentDetailsCard rows={detailRows} copyAllText={copyAllText} />
+        </div>
+      )}
 
       <div className="mt-4">
         <ConfirmPaymentFields
@@ -213,14 +197,28 @@ export function PaymentMethods({
         />
       </div>
 
-      <a
-        href={whatsappHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700"
+      <button
+        type="button"
+        disabled={sending}
+        onClick={async () => {
+          setSending(true);
+          await createSubscriptionPayment(restaurantId, {
+            planId: plan.id,
+            planName: plan.name,
+            amountUsd: plan.priceUsd,
+            paymentMethod: methodId ?? undefined,
+            bankPaidFrom: confirmValues.bankPaidFrom || undefined,
+            reference: confirmValues.reference || undefined,
+            amountPaidBs: confirmValues.amountPaid || undefined,
+            receiptUrl: receiptUrl ?? undefined,
+          });
+          setSending(false);
+          window.open(whatsappHref, "_blank", "noopener,noreferrer");
+        }}
+        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"
       >
-        Ya realicé el pago, notificar por WhatsApp
-      </a>
+        {sending ? "Enviando..." : "Ya realicé el pago, notificar por WhatsApp"}
+      </button>
     </div>
   );
 }
