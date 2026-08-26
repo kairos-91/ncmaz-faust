@@ -4,6 +4,7 @@ import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
 import { updateRestaurant } from "@/app/admin/actions";
 import { RestaurantForm } from "./restaurant-form";
 import { LogoUploader } from "./logo-uploader";
+import { CoverUploader } from "./cover-uploader";
 
 export const metadata: Metadata = { title: "Mi restaurante" };
 
@@ -22,7 +23,20 @@ export default async function RestaurantSettingsPage() {
         </p>
       </div>
 
-      <LogoUploader restaurant={restaurant} />
+      <div className="space-y-6">
+        <div>
+          <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            Logo
+          </p>
+          <LogoUploader restaurant={restaurant} />
+        </div>
+        <div>
+          <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            Portada
+          </p>
+          <CoverUploader restaurant={restaurant} />
+        </div>
+      </div>
 
       <RestaurantForm
         restaurant={restaurant}

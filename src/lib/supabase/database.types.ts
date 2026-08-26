@@ -25,6 +25,7 @@ export interface Database {
           currency: string;
           is_published: boolean;
           plan: string;
+          payment_methods: Json;
           created_at: string;
           updated_at: string;
         };
@@ -43,6 +44,7 @@ export interface Database {
           currency?: string;
           is_published?: boolean;
           plan?: string;
+          payment_methods?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -61,6 +63,7 @@ export interface Database {
           currency?: string;
           is_published?: boolean;
           plan?: string;
+          payment_methods?: Json;
           created_at?: string;
           updated_at?: string;
         };
