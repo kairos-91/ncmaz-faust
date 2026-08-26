@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatBs, type BcvRate } from "@/lib/bcv-rate";
+import { formatBs, formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
+import { PaymentDetailsCard } from "@/components/payment-details-card";
 import { ReceiptPasteZone } from "./receipt-paste-zone";
 
 const SUPPORT_WHATSAPP = "584120000000";
@@ -87,6 +87,14 @@ export function PaymentMethods({
       ? formatBs(planPriceUsd, bcvRate.rate)
       : null;
 
+  const detailRows =
+    active.convertToVes && bcvRate
+      ? [
+          ...active.fields,
+          { label: "Monto (Bs)", value: formatBsAmount(planPriceUsd, bcvRate.rate) },
+        ]
+      : active.fields;
+
   const message = [
     `Hola! Soy ${restaurantName} y ya realicé el pago del plan ${planLabel} (${planPrice}${amountBs ? ` · ${amountBs}` : ""}) por ${active.label}.`,
     receiptUrl ? `Comprobante: ${receiptUrl}` : "Adjunto el comprobante.",
@@ -132,7 +140,7 @@ export function PaymentMethods({
                 {amountBs}
               </p>
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
-                Tasa BCV: Bs. {bcvRate.rate.toFixed(2)} por USD
+                Tasa BCV: Bs {bcvRate.rate.toFixed(2)} por USD
                 {bcvRate.updatedAt &&
                   ` · actualizada ${new Date(bcvRate.updatedAt).toLocaleDateString("es-VE")}`}
               </p>
@@ -146,10 +154,8 @@ export function PaymentMethods({
         </div>
       )}
 
-      <div className="mt-4 space-y-2 rounded-xl bg-neutral-50 p-4 dark:bg-neutral-800/50">
-        {active.fields.map((field) => (
-          <CopyField key={field.label} {...field} />
-        ))}
+      <div className="mt-4">
+        <PaymentDetailsCard rows={detailRows} />
       </div>
 
       <div className="mt-4">
@@ -164,45 +170,6 @@ export function PaymentMethods({
       >
         Ya realicé el pago, notificar por WhatsApp
       </a>
-    </div>
-  );
-}
-
-function CopyField({ label, value }: { label: string; value: string }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      // ignore: clipboard access denied
-    }
-  };
-
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <div className="min-w-0">
-        <p className="text-xs text-neutral-500 dark:text-neutral-400">
-          {label}
-        </p>
-        <p className="truncate text-sm font-medium text-neutral-900 dark:text-white">
-          {value}
-        </p>
-      </div>
-      <button
-        type="button"
-        onClick={handleCopy}
-        aria-label={`Copiar ${label}`}
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-neutral-500 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-700"
-      >
-        {copied ? (
-          <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-        ) : (
-          <Copy className="h-4 w-4" />
-        )}
-      </button>
     </div>
   );
 }

@@ -23,9 +23,18 @@ export async function getBcvRate(): Promise<BcvRate | null> {
 }
 
 export function formatBs(amountUsd: number, rate: number) {
+  // Intl's "VES" currency symbol renders as "Bs.S" (bolívar soberano) in
+  // Node's ICU data — format the number plainly and prefix "Bs" ourselves.
+  const amount = new Intl.NumberFormat("es-VE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amountUsd * rate);
+  return `Bs ${amount}`;
+}
+
+export function formatBsAmount(amountUsd: number, rate: number) {
   return new Intl.NumberFormat("es-VE", {
-    style: "currency",
-    currency: "VES",
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amountUsd * rate);
 }

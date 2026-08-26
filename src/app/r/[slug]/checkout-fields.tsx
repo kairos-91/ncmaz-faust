@@ -3,13 +3,14 @@
 import { useMemo, useState } from "react";
 import { Bike, Check, Store, UtensilsCrossed } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
-import { formatBs, type BcvRate } from "@/lib/bcv-rate";
+import { formatBs, formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
 import {
   PAYMENT_METHOD_META,
   enabledPaymentMethods,
   type PaymentMethodId,
   type PaymentMethodValues,
 } from "@/lib/payment-methods";
+import { PaymentDetailsCard } from "@/components/payment-details-card";
 import type { MenuItem } from "@/lib/supabase/database.types";
 
 type OrderType = "delivery" | "pickup" | "dine_in";
@@ -191,29 +192,30 @@ export function CheckoutFields({
       )}
 
       {activeMeta && activeValues && (
-        <div className="space-y-2 rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800/50">
+        <div className="space-y-3">
           {amountBs && (
             <p className="text-sm font-semibold text-neutral-900 dark:text-white">
               Monto a pagar: {amountBs}
               {bcvRate && (
                 <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-400">
-                  (tasa BCV Bs. {bcvRate.rate.toFixed(2)})
+                  (tasa BCV Bs {bcvRate.rate.toFixed(2)})
                 </span>
               )}
             </p>
           )}
-          {activeMeta.fields.map((field) => {
-            const value = activeValues[field.key];
-            if (!value) return null;
-            return (
-              <p key={field.key} className="text-xs text-neutral-600 dark:text-neutral-400">
-                <span className="font-medium text-neutral-900 dark:text-white">
-                  {field.label}:
-                </span>{" "}
-                {value}
-              </p>
-            );
-          })}
+          <PaymentDetailsCard
+            rows={[
+              ...activeMeta.fields
+                .filter((field) => activeValues[field.key])
+                .map((field) => ({
+                  label: field.label,
+                  value: activeValues[field.key],
+                })),
+              ...(activeMeta.convertToVes && bcvRate
+                ? [{ label: "Monto (Bs)", value: formatBsAmount(total, bcvRate.rate) }]
+                : []),
+            ]}
+          />
         </div>
       )}
 
