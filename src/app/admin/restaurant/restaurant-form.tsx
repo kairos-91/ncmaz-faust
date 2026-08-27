@@ -131,27 +131,42 @@ export function RestaurantForm({
       <div>
         <Label>{t.socialLabel}</Label>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <Input
-            name="instagram_url"
-            type="url"
-            defaultValue={restaurant?.instagram_url ?? ""}
-            placeholder={t.instagramLabel}
-            aria-label={t.instagramLabel}
-          />
-          <Input
-            name="tiktok_url"
-            type="url"
-            defaultValue={restaurant?.tiktok_url ?? ""}
-            placeholder={t.tiktokLabel}
-            aria-label={t.tiktokLabel}
-          />
-          <Input
-            name="facebook_url"
-            type="url"
-            defaultValue={restaurant?.facebook_url ?? ""}
-            placeholder={t.facebookLabel}
-            aria-label={t.facebookLabel}
-          />
+          <div>
+            <Label htmlFor="instagram_url" className="text-xs font-normal text-neutral-500 dark:text-neutral-500">
+              {t.instagramLabel}
+            </Label>
+            <Input
+              id="instagram_url"
+              name="instagram_url"
+              type="url"
+              defaultValue={restaurant?.instagram_url ?? ""}
+              placeholder="https://instagram.com/turestaurante"
+            />
+          </div>
+          <div>
+            <Label htmlFor="tiktok_url" className="text-xs font-normal text-neutral-500 dark:text-neutral-500">
+              {t.tiktokLabel}
+            </Label>
+            <Input
+              id="tiktok_url"
+              name="tiktok_url"
+              type="url"
+              defaultValue={restaurant?.tiktok_url ?? ""}
+              placeholder="https://tiktok.com/@turestaurante"
+            />
+          </div>
+          <div>
+            <Label htmlFor="facebook_url" className="text-xs font-normal text-neutral-500 dark:text-neutral-500">
+              {t.facebookLabel}
+            </Label>
+            <Input
+              id="facebook_url"
+              name="facebook_url"
+              type="url"
+              defaultValue={restaurant?.facebook_url ?? ""}
+              placeholder="https://facebook.com/turestaurante"
+            />
+          </div>
         </div>
         <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
           {t.socialHint}
