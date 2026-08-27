@@ -37,3 +37,20 @@ export function parseOrderItems(json: Json | null | undefined): OrderItemSnapsho
         : [],
     }));
 }
+
+export function topOrderedItems(
+  ordersItems: (Json | null | undefined)[],
+  limit = 5,
+): { name: string; qty: number }[] {
+  const counts = new Map<string, number>();
+  for (const json of ordersItems) {
+    for (const item of parseOrderItems(json)) {
+      if (!item.name) continue;
+      counts.set(item.name, (counts.get(item.name) ?? 0) + item.qty);
+    }
+  }
+  return [...counts.entries()]
+    .map(([name, qty]) => ({ name, qty }))
+    .sort((a, b) => b.qty - a.qty)
+    .slice(0, limit);
+}

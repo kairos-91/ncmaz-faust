@@ -161,6 +161,9 @@ export default async function PublicMenuPage({
     );
   }
 
+  const supabase = await createClient();
+  await supabase.from("menu_views").insert({ restaurant_id: restaurant.id });
+
   const paymentMethods = parsePaymentMethods(restaurant.payment_methods);
   const needsBcvRate = enabledPaymentMethods(paymentMethods).some(
     (id) => PAYMENT_METHOD_META[id].convertToVes,

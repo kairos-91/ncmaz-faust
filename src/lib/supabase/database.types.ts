@@ -249,6 +249,24 @@ export interface Database {
         };
         Relationships: [];
       };
+      menu_views: {
+        Row: {
+          id: string;
+          restaurant_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          restaurant_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          restaurant_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       reviews: {
         Row: {
           id: string;

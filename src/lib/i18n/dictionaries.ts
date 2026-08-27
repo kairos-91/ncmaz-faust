@@ -209,6 +209,7 @@ const es = {
   },
   adminNav: {
     summary: "Resumen",
+    analytics: "Analíticas",
     myRestaurant: "Mi restaurante",
     categories: "Categorías",
     menu: "Menú",
@@ -235,6 +236,17 @@ const es = {
     viewPlans: "Ver planes",
     qrTitle: "Tu menú digital",
     qrHint: "Imprime este código QR y colócalo en tus mesas.",
+  },
+  analyticsPage: {
+    title: "Analíticas",
+    subtitle: "Cómo le está yendo a tu menú digital.",
+    totalViews: "Vistas totales",
+    views30d: "Vistas (30 días)",
+    totalOrders: "Pedidos totales",
+    orders30d: "Pedidos (30 días)",
+    topItems: "Platos más pedidos",
+    noOrders: "Aún no hay pedidos para mostrar estadísticas.",
+    unitsSold: "vendidos",
   },
   restaurantPage: {
     title: "Mi restaurante",
@@ -741,6 +753,7 @@ const en: typeof es = {
   },
   adminNav: {
     summary: "Overview",
+    analytics: "Analytics",
     myRestaurant: "My restaurant",
     categories: "Categories",
     menu: "Menu",
@@ -767,6 +780,17 @@ const en: typeof es = {
     viewPlans: "View plans",
     qrTitle: "Your digital menu",
     qrHint: "Print this QR code and place it on your tables.",
+  },
+  analyticsPage: {
+    title: "Analytics",
+    subtitle: "How your digital menu is doing.",
+    totalViews: "Total views",
+    views30d: "Views (30 days)",
+    totalOrders: "Total orders",
+    orders30d: "Orders (30 days)",
+    topItems: "Best-selling dishes",
+    noOrders: "No orders yet to show statistics.",
+    unitsSold: "sold",
   },
   restaurantPage: {
     title: "My restaurant",

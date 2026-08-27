@@ -25,6 +25,7 @@ export function AdminNav({
 
   const links = [
     { href: "/admin", label: t.summary },
+    { href: "/admin/analytics", label: t.analytics },
     { href: "/admin/restaurant", label: t.myRestaurant },
     { href: "/admin/categories", label: t.categories },
     { href: "/admin/menu", label: t.menu },

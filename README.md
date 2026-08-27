@@ -137,6 +137,11 @@ o recíbelo como prop `t` (client) donde lo necesites.
      calificación 1-5, comentario) que los clientes dejan desde el menú
      público. Visibles por defecto; gestionables (ocultar/eliminar)
      desde `/admin/reviews`.
+   - `supabase/migrations/0016_menu_views.sql` — tabla `menu_views`: un
+     registro por cada carga del menú público, usado en `/admin/analytics`
+     para mostrar vistas totales/últimos 30 días, pedidos totales/últimos
+     30 días y los platos más pedidos (estos últimos calculados a partir
+     de `orders.items`, sin necesitar una tabla nueva).
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 
