@@ -47,18 +47,41 @@ export function MenuView({
 }) {
   const canOrder = Boolean(whatsapp) && orderingAllowed;
   const [query, setQuery] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [cart, setCart] = useState<Cart>({});
   const [cartOpen, setCartOpen] = useState(false);
 
+  const allTags = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const item of items) {
+      for (const tag of item.tags) {
+        const key = tag.trim().toLowerCase();
+        if (key && !seen.has(key)) seen.set(key, tag.trim());
+      }
+    }
+    return [...seen.values()].sort((a, b) => a.localeCompare(b));
+  }, [items]);
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+    );
+  };
+
   const filteredItems = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter(
-      (item) =>
+    return items.filter((item) => {
+      const matchesQuery =
+        !q ||
         item.name.toLowerCase().includes(q) ||
-        (item.description ?? "").toLowerCase().includes(q),
-    );
-  }, [items, query]);
+        (item.description ?? "").toLowerCase().includes(q);
+      const itemTags = item.tags.map((t) => t.toLowerCase());
+      const matchesTags = selectedTags.every((tag) =>
+        itemTags.includes(tag.toLowerCase()),
+      );
+      return matchesQuery && matchesTags;
+    });
+  }, [items, query, selectedTags]);
 
   const nonEmptyCategories = categories.filter((c) =>
     filteredItems.some((i) => i.category_id === c.id),
@@ -124,6 +147,30 @@ export function MenuView({
         />
       </div>
 
+      {allTags.length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-1.5">
+          {allTags.map((tag) => {
+            const isSelected = selectedTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => toggleTag(tag)}
+                className={cn(
+                  "rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+                  isSelected
+                    ? "border-transparent text-white"
+                    : "border-neutral-200 bg-white text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400",
+                )}
+                style={isSelected ? { backgroundColor: themeColor } : undefined}
+              >
+                {tag}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       <div className="sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto bg-neutral-50/95 px-4 py-3 backdrop-blur dark:bg-neutral-950/95">
         {nonEmptyCategories.map((category) => (
           <a
@@ -147,7 +194,9 @@ export function MenuView({
 
       {nonEmptyCategories.length === 0 ? (
         <p className="mt-10 text-center text-sm text-neutral-600 dark:text-neutral-400">
-          No encontramos platos para &ldquo;{query}&rdquo;.
+          {query
+            ? <>No encontramos platos para &ldquo;{query}&rdquo;.</>
+            : "No encontramos platos con esos filtros."}
         </p>
       ) : (
         <div className="mt-4 space-y-10">
