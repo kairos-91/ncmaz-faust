@@ -18,8 +18,29 @@ export default async function AdminDashboardPage() {
   if (role === "staff") redirect("/admin/orders");
 
   if (!restaurant) {
+    const debugSupabase = await createClient();
+    const {
+      data: { user: debugUser },
+    } = await debugSupabase.auth.getUser();
+    const debugQuery = debugUser
+      ? await debugSupabase
+          .from("restaurants")
+          .select("id, name, slug, owner_id")
+          .eq("owner_id", debugUser.id)
+      : null;
+
     return (
       <div>
+        <div className="mb-6 space-y-1 rounded-lg border border-amber-300 bg-amber-50 p-3 font-mono text-xs text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
+          <p>DEBUG (temporal)</p>
+          <p>auth.uid(): {debugUser?.id ?? "null"}</p>
+          <p>auth email: {debugUser?.email ?? "null"}</p>
+          <p>
+            restaurants con ese owner_id: {debugQuery?.data?.length ?? "n/a"}
+          </p>
+          <p>error: {debugQuery?.error?.message ?? "ninguno"}</p>
+          <p>data: {JSON.stringify(debugQuery?.data ?? null)}</p>
+        </div>
         <h1 className="mb-1 text-xl font-semibold">{t.dashboard.createTitle}</h1>
         <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
           {t.dashboard.createSubtitle}
