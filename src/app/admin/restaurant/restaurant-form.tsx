@@ -129,6 +129,36 @@ export function RestaurantForm({
       </div>
 
       <div>
+        <Label>{t.socialLabel}</Label>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <Input
+            name="instagram_url"
+            type="url"
+            defaultValue={restaurant?.instagram_url ?? ""}
+            placeholder={t.instagramLabel}
+            aria-label={t.instagramLabel}
+          />
+          <Input
+            name="tiktok_url"
+            type="url"
+            defaultValue={restaurant?.tiktok_url ?? ""}
+            placeholder={t.tiktokLabel}
+            aria-label={t.tiktokLabel}
+          />
+          <Input
+            name="facebook_url"
+            type="url"
+            defaultValue={restaurant?.facebook_url ?? ""}
+            placeholder={t.facebookLabel}
+            aria-label={t.facebookLabel}
+          />
+        </div>
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.socialHint}
+        </p>
+      </div>
+
+      <div>
         <Label htmlFor="delivery_zones">{t.deliveryZonesLabel}</Label>
         <Textarea
           id="delivery_zones"

@@ -280,6 +280,11 @@ const es = {
     mapsUrlPlaceholder: "https://maps.app.goo.gl/...",
     mapsUrlHint:
       "Pega el enlace para compartir de Google Maps. Se mostrará como \"Ubicación\" en tu menú público y llevará a tus clientes directo al mapa.",
+    socialLabel: "Redes sociales",
+    socialHint: "Se muestran como íconos junto a tu logo en el menú público.",
+    instagramLabel: "Instagram",
+    tiktokLabel: "TikTok",
+    facebookLabel: "Facebook",
     servicesLabel: "Servicios que ofreces",
     servicesHint: "Se muestran como íconos en tu menú público.",
     serviceDelivery: "Delivery",
@@ -772,6 +777,11 @@ const en: typeof es = {
     mapsUrlPlaceholder: "https://maps.app.goo.gl/...",
     mapsUrlHint:
       "Paste the Google Maps share link. It will show as \"Location\" on your public menu and take customers straight to the map.",
+    socialLabel: "Social media",
+    socialHint: "Shown as icons next to your logo on the public menu.",
+    instagramLabel: "Instagram",
+    tiktokLabel: "TikTok",
+    facebookLabel: "Facebook",
     servicesLabel: "Services you offer",
     servicesHint: "Shown as icons on your public menu.",
     serviceDelivery: "Delivery",

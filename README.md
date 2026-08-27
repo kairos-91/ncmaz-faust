@@ -123,6 +123,10 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `restaurants.services` (delivery/pickup/comer en el local),
      `restaurants.has_wifi` y `restaurants.accepts_pets`, configurables
      desde `/admin/restaurant` y mostradas como íconos en el menú público.
+   - `supabase/migrations/0013_social_links.sql` — columnas
+     `restaurants.instagram_url`, `restaurants.tiktok_url` y
+     `restaurants.facebook_url`, configurables desde `/admin/restaurant`
+     y mostradas como íconos junto al logo en el menú público.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

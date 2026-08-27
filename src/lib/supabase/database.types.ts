@@ -20,6 +20,9 @@ export interface Database {
           cover_url: string | null;
           address: string | null;
           maps_url: string | null;
+          instagram_url: string | null;
+          tiktok_url: string | null;
+          facebook_url: string | null;
           phone: string | null;
           whatsapp: string | null;
           theme_color: string;
@@ -46,6 +49,9 @@ export interface Database {
           cover_url?: string | null;
           address?: string | null;
           maps_url?: string | null;
+          instagram_url?: string | null;
+          tiktok_url?: string | null;
+          facebook_url?: string | null;
           phone?: string | null;
           whatsapp?: string | null;
           theme_color?: string;
@@ -72,6 +78,9 @@ export interface Database {
           cover_url?: string | null;
           address?: string | null;
           maps_url?: string | null;
+          instagram_url?: string | null;
+          tiktok_url?: string | null;
+          facebook_url?: string | null;
           phone?: string | null;
           whatsapp?: string | null;
           theme_color?: string;

@@ -20,6 +20,7 @@ import {
 } from "@/lib/opening-hours";
 import { parseServices, type ServiceId } from "@/lib/restaurant-services";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SocialLinks } from "@/components/social-links";
 import { Logo } from "@/components/logo";
 import { MenuView } from "./menu-view";
 
@@ -181,7 +182,7 @@ export default async function PublicMenuPage({
       </div>
 
       <div className="relative mx-auto max-w-2xl px-4">
-        <div className="relative z-10 -mt-10 flex items-end gap-4">
+        <div className="relative z-10 -mt-10 flex items-end justify-between gap-4">
           <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-neutral-50 bg-white shadow-sm dark:border-neutral-950 dark:bg-neutral-900">
             {restaurant.logo_url ? (
               <Image
@@ -201,6 +202,11 @@ export default async function PublicMenuPage({
               </div>
             )}
           </div>
+          <SocialLinks
+            instagramUrl={restaurant.instagram_url}
+            tiktokUrl={restaurant.tiktok_url}
+            facebookUrl={restaurant.facebook_url}
+          />
         </div>
 
         <div className="mt-3">
