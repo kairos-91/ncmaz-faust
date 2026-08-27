@@ -157,6 +157,16 @@ o recíbelo como prop `t` (client) donde lo necesites.
      panel). **Antes de correrla**, revisa en Table Editor si ya tienes
      un `owner_id` duplicado y borra la fila de más (quédate con la que
      tenga el menú configurado) — si no, el `ALTER TABLE` va a fallar.
+   - `supabase/migrations/0019_fix_staff_rls_recursion.sql` — **corrige un
+     bug crítico** de la migración 0017: las políticas RLS de
+     `restaurants` y `restaurant_staff` se consultaban una a la otra en
+     ciclo, y Postgres respondía "infinite recursion detected in policy
+     for relation restaurants" — esto rompía el panel para **todos los
+     dueños**, no solo los que tienen staff, porque para resolver el OR
+     entre políticas Postgres igual evalúa la del staff. Se corrige
+     moviendo esas comprobaciones a funciones `security definer`
+     (`is_restaurant_owner`, `is_restaurant_staff`). Ejecútala cuanto
+     antes si ya corriste la 0017.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 
