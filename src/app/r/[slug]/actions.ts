@@ -107,3 +107,21 @@ export async function createReview(
 
   return { success: true };
 }
+
+export async function subscribeToPush(
+  restaurantId: string,
+  subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
+) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("push_subscriptions").upsert(
+    {
+      restaurant_id: restaurantId,
+      endpoint: subscription.endpoint,
+      p256dh: subscription.keys.p256dh,
+      auth: subscription.keys.auth,
+    },
+    { onConflict: "restaurant_id,endpoint" },
+  );
+  if (error) return { error: error.message };
+  return { success: true };
+}

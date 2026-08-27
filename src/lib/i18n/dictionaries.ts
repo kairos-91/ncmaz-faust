@@ -216,6 +216,7 @@ const es = {
     orders: "Pedidos",
     reviews: "Reseñas",
     coupons: "Cupones",
+    notifications: "Notificaciones",
     team: "Equipo",
     paymentMethods: "Métodos de pago",
     subscription: "Suscripción",
@@ -348,6 +349,25 @@ const es = {
     create: "Crear cupón",
     creating: "Creando...",
     deleteConfirm: (code: string) => `¿Eliminar el cupón "${code}"?`,
+  },
+  notificationsPage: {
+    title: "Notificaciones",
+    subtitle: "Envía notificaciones push a tus clientes suscritos sobre promociones, descuentos y cupones.",
+  },
+  notificationManager: {
+    subscriberCount: (n: number) =>
+      n === 1 ? "1 cliente suscrito" : `${n} clientes suscritos`,
+    noSubscribers:
+      "Todavía no tienes clientes suscritos. Cuando alguien active las notificaciones desde tu menú público, podrás enviarles avisos aquí.",
+    titleLabel: "Título",
+    titlePlaceholder: "🔥 ¡Promoción especial!",
+    bodyLabel: "Mensaje",
+    bodyPlaceholder: "20% de descuento en todo el menú hoy usando el cupón PROMO20.",
+    urlLabel: "Enlace al abrir (opcional)",
+    send: "Enviar notificación",
+    sending: "Enviando...",
+    sentSuccess: (n: number) =>
+      n === 1 ? "Enviada a 1 cliente." : `Enviada a ${n} clientes.`,
   },
   reviewsPage: {
     title: "Reseñas",
@@ -775,6 +795,7 @@ const en: typeof es = {
     orders: "Orders",
     reviews: "Reviews",
     coupons: "Coupons",
+    notifications: "Notifications",
     team: "Team",
     paymentMethods: "Payment methods",
     subscription: "Subscription",
@@ -907,6 +928,25 @@ const en: typeof es = {
     create: "Create coupon",
     creating: "Creating...",
     deleteConfirm: (code: string) => `Delete coupon "${code}"?`,
+  },
+  notificationsPage: {
+    title: "Notifications",
+    subtitle: "Send push notifications to your subscribed customers about promotions, discounts and coupons.",
+  },
+  notificationManager: {
+    subscriberCount: (n: number) =>
+      n === 1 ? "1 subscribed customer" : `${n} subscribed customers`,
+    noSubscribers:
+      "You don't have any subscribed customers yet. Once someone turns on notifications from your public menu, you'll be able to notify them here.",
+    titleLabel: "Title",
+    titlePlaceholder: "🔥 Special promotion!",
+    bodyLabel: "Message",
+    bodyPlaceholder: "20% off the whole menu today with code PROMO20.",
+    urlLabel: "Link to open (optional)",
+    send: "Send notification",
+    sending: "Sending...",
+    sentSuccess: (n: number) =>
+      n === 1 ? "Sent to 1 customer." : `Sent to ${n} customers.`,
   },
   reviewsPage: {
     title: "Reviews",

@@ -96,3 +96,10 @@ export const reviewSchema = z.object({
   comment: z.string().max(500).optional().or(z.literal("")),
 });
 export type ReviewInput = z.infer<typeof reviewSchema>;
+
+export const pushNotificationSchema = z.object({
+  title: z.string().min(1, "Escribe un título").max(65),
+  body: z.string().min(1, "Escribe un mensaje").max(200),
+  url: z.string().max(200).optional().or(z.literal("")),
+});
+export type PushNotificationInput = z.infer<typeof pushNotificationSchema>;

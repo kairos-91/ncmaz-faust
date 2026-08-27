@@ -167,8 +167,17 @@ o recíbelo como prop `t` (client) donde lo necesites.
      moviendo esas comprobaciones a funciones `security definer`
      (`is_restaurant_owner`, `is_restaurant_staff`). Ejecútala cuanto
      antes si ya corriste la 0017.
+   - `supabase/migrations/0020_push_subscriptions.sql` — tabla
+     `push_subscriptions` (endpoint, p256dh, auth) para guardar las
+     suscripciones de notificaciones push de los clientes que activan
+     "Recibir promociones" en el menú público. RLS: cualquiera puede
+     suscribirse a un restaurante publicado, solo el dueño puede leer o
+     borrar sus suscripciones.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
-   proyecto (Settings → API):
+   proyecto (Settings → API). Para las notificaciones push, genera un par
+   de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
+   `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` y `VAPID_SUBJECT`
+   (esta última es un `mailto:` de contacto):
 
    ```bash
    cp .env.example .env.local

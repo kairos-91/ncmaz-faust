@@ -39,6 +39,7 @@ export function AdminNav({
     },
     { href: "/admin/reviews", label: t.reviews, ownerOnly: true },
     { href: "/admin/coupons", label: t.coupons, ownerOnly: true },
+    { href: "/admin/notifications", label: t.notifications, ownerOnly: true },
     { href: "/admin/team", label: t.team, ownerOnly: true },
     { href: "/admin/payment-methods", label: t.paymentMethods, ownerOnly: true },
     { href: "/admin/subscription", label: t.subscription, ownerOnly: true },

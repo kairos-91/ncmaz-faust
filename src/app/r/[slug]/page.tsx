@@ -25,6 +25,7 @@ import { SocialLinks } from "@/components/social-links";
 import { Logo } from "@/components/logo";
 import { MenuView } from "./menu-view";
 import { ReviewsSection } from "./reviews-section";
+import { PwaActions } from "./pwa-actions";
 
 type Params = { slug: string };
 
@@ -257,9 +258,8 @@ export default async function PublicMenuPage({
               {restaurant.description}
             </p>
           )}
-          {(hasOpeningHours || hasContactInfo || hasAmenities || hasSocialLinks) && (
-            <div className="mt-2">
-              <details className="group">
+          <div className="mt-2">
+            <details className="group">
                 <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 text-xs">
                   {hasOpeningHours && (
                     <span
@@ -378,10 +378,15 @@ export default async function PublicMenuPage({
                       ))}
                     </ul>
                   )}
+
+                  <PwaActions
+                    slug={slug}
+                    restaurantId={restaurant.id}
+                    themeColor={restaurant.theme_color}
+                  />
                 </div>
               </details>
             </div>
-          )}
         </div>
 
         {categories.length === 0 || items.length === 0 ? (
