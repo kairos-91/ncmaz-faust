@@ -136,14 +136,23 @@ o recíbelo como prop `t` (client) donde lo necesites.
    (`https://<tu-proyecto>.supabase.co/auth/v1/callback`). Sin esto el
    botón muestra un error al hacer clic; el resto de la app funciona
    igual sin configurarlo.
-5. Instala dependencias y levanta el servidor de desarrollo:
+5. El enlace "¿Olvidaste tu contraseña?" de `/login` usa
+   `supabase.auth.resetPasswordForEmail` + `/auth/callback` (la misma
+   ruta que ya usan la confirmación de registro y "Continuar con
+   Google"), así que no requiere configuración adicional en Supabase
+   más allá de las URLs de redirect que ya tengas permitidas ahí. Si
+   nunca configuraste el envío de correos en el proyecto, Supabase
+   usa su SMTP de pruebas con límites bajos — para producción,
+   configura un proveedor propio en **Authentication → Emails →
+   SMTP Settings**.
+6. Instala dependencias y levanta el servidor de desarrollo:
 
    ```bash
    npm install
    npm run dev
    ```
 
-6. Abre [http://localhost:3000](http://localhost:3000). Regístrate en
+7. Abre [http://localhost:3000](http://localhost:3000). Regístrate en
    `/signup`, crea tu restaurante desde `/admin` y publica tu menú.
 
 ## Modelo de datos

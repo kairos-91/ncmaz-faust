@@ -61,7 +61,15 @@ export function LoginForm({ t }: { t: Dictionary["auth"] }) {
           <FieldError message={errors.email?.message} />
         </div>
         <div>
-          <Label htmlFor="password">{t.login.passwordLabel}</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">{t.login.passwordLabel}</Label>
+            <a
+              href="/forgot-password"
+              className="text-xs font-medium text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+            >
+              {t.login.forgotPasswordLink}
+            </a>
+          </div>
           <Input
             id="password"
             type="password"
