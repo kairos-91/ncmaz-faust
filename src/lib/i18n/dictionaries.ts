@@ -300,6 +300,7 @@ const es = {
     deliveryZonesHint:
       "Una zona por línea: nombre, costo de envío. Usa 0 si el envío es gratis. Tus clientes la elegirán al pedir delivery y se sumará al total.",
     saving: "Guardando...",
+    saved: "Ajustes guardados",
   },
   categoriesPage: {
     title: "Categorías",
@@ -797,6 +798,7 @@ const en: typeof es = {
     deliveryZonesHint:
       "One zone per line: name, delivery fee. Use 0 if delivery is free. Customers pick one when ordering delivery and it's added to the total.",
     saving: "Saving...",
+    saved: "Settings saved",
   },
   categoriesPage: {
     title: "Categories",

@@ -277,6 +277,9 @@ export function RestaurantForm({
       </label>
 
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state && !state.error && !isPending && (
+        <p className="text-sm text-green-600 dark:text-green-500">{t.saved}</p>
+      )}
 
       <Button type="submit" disabled={isPending}>
         {isPending ? t.saving : submitLabel}
