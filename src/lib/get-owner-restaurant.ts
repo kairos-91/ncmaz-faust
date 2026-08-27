@@ -11,10 +11,18 @@ export async function getOwnerRestaurant(): Promise<{
   } = await supabase.auth.getUser();
   if (!user) return { userEmail: null, restaurant: null };
 
+  // .eq + .maybeSingle() sin límite lanza un error si el dueño terminó con
+  // más de un restaurante (no debería pasar, pero no hay constraint que lo
+  // impida) — eso lo resolvía como "sin restaurante" en silencio y mandaba
+  // al usuario de vuelta a la pantalla de "crear restaurante". Con
+  // .order + .limit(1) siempre nos quedamos con el más antiguo en vez de
+  // que la consulta falle.
   const { data: restaurant } = await supabase
     .from("restaurants")
     .select("*")
     .eq("owner_id", user.id)
+    .order("created_at", { ascending: true })
+    .limit(1)
     .maybeSingle();
 
   return { userEmail: user.email ?? null, restaurant };
@@ -43,6 +51,8 @@ export async function getStaffRestaurant(): Promise<{
     .from("restaurants")
     .select("*")
     .eq("owner_id", user.id)
+    .order("created_at", { ascending: true })
+    .limit(1)
     .maybeSingle();
   if (owned) {
     return { userEmail: user.email ?? null, restaurant: owned, role: "owner" };

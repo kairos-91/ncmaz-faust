@@ -106,6 +106,15 @@ export async function createRestaurant(
   formData: FormData,
 ): Promise<ActionState> {
   const { supabase, user } = await requireUser();
+
+  const { count: existingCount } = await supabase
+    .from("restaurants")
+    .select("id", { count: "exact", head: true })
+    .eq("owner_id", user.id);
+  if (existingCount && existingCount > 0) {
+    redirect("/admin");
+  }
+
   const parsed = parseRestaurantForm(formData);
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Datos inválidos" };

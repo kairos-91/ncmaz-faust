@@ -151,6 +151,12 @@ o recíbelo como prop `t` (client) donde lo necesites.
      siendo solo del dueño. Agrega políticas RLS nuevas (aditivas, no
      reemplazan las del dueño) en `restaurants`, `categories`,
      `menu_items` y `orders`.
+   - `supabase/migrations/0018_restaurant_owner_unique.sql` — agrega un
+     `unique (owner_id)` en `restaurants` para que nunca un dueño termine
+     con dos restaurantes (rompía las consultas `.maybeSingle()` del
+     panel). **Antes de correrla**, revisa en Table Editor si ya tienes
+     un `owner_id` duplicado y borra la fila de más (quédate con la que
+     tenga el menú configurado) — si no, el `ALTER TABLE` va a fallar.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 
