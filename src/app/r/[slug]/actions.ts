@@ -13,6 +13,8 @@ export async function createOrder(
     tableNumber?: string;
     deliveryZone?: string;
     deliveryFee?: number;
+    couponCode?: string;
+    discountAmount?: number;
     items: OrderItemSnapshot[];
     total: number;
     currency: string;
@@ -39,6 +41,8 @@ export async function createOrder(
       table_number: input.tableNumber?.trim() || null,
       delivery_zone: input.deliveryZone?.trim() || null,
       delivery_fee: input.deliveryFee ?? 0,
+      coupon_code: input.couponCode?.trim() || null,
+      discount_amount: input.discountAmount ?? 0,
       items: input.items,
       total: input.total,
       currency: input.currency,

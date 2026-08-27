@@ -72,3 +72,20 @@ export const menuItemSchema = z.object({
   extras: z.string().max(1000).optional().or(z.literal("")),
 });
 export type MenuItemInput = z.infer<typeof menuItemSchema>;
+
+export const couponSchema = z
+  .object({
+    code: z
+      .string()
+      .min(2, "El código es muy corto")
+      .max(30)
+      .regex(/^[a-zA-Z0-9-]+$/, "Solo letras, números y guiones"),
+    discount_type: z.enum(["percent", "fixed"]),
+    discount_value: z.coerce.number().positive("Debe ser mayor a 0"),
+    expires_at: z.string().optional().or(z.literal("")),
+  })
+  .refine(
+    (data) => data.discount_type !== "percent" || data.discount_value <= 100,
+    { message: "El porcentaje no puede ser mayor a 100", path: ["discount_value"] },
+  );
+export type CouponInput = z.infer<typeof couponSchema>;

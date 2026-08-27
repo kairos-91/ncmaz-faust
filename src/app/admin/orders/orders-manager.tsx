@@ -164,6 +164,13 @@ function OrderCard({
               {t.table}: {order.table_number}
             </p>
           )}
+          {order.coupon_code && (
+            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+              {t.coupon}: {order.coupon_code}
+              {order.discount_amount > 0 &&
+                ` (-${formatPrice(order.discount_amount, currency)})`}
+            </p>
+          )}
         </div>
 
         <div>

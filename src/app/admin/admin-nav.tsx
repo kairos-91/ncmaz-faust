@@ -29,6 +29,7 @@ export function AdminNav({
     { href: "/admin/categories", label: t.categories },
     { href: "/admin/menu", label: t.menu },
     { href: "/admin/orders", label: t.orders, badge: pendingOrders },
+    { href: "/admin/coupons", label: t.coupons },
     { href: "/admin/payment-methods", label: t.paymentMethods },
     { href: "/admin/subscription", label: t.subscription },
   ];

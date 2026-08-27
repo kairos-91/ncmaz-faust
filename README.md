@@ -127,6 +127,12 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `restaurants.instagram_url`, `restaurants.tiktok_url` y
      `restaurants.facebook_url`, configurables desde `/admin/restaurant`
      y mostradas como íconos junto al logo en el menú público.
+   - `supabase/migrations/0014_coupons.sql` — tabla `coupons` (código,
+     tipo de descuento, vencimiento) gestionable desde `/admin/coupons`,
+     y columnas `orders.coupon_code` / `orders.discount_amount` para
+     registrar el cupón usado en cada pedido. Los cupones activos y no
+     vencidos son legibles públicamente (igual que los métodos de pago)
+     para poder validarlos desde el checkout sin sesión.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

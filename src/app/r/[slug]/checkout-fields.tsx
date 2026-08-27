@@ -14,6 +14,7 @@ import {
 import { bankLabel } from "@/lib/venezuelan-banks";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
 import type { DeliveryZone } from "@/lib/delivery-zones";
+import { computeDiscount, type Coupon } from "@/lib/coupons";
 import { PaymentDetailsCard } from "@/components/payment-details-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,7 @@ import {
   type ConfirmPaymentValues,
 } from "@/components/confirm-payment-fields";
 import { createOrder, uploadOrderReceipt } from "./actions";
+import { createClient } from "@/lib/supabase/client";
 import type { MenuItem } from "@/lib/supabase/database.types";
 
 type OrderType = "delivery" | "pickup" | "dine_in";
@@ -69,13 +71,45 @@ export function CheckoutFields({
     reference: "",
     amountPaid: "",
   });
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [checkingCoupon, setCheckingCoupon] = useState(false);
 
   const methods = enabledPaymentMethods(paymentMethods);
   const deliveryFee =
     orderType === "delivery"
       ? (deliveryZones.find((z) => z.name === deliveryZone)?.fee ?? 0)
       : 0;
-  const grandTotal = total + deliveryFee;
+  const discountAmount = appliedCoupon ? computeDiscount(appliedCoupon, total) : 0;
+  const grandTotal = total + deliveryFee - discountAmount;
+
+  const applyCoupon = async () => {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) return;
+    setCheckingCoupon(true);
+    setCouponError(null);
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("coupons")
+      .select("id, code, discount_type, discount_value, is_active, expires_at")
+      .eq("restaurant_id", restaurantId)
+      .eq("code", code)
+      .maybeSingle();
+    setCheckingCoupon(false);
+    if (!data) {
+      setCouponError("Ese cupón no existe o ya venció.");
+      setAppliedCoupon(null);
+      return;
+    }
+    setAppliedCoupon(data);
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError(null);
+  };
 
   const activeMeta = methodId ? PAYMENT_METHOD_META[methodId] : null;
   const activeValues = methodId
@@ -130,6 +164,11 @@ export function CheckoutFields({
         `Envío (${deliveryZone}): ${formatPrice(deliveryFee, currency)}`,
       );
     }
+    if (appliedCoupon) {
+      parts.push(
+        `Cupón (${appliedCoupon.code}): -${formatPrice(discountAmount, currency)}`,
+      );
+    }
     parts.push(
       `Total: ${formatPrice(grandTotal, currency)}${amountBs ? ` (${amountBs})` : ""}`,
       "",
@@ -171,6 +210,8 @@ export function CheckoutFields({
     grandTotal,
     deliveryFee,
     deliveryZone,
+    appliedCoupon,
+    discountAmount,
     amountBs,
     address,
     table,
@@ -290,6 +331,46 @@ export function CheckoutFields({
         </div>
       )}
 
+      <div>
+        <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+          ¿Tienes un cupón?
+        </label>
+        {appliedCoupon ? (
+          <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm dark:border-green-900/40 dark:bg-green-900/20">
+            <span className="font-medium text-green-700 dark:text-green-400">
+              {appliedCoupon.code} aplicado · -{formatPrice(discountAmount, currency)}
+            </span>
+            <button
+              type="button"
+              onClick={removeCoupon}
+              className="text-xs font-medium text-green-700 underline dark:text-green-400"
+            >
+              Quitar
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <input
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+              placeholder="Código de descuento"
+              className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+            />
+            <button
+              type="button"
+              disabled={checkingCoupon || !couponCode.trim()}
+              onClick={applyCoupon}
+              className="shrink-0 rounded-lg border border-neutral-200 px-4 text-sm font-medium text-neutral-700 disabled:opacity-50 dark:border-neutral-700 dark:text-neutral-300"
+            >
+              {checkingCoupon ? "..." : "Aplicar"}
+            </button>
+          </div>
+        )}
+        {couponError && (
+          <p className="mt-1 text-xs text-red-600">{couponError}</p>
+        )}
+      </div>
+
       {methods.length > 0 && (
         <div>
           <p className="mb-2 text-sm font-medium text-neutral-900 dark:text-white">
@@ -378,6 +459,8 @@ export function CheckoutFields({
               tableNumber: orderType === "dine_in" ? table : undefined,
               deliveryZone: orderType === "delivery" ? deliveryZone || undefined : undefined,
               deliveryFee,
+              couponCode: appliedCoupon?.code,
+              discountAmount: discountAmount || undefined,
               items: lines.map((l) => ({
                 name: l.item.name,
                 qty: l.qty,

@@ -194,6 +194,8 @@ export interface Database {
           receipt_url: string | null;
           delivery_zone: string | null;
           delivery_fee: number;
+          coupon_code: string | null;
+          discount_amount: number;
           created_at: string;
           updated_at: string;
         };
@@ -216,6 +218,8 @@ export interface Database {
           receipt_url?: string | null;
           delivery_zone?: string | null;
           delivery_fee?: number;
+          coupon_code?: string | null;
+          discount_amount?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -238,8 +242,43 @@ export interface Database {
           receipt_url?: string | null;
           delivery_zone?: string | null;
           delivery_fee?: number;
+          coupon_code?: string | null;
+          discount_amount?: number;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      coupons: {
+        Row: {
+          id: string;
+          restaurant_id: string;
+          code: string;
+          discount_type: string;
+          discount_value: number;
+          is_active: boolean;
+          expires_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          restaurant_id: string;
+          code: string;
+          discount_type: string;
+          discount_value: number;
+          is_active?: boolean;
+          expires_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          restaurant_id?: string;
+          code?: string;
+          discount_type?: string;
+          discount_value?: number;
+          is_active?: boolean;
+          expires_at?: string | null;
+          created_at?: string;
         };
         Relationships: [];
       };
