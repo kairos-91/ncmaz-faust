@@ -172,6 +172,12 @@ export default async function PublicMenuPage({
 
   const services = parseServices(restaurant.services);
   const hasAmenities = services.length > 0 || restaurant.has_wifi || restaurant.accepts_pets;
+  const hasContactInfo = Boolean(
+    restaurant.address || restaurant.maps_url || restaurant.phone || restaurant.whatsapp,
+  );
+  const hasSocialLinks = Boolean(
+    restaurant.instagram_url || restaurant.tiktok_url || restaurant.facebook_url,
+  );
 
   const hasOpeningHours =
     Array.isArray(restaurant.opening_hours) && restaurant.opening_hours.length > 0;
@@ -206,7 +212,7 @@ export default async function PublicMenuPage({
       </div>
 
       <div className="relative mx-auto max-w-2xl px-4">
-        <div className="relative z-10 -mt-10 flex items-end justify-between gap-4">
+        <div className="relative z-10 -mt-10 flex items-end gap-4">
           <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-neutral-50 bg-white shadow-sm dark:border-neutral-950 dark:bg-neutral-900">
             {restaurant.logo_url ? (
               <Image
@@ -226,11 +232,6 @@ export default async function PublicMenuPage({
               </div>
             )}
           </div>
-          <SocialLinks
-            instagramUrl={restaurant.instagram_url}
-            tiktokUrl={restaurant.tiktok_url}
-            facebookUrl={restaurant.facebook_url}
-          />
         </div>
 
         <div className="mt-3">
@@ -256,111 +257,128 @@ export default async function PublicMenuPage({
               {restaurant.description}
             </p>
           )}
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
-            {restaurant.address && restaurant.maps_url && (
-              <a
-                href={restaurant.maps_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium"
-              >
-                📍 {restaurant.address}
-              </a>
-            )}
-            {restaurant.address && !restaurant.maps_url && (
-              <span>📍 {restaurant.address}</span>
-            )}
-            {!restaurant.address && restaurant.maps_url && (
-              <a
-                href={restaurant.maps_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium"
-              >
-                📍 Ubicación
-              </a>
-            )}
-            {restaurant.phone && (
-              <a
-                href={`tel:${restaurant.phone.replace(/[^0-9+]/g, "")}`}
-                className="font-medium"
-              >
-                📞 {restaurant.phone}
-              </a>
-            )}
-            {restaurant.whatsapp && (
-              <a
-                href={`https://wa.me/${restaurant.whatsapp.replace(/[^0-9]/g, "")}`}
-                target="_blank"
-                className="font-medium text-green-600 dark:text-green-400"
-              >
-                💬 WhatsApp
-              </a>
-            )}
-          </div>
-
-          {hasAmenities && (
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {services.map((id) => (
-                <span
-                  key={id}
-                  className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
-                >
-                  {SERVICE_LABELS[id]}
-                </span>
-              ))}
-              {restaurant.has_wifi && (
-                <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
-                  📶 WiFi
-                </span>
-              )}
-              {restaurant.accepts_pets && (
-                <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
-                  🐾 Acepta mascotas
-                </span>
-              )}
-            </div>
-          )}
-
-          {hasOpeningHours && (
+          {(hasOpeningHours || hasContactInfo || hasAmenities || hasSocialLinks) && (
             <div className="mt-2">
               <details className="group">
                 <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 text-xs">
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${
-                      openNow
-                        ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                        : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
-                    }`}
-                  >
-                    ● {openNow ? "Abierto ahora" : "Cerrado ahora"}
-                  </span>
-                  <span className="text-neutral-500 underline-offset-2 group-open:hidden dark:text-neutral-500">
-                    Ver horario
-                  </span>
-                  <span className="hidden text-neutral-500 group-open:inline dark:text-neutral-500">
-                    Ocultar horario
-                  </span>
-                </summary>
-                <ul className="mt-2 space-y-0.5 rounded-lg border border-neutral-200 p-3 text-xs dark:border-neutral-800">
-                  {openingHours.map((h) => (
-                    <li
-                      key={h.day}
-                      className={`flex justify-between gap-4 ${
-                        h.day === todayKey
-                          ? "font-semibold text-neutral-900 dark:text-white"
-                          : "text-neutral-600 dark:text-neutral-400"
+                  {hasOpeningHours && (
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${
+                        openNow
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                          : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
                       }`}
                     >
-                      <span>{DAY_LABELS[h.day]}</span>
-                      <span>
-                        {h.closed
-                          ? "Cerrado"
-                          : `${formatTime12h(h.open)} – ${formatTime12h(h.close)}`}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                      ● {openNow ? "Abierto ahora" : "Cerrado ahora"}
+                    </span>
+                  )}
+                  <span className="text-neutral-500 underline-offset-2 group-open:hidden dark:text-neutral-500">
+                    Más información
+                  </span>
+                  <span className="hidden text-neutral-500 group-open:inline dark:text-neutral-500">
+                    Ocultar información
+                  </span>
+                </summary>
+
+                <div className="mt-2 space-y-3 rounded-lg border border-neutral-200 p-3 text-xs dark:border-neutral-800">
+                  {hasContactInfo && (
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-neutral-600 dark:text-neutral-400">
+                      {restaurant.address && restaurant.maps_url && (
+                        <a
+                          href={restaurant.maps_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium"
+                        >
+                          📍 {restaurant.address}
+                        </a>
+                      )}
+                      {restaurant.address && !restaurant.maps_url && (
+                        <span>📍 {restaurant.address}</span>
+                      )}
+                      {!restaurant.address && restaurant.maps_url && (
+                        <a
+                          href={restaurant.maps_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium"
+                        >
+                          📍 Ubicación
+                        </a>
+                      )}
+                      {restaurant.phone && (
+                        <a
+                          href={`tel:${restaurant.phone.replace(/[^0-9+]/g, "")}`}
+                          className="font-medium"
+                        >
+                          📞 {restaurant.phone}
+                        </a>
+                      )}
+                      {restaurant.whatsapp && (
+                        <a
+                          href={`https://wa.me/${restaurant.whatsapp.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          className="font-medium text-green-600 dark:text-green-400"
+                        >
+                          💬 WhatsApp
+                        </a>
+                      )}
+                    </div>
+                  )}
+
+                  {hasSocialLinks && (
+                    <SocialLinks
+                      instagramUrl={restaurant.instagram_url}
+                      tiktokUrl={restaurant.tiktok_url}
+                      facebookUrl={restaurant.facebook_url}
+                    />
+                  )}
+
+                  {hasAmenities && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {services.map((id) => (
+                        <span
+                          key={id}
+                          className="rounded-full bg-neutral-100 px-2.5 py-1 font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                        >
+                          {SERVICE_LABELS[id]}
+                        </span>
+                      ))}
+                      {restaurant.has_wifi && (
+                        <span className="rounded-full bg-neutral-100 px-2.5 py-1 font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+                          📶 WiFi
+                        </span>
+                      )}
+                      {restaurant.accepts_pets && (
+                        <span className="rounded-full bg-neutral-100 px-2.5 py-1 font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+                          🐾 Acepta mascotas
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {hasOpeningHours && (
+                    <ul className="space-y-0.5">
+                      {openingHours.map((h) => (
+                        <li
+                          key={h.day}
+                          className={`flex justify-between gap-4 ${
+                            h.day === todayKey
+                              ? "font-semibold text-neutral-900 dark:text-white"
+                              : "text-neutral-600 dark:text-neutral-400"
+                          }`}
+                        >
+                          <span>{DAY_LABELS[h.day]}</span>
+                          <span>
+                            {h.closed
+                              ? "Cerrado"
+                              : `${formatTime12h(h.open)} – ${formatTime12h(h.close)}`}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </details>
             </div>
           )}
