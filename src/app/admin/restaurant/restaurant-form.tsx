@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { slugify } from "@/lib/utils";
 import { deliveryZonesToText, parseDeliveryZones } from "@/lib/delivery-zones";
 import { OpeningHoursFields } from "./opening-hours-fields";
+import { SERVICE_IDS, parseServices } from "@/lib/restaurant-services";
 import type { Restaurant } from "@/lib/supabase/database.types";
 import type { ActionState } from "@/app/admin/actions";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -31,6 +32,7 @@ export function RestaurantForm({
   const [name, setName] = useState(restaurant?.name ?? "");
   const [slug, setSlug] = useState(restaurant?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(restaurant));
+  const selectedServices = parseServices(restaurant?.services);
 
   return (
     <form action={formAction} className="space-y-5">
@@ -138,6 +140,55 @@ export function RestaurantForm({
         <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
           {t.deliveryZonesHint}
         </p>
+      </div>
+
+      <div>
+        <Label>{t.servicesLabel}</Label>
+        <div className="mt-2 flex flex-wrap gap-4">
+          {SERVICE_IDS.map((id) => (
+            <label
+              key={id}
+              className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300"
+            >
+              <input
+                type="checkbox"
+                name="services"
+                value={id}
+                defaultChecked={selectedServices.includes(id)}
+                className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
+              />
+              {id === "delivery"
+                ? t.serviceDelivery
+                : id === "pickup"
+                  ? t.servicePickup
+                  : t.serviceDineIn}
+            </label>
+          ))}
+        </div>
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.servicesHint}
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-4">
+        <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <input
+            type="checkbox"
+            name="has_wifi"
+            defaultChecked={restaurant?.has_wifi ?? false}
+            className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
+          />
+          {t.wifiLabel}
+        </label>
+        <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <input
+            type="checkbox"
+            name="accepts_pets"
+            defaultChecked={restaurant?.accepts_pets ?? false}
+            className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
+          />
+          {t.petsLabel}
+        </label>
       </div>
 
       <OpeningHoursFields openingHours={restaurant?.opening_hours} t={hoursT} />

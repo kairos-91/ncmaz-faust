@@ -12,6 +12,7 @@ import { parseExtrasText } from "@/lib/menu-item-extras";
 import { parseDeliveryZonesText } from "@/lib/delivery-zones";
 import { DAY_KEYS, type DayHours } from "@/lib/opening-hours";
 import { computeExtendedExpiry } from "@/lib/subscription-plans";
+import { SERVICE_IDS, type ServiceId } from "@/lib/restaurant-services";
 
 export type ActionState = { error?: string } | null;
 
@@ -49,8 +50,15 @@ function parseRestaurantForm(formData: FormData) {
     theme_color: formData.get("theme_color") || "#f97316",
     currency: formData.get("currency") || "USD",
     is_published: formData.get("is_published") === "on",
+    has_wifi: formData.get("has_wifi") === "on",
+    accepts_pets: formData.get("accepts_pets") === "on",
     delivery_zones: formData.get("delivery_zones") ?? "",
   });
+}
+
+function parseServicesForm(formData: FormData): ServiceId[] {
+  const values = formData.getAll("services").map(String);
+  return SERVICE_IDS.filter((id) => values.includes(id));
 }
 
 function parseOpeningHoursForm(formData: FormData): DayHours[] {
@@ -82,6 +90,7 @@ export async function createRestaurant(
     ...parsed.data,
     delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
     opening_hours: parseOpeningHoursForm(formData),
+    services: parseServicesForm(formData),
     owner_id: user.id,
     plan_expires_at: computeExtendedExpiry(null, trialPlan?.duration_days ?? 15),
   });
@@ -113,6 +122,7 @@ export async function updateRestaurant(
       ...parsed.data,
       delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
       opening_hours: parseOpeningHoursForm(formData),
+      services: parseServicesForm(formData),
     })
     .eq("id", restaurantId);
 

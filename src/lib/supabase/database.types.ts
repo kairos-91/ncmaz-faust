@@ -30,6 +30,9 @@ export interface Database {
           payment_methods: Json;
           delivery_zones: Json;
           opening_hours: Json;
+          services: Json;
+          has_wifi: boolean;
+          accepts_pets: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -53,6 +56,9 @@ export interface Database {
           payment_methods?: Json;
           delivery_zones?: Json;
           opening_hours?: Json;
+          services?: Json;
+          has_wifi?: boolean;
+          accepts_pets?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -76,6 +82,9 @@ export interface Database {
           payment_methods?: Json;
           delivery_zones?: Json;
           opening_hours?: Json;
+          services?: Json;
+          has_wifi?: boolean;
+          accepts_pets?: boolean;
           created_at?: string;
           updated_at?: string;
         };

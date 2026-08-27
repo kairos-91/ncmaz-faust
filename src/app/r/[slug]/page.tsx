@@ -18,11 +18,18 @@ import {
   formatTime12h,
   type DayKey,
 } from "@/lib/opening-hours";
+import { parseServices, type ServiceId } from "@/lib/restaurant-services";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 import { MenuView } from "./menu-view";
 
 type Params = { slug: string };
+
+const SERVICE_LABELS: Record<ServiceId, string> = {
+  delivery: "🛵 Delivery",
+  pickup: "🥡 Para llevar",
+  dine_in: "🍽️ Comer en el local",
+};
 
 const DAY_LABELS: Record<DayKey, string> = {
   mon: "Lunes",
@@ -138,6 +145,9 @@ export default async function PublicMenuPage({
   );
   const bcvRate = needsBcvRate ? await getBcvRate() : null;
 
+  const services = parseServices(restaurant.services);
+  const hasAmenities = services.length > 0 || restaurant.has_wifi || restaurant.accepts_pets;
+
   const hasOpeningHours =
     Array.isArray(restaurant.opening_hours) && restaurant.opening_hours.length > 0;
   const openingHours = parseOpeningHours(restaurant.opening_hours);
@@ -244,6 +254,29 @@ export default async function PublicMenuPage({
               </a>
             )}
           </div>
+
+          {hasAmenities && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {services.map((id) => (
+                <span
+                  key={id}
+                  className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                >
+                  {SERVICE_LABELS[id]}
+                </span>
+              ))}
+              {restaurant.has_wifi && (
+                <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+                  📶 WiFi
+                </span>
+              )}
+              {restaurant.accepts_pets && (
+                <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+                  🐾 Acepta mascotas
+                </span>
+              )}
+            </div>
+          )}
 
           {hasOpeningHours && (
             <div className="mt-2">
