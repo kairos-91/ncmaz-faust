@@ -16,6 +16,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 export function SignupForm({ t }: { t: Dictionary["auth"] }) {
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
+  const [emailInUse, setEmailInUse] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
 
   const {
@@ -26,6 +27,7 @@ export function SignupForm({ t }: { t: Dictionary["auth"] }) {
 
   const onSubmit = async (values: SignupInput) => {
     setFormError(null);
+    setEmailInUse(false);
     const supabase = createClient();
     const { data, error } = await supabase.auth.signUp({
       email: values.email,
@@ -37,17 +39,25 @@ export function SignupForm({ t }: { t: Dictionary["auth"] }) {
     });
 
     if (error) {
-      setFormError(
-        error.message.includes("already registered")
-          ? t.signup.errorExists
-          : t.signup.errorGeneric,
-      );
+      if (error.message.includes("already registered")) {
+        setEmailInUse(true);
+      } else {
+        setFormError(t.signup.errorGeneric);
+      }
       return;
     }
 
     if (data.session) {
       router.push("/admin");
       router.refresh();
+      return;
+    }
+
+    // Con la confirmación de correo activada, Supabase no devuelve error
+    // si el correo ya tiene una cuenta (para no revelar qué correos
+    // existen) — en ese caso el user vuelve con identities vacío.
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      setEmailInUse(true);
       return;
     }
 
@@ -108,6 +118,14 @@ export function SignupForm({ t }: { t: Dictionary["auth"] }) {
           <FieldError message={errors.password?.message} />
         </div>
         {formError && <p className="text-sm text-red-600">{formError}</p>}
+        {emailInUse && (
+          <p className="text-sm text-red-600">
+            {t.signup.errorExists}{" "}
+            <a href="/login" className="font-medium underline">
+              {t.signup.loginLink}
+            </a>
+          </p>
+        )}
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? t.signup.submitting : t.signup.submit}
         </Button>
