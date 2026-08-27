@@ -15,6 +15,7 @@ import {
   isOpenNow,
   getNextOpening,
   getDayKey,
+  formatTime12h,
   type DayKey,
 } from "@/lib/opening-hours";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -148,7 +149,7 @@ export default async function PublicMenuPage({
   const closedMessage = orderingAllowed
     ? null
     : nextOpening
-      ? `Estamos cerrados. Abrimos ${nextOpening.isToday ? "hoy" : `el ${DAY_LABELS[nextOpening.day].toLowerCase()}`} a las ${nextOpening.time}.`
+      ? `Estamos cerrados. Abrimos ${nextOpening.isToday ? "hoy" : `el ${DAY_LABELS[nextOpening.day].toLowerCase()}`} a las ${formatTime12h(nextOpening.time)}.`
       : "Estamos cerrados por el momento.";
 
   return (
@@ -275,7 +276,11 @@ export default async function PublicMenuPage({
                       }`}
                     >
                       <span>{DAY_LABELS[h.day]}</span>
-                      <span>{h.closed ? "Cerrado" : `${h.open} – ${h.close}`}</span>
+                      <span>
+                        {h.closed
+                          ? "Cerrado"
+                          : `${formatTime12h(h.open)} – ${formatTime12h(h.close)}`}
+                      </span>
                     </li>
                   ))}
                 </ul>

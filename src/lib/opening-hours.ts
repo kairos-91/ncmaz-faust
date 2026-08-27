@@ -45,6 +45,15 @@ export function getDayKey(date: Date): DayKey {
   return getZonedParts(date).day;
 }
 
+export function formatTime12h(time: string): string {
+  const [hStr, mStr] = time.split(":");
+  const h = Number(hStr) || 0;
+  const m = Number(mStr) || 0;
+  const period = h >= 12 ? "pm" : "am";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
+}
+
 function defaultDayHours(day: DayKey): DayHours {
   return { day, open: "08:00", close: "18:00", closed: false };
 }
