@@ -11,11 +11,38 @@ export type DayHours = {
 
 export const DAY_KEYS: DayKey[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
-// JS Date#getDay(): 0 = Sunday ... 6 = Saturday.
-const DAY_KEY_BY_JS_INDEX: DayKey[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+// El servidor (Vercel) corre en UTC, pero los horarios se cargan en hora
+// de Venezuela. Todo el cálculo de "abierto/cerrado" debe hacerse en esa
+// zona horaria, no en la del proceso, o el horario queda desfasado ~4-5h.
+const RESTAURANT_TIMEZONE = "America/Caracas";
+
+const WEEKDAY_TO_DAY_KEY: Record<string, DayKey> = {
+  Sun: "sun",
+  Mon: "mon",
+  Tue: "tue",
+  Wed: "wed",
+  Thu: "thu",
+  Fri: "fri",
+  Sat: "sat",
+};
+
+function getZonedParts(date: Date): { day: DayKey; minutesOfDay: number } {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: RESTAURANT_TIMEZONE,
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const byType = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+  const day = WEEKDAY_TO_DAY_KEY[byType.weekday] ?? "mon";
+  const hour = Number(byType.hour) % 24;
+  const minute = Number(byType.minute) || 0;
+  return { day, minutesOfDay: hour * 60 + minute };
+}
 
 export function getDayKey(date: Date): DayKey {
-  return DAY_KEY_BY_JS_INDEX[date.getDay()];
+  return getZonedParts(date).day;
 }
 
 function defaultDayHours(day: DayKey): DayHours {
@@ -49,9 +76,8 @@ export function getNextOpening(
   hours: DayHours[],
   now: Date = new Date(),
 ): { day: DayKey; time: string; isToday: boolean } | null {
-  const todayKey = getDayKey(now);
+  const { day: todayKey, minutesOfDay: minutesNow } = getZonedParts(now);
   const todayIndex = DAY_KEYS.indexOf(todayKey);
-  const minutesNow = now.getHours() * 60 + now.getMinutes();
   const byDay = new Map(hours.map((h) => [h.day, h]));
 
   const today = byDay.get(todayKey);
@@ -74,9 +100,9 @@ export function getNextOpening(
 }
 
 export function isOpenNow(hours: DayHours[], now: Date = new Date()): boolean {
-  const today = hours.find((h) => h.day === DAY_KEY_BY_JS_INDEX[now.getDay()]);
+  const { day: todayKey, minutesOfDay: minutesNow } = getZonedParts(now);
+  const today = hours.find((h) => h.day === todayKey);
   if (!today || today.closed) return false;
-  const minutesNow = now.getHours() * 60 + now.getMinutes();
   const [openH, openM] = today.open.split(":").map(Number);
   const [closeH, closeM] = today.close.split(":").map(Number);
   const openMinutes = openH * 60 + (openM || 0);
