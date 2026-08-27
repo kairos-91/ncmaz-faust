@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
+import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
 import { MenuManager } from "./menu-manager";
@@ -9,7 +9,7 @@ import { MenuManager } from "./menu-manager";
 export const metadata: Metadata = { title: "Menú" };
 
 export default async function MenuPage() {
-  const { restaurant } = await getOwnerRestaurant();
+  const { restaurant } = await getStaffRestaurant();
   if (!restaurant) redirect("/admin");
   const { locale, t } = await getT();
 

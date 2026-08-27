@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
+import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
 import { OrdersManager } from "./orders-manager";
@@ -8,7 +8,7 @@ import { OrdersManager } from "./orders-manager";
 export const metadata: Metadata = { title: "Pedidos" };
 
 export default async function OrdersPage() {
-  const { restaurant } = await getOwnerRestaurant();
+  const { restaurant } = await getStaffRestaurant();
   if (!restaurant) redirect("/admin");
   const { locale, t } = await getT();
 

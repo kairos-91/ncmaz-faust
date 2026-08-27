@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
+import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { getT } from "@/lib/i18n/locale";
 import { AdminNav } from "./admin-nav";
 
@@ -9,7 +9,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userEmail, restaurant } = await getOwnerRestaurant();
+  const { userEmail, restaurant, role } = await getStaffRestaurant();
   if (!userEmail) redirect("/login");
   const { locale, t } = await getT();
 
@@ -31,6 +31,7 @@ export default async function AdminLayout({
         locale={locale}
         t={t.adminNav}
         pendingOrders={pendingOrders}
+        isStaff={role === "staff"}
       />
       <main className="flex-1 px-4 py-8 md:px-10">
         <div className="mx-auto max-w-3xl">{children}</div>

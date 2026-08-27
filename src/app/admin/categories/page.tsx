@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
+import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
 import { CategoryManager } from "./category-manager";
@@ -8,7 +8,7 @@ import { CategoryManager } from "./category-manager";
 export const metadata: Metadata = { title: "Categorías" };
 
 export default async function CategoriesPage() {
-  const { restaurant } = await getOwnerRestaurant();
+  const { restaurant } = await getStaffRestaurant();
   if (!restaurant) redirect("/admin");
   const { locale, t } = await getT();
 

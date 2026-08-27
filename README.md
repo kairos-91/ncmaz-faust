@@ -142,6 +142,15 @@ o recíbelo como prop `t` (client) donde lo necesites.
      para mostrar vistas totales/últimos 30 días, pedidos totales/últimos
      30 días y los platos más pedidos (estos últimos calculados a partir
      de `orders.items`, sin necesitar una tabla nueva).
+   - `supabase/migrations/0017_restaurant_staff.sql` — tabla
+     `restaurant_staff` y función `add_restaurant_staff(restaurant_id,
+     email)` para que el dueño agregue personas de su equipo (deben
+     tener cuenta creada en Levery) desde `/admin/team`. El staff puede
+     gestionar categorías, menú y pedidos de ese restaurante, pero no
+     sus datos, pagos, suscripción, cupones ni reseñas — eso sigue
+     siendo solo del dueño. Agrega políticas RLS nuevas (aditivas, no
+     reemplazan las del dueño) en `restaurants`, `categories`,
+     `menu_items` y `orders`.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

@@ -38,6 +38,34 @@ async function requireOwnedRestaurant(restaurantId: string) {
   return { supabase, user };
 }
 
+// Como requireOwnedRestaurant, pero también deja pasar a un usuario
+// agregado como staff del restaurante (ver restaurant_staff / RLS en
+// 0017_restaurant_staff.sql). Úsala solo para categorías, menú y
+// pedidos — el resto de las acciones (datos del restaurante, logo,
+// pagos, suscripción) debe seguir usando requireOwnedRestaurant.
+async function requireStaffAccess(restaurantId: string) {
+  const { supabase, user } = await requireUser();
+  const { data: restaurant } = await supabase
+    .from("restaurants")
+    .select("id, owner_id")
+    .eq("id", restaurantId)
+    .maybeSingle();
+  if (restaurant && restaurant.owner_id === user.id) {
+    return { supabase, user };
+  }
+
+  const { data: staffRow } = await supabase
+    .from("restaurant_staff")
+    .select("id")
+    .eq("restaurant_id", restaurantId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!staffRow) {
+    throw new Error("No autorizado");
+  }
+  return { supabase, user };
+}
+
 function parseRestaurantForm(formData: FormData) {
   return restaurantSchema.safeParse({
     name: formData.get("name"),
@@ -181,7 +209,7 @@ export async function createCategory(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const { supabase } = await requireOwnedRestaurant(restaurantId);
+  const { supabase } = await requireStaffAccess(restaurantId);
   const parsed = categorySchema.safeParse({ name: formData.get("name") });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message };
@@ -209,7 +237,7 @@ export async function renameCategory(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const { supabase } = await requireOwnedRestaurant(restaurantId);
+  const { supabase } = await requireStaffAccess(restaurantId);
   const parsed = categorySchema.safeParse({ name: formData.get("name") });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
 
@@ -224,7 +252,7 @@ export async function renameCategory(
 }
 
 export async function deleteCategory(restaurantId: string, categoryId: string) {
-  const { supabase } = await requireOwnedRestaurant(restaurantId);
+  const { supabase } = await requireStaffAccess(restaurantId);
   const { error } = await supabase
     .from("categories")
     .delete()
@@ -239,7 +267,7 @@ export async function moveCategory(
   categoryId: string,
   direction: "up" | "down",
 ) {
-  const { supabase } = await requireOwnedRestaurant(restaurantId);
+  const { supabase } = await requireStaffAccess(restaurantId);
   const { data: categories } = await supabase
     .from("categories")
     .select("id, sort_order")
@@ -294,7 +322,7 @@ export async function createMenuItem(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const { supabase, user } = await requireOwnedRestaurant(restaurantId);
+  const { supabase, user } = await requireStaffAccess(restaurantId);
   const parsed = parseMenuItemForm(formData);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
 
@@ -332,7 +360,7 @@ export async function updateMenuItem(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const { supabase, user } = await requireOwnedRestaurant(restaurantId);
+  const { supabase, user } = await requireStaffAccess(restaurantId);
   const parsed = parseMenuItemForm(formData);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
 
@@ -367,7 +395,7 @@ export async function updateMenuItem(
 }
 
 export async function deleteMenuItem(restaurantId: string, itemId: string) {
-  const { supabase } = await requireOwnedRestaurant(restaurantId);
+  const { supabase } = await requireStaffAccess(restaurantId);
   const { error } = await supabase
     .from("menu_items")
     .delete()
@@ -381,7 +409,7 @@ export async function toggleAvailability(
   itemId: string,
   isAvailable: boolean,
 ) {
-  const { supabase } = await requireOwnedRestaurant(restaurantId);
+  const { supabase } = await requireStaffAccess(restaurantId);
   const { error } = await supabase
     .from("menu_items")
     .update({ is_available: isAvailable })
@@ -395,7 +423,7 @@ export async function updateOrderStatus(
   orderId: string,
   status: "accepted" | "rejected" | "pending",
 ) {
-  const { supabase } = await requireOwnedRestaurant(restaurantId);
+  const { supabase } = await requireStaffAccess(restaurantId);
   const { error } = await supabase
     .from("orders")
     .update({ status })

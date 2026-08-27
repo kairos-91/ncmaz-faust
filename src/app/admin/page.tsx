@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
+import { redirect } from "next/navigation";
+import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
 import { createRestaurant } from "./actions";
@@ -11,8 +12,10 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = { title: "Resumen" };
 
 export default async function AdminDashboardPage() {
-  const { restaurant } = await getOwnerRestaurant();
+  const { restaurant, role } = await getStaffRestaurant();
   const { t } = await getT();
+
+  if (role === "staff") redirect("/admin/orders");
 
   if (!restaurant) {
     return (

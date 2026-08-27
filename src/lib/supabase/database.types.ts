@@ -447,9 +447,38 @@ export interface Database {
         };
         Relationships: [];
       };
+      restaurant_staff: {
+        Row: {
+          id: string;
+          restaurant_id: string;
+          user_id: string;
+          email: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          restaurant_id: string;
+          user_id: string;
+          email: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          restaurant_id?: string;
+          user_id?: string;
+          email?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      add_restaurant_staff: {
+        Args: { p_restaurant_id: string; p_email: string };
+        Returns: undefined;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

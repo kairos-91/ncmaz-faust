@@ -15,26 +15,35 @@ export function AdminNav({
   locale,
   t,
   pendingOrders = 0,
+  isStaff = false,
 }: {
   email: string | null;
   locale: Locale;
   t: Dictionary["adminNav"];
   pendingOrders?: number;
+  isStaff?: boolean;
 }) {
   const pathname = usePathname();
 
-  const links = [
-    { href: "/admin", label: t.summary },
-    { href: "/admin/analytics", label: t.analytics },
-    { href: "/admin/restaurant", label: t.myRestaurant },
-    { href: "/admin/categories", label: t.categories },
-    { href: "/admin/menu", label: t.menu },
-    { href: "/admin/orders", label: t.orders, badge: pendingOrders },
-    { href: "/admin/reviews", label: t.reviews },
-    { href: "/admin/coupons", label: t.coupons },
-    { href: "/admin/payment-methods", label: t.paymentMethods },
-    { href: "/admin/subscription", label: t.subscription },
+  const allLinks = [
+    { href: "/admin", label: t.summary, ownerOnly: true },
+    { href: "/admin/analytics", label: t.analytics, ownerOnly: true },
+    { href: "/admin/restaurant", label: t.myRestaurant, ownerOnly: true },
+    { href: "/admin/categories", label: t.categories, ownerOnly: false },
+    { href: "/admin/menu", label: t.menu, ownerOnly: false },
+    {
+      href: "/admin/orders",
+      label: t.orders,
+      badge: pendingOrders,
+      ownerOnly: false,
+    },
+    { href: "/admin/reviews", label: t.reviews, ownerOnly: true },
+    { href: "/admin/coupons", label: t.coupons, ownerOnly: true },
+    { href: "/admin/team", label: t.team, ownerOnly: true },
+    { href: "/admin/payment-methods", label: t.paymentMethods, ownerOnly: true },
+    { href: "/admin/subscription", label: t.subscription, ownerOnly: true },
   ];
+  const links = allLinks.filter((link) => !isStaff || !link.ownerOnly);
 
   return (
     <aside className="flex w-full shrink-0 flex-col justify-between border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 md:h-screen md:w-56 md:border-r md:sticky md:top-0">

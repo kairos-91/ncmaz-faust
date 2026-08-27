@@ -216,6 +216,7 @@ const es = {
     orders: "Pedidos",
     reviews: "Reseñas",
     coupons: "Cupones",
+    team: "Equipo",
     paymentMethods: "Métodos de pago",
     subscription: "Suscripción",
     superadminPanel: "Panel superadmin",
@@ -357,6 +358,20 @@ const es = {
     visible: "Visible",
     hidden: "Oculta",
     deleteConfirm: (name: string) => `¿Eliminar la reseña de "${name}"?`,
+  },
+  teamPage: {
+    title: "Equipo",
+    subtitle:
+      "Agrega personas de tu equipo para que gestionen categorías, menú y pedidos. No pueden ver ni cambiar los datos del restaurante, pagos ni suscripción.",
+  },
+  teamManager: {
+    empty: "Aún no agregaste a nadie de tu equipo.",
+    emailPlaceholder: "correo@ejemplo.com",
+    add: "Agregar",
+    adding: "Agregando...",
+    remove: "Quitar",
+    removeConfirm: (email: string) => `¿Quitar a "${email}" de tu equipo?`,
+    hint: "La persona debe tener una cuenta creada en Levery con ese correo (puede registrarse en /signup).",
   },
   menuPage: {
     title: "Menú",
@@ -760,6 +775,7 @@ const en: typeof es = {
     orders: "Orders",
     reviews: "Reviews",
     coupons: "Coupons",
+    team: "Team",
     paymentMethods: "Payment methods",
     subscription: "Subscription",
     superadminPanel: "Superadmin panel",
@@ -901,6 +917,20 @@ const en: typeof es = {
     visible: "Visible",
     hidden: "Hidden",
     deleteConfirm: (name: string) => `Delete the review from "${name}"?`,
+  },
+  teamPage: {
+    title: "Team",
+    subtitle:
+      "Add people from your team to manage categories, menu, and orders. They can't see or change the restaurant's details, payments, or subscription.",
+  },
+  teamManager: {
+    empty: "You haven't added anyone to your team yet.",
+    emailPlaceholder: "email@example.com",
+    add: "Add",
+    adding: "Adding...",
+    remove: "Remove",
+    removeConfirm: (email: string) => `Remove "${email}" from your team?`,
+    hint: "The person needs a Levery account with that email (they can sign up at /signup).",
   },
   menuPage: {
     title: "Menu",
