@@ -10,7 +10,13 @@ import {
   PAYMENT_METHOD_META,
 } from "@/lib/payment-methods";
 import { parseDeliveryZones } from "@/lib/delivery-zones";
-import { parseOpeningHours, isOpenNow, getDayKey, type DayKey } from "@/lib/opening-hours";
+import {
+  parseOpeningHours,
+  isOpenNow,
+  getNextOpening,
+  getDayKey,
+  type DayKey,
+} from "@/lib/opening-hours";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 import { MenuView } from "./menu-view";
@@ -80,6 +86,51 @@ export default async function PublicMenuPage({
   if (!data) notFound();
 
   const { restaurant, categories, items } = data;
+
+  const isSubscriptionExpired =
+    restaurant.plan_expires_at !== null &&
+    new Date(restaurant.plan_expires_at).getTime() < new Date().getTime();
+
+  if (isSubscriptionExpired) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-neutral-50 px-4 text-center dark:bg-neutral-950">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-900">
+          {restaurant.logo_url ? (
+            <Image
+              src={restaurant.logo_url}
+              alt={restaurant.name}
+              width={64}
+              height={64}
+              className="h-full w-full object-contain p-2"
+              unoptimized
+            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center text-lg font-semibold text-white"
+              style={{ backgroundColor: restaurant.theme_color }}
+            >
+              {restaurant.name.charAt(0)}
+            </div>
+          )}
+        </div>
+        <div>
+          <h1 className="text-lg font-semibold text-neutral-900 dark:text-white">
+            {restaurant.name}
+          </h1>
+          <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-400">
+            Este menú no está disponible en este momento. Vuelve más tarde.
+          </p>
+        </div>
+        <p className="mt-6 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-400 dark:text-neutral-600">
+          Hecho con{" "}
+          <Link href="/" className="inline-flex">
+            <Logo height={14} />
+          </Link>
+        </p>
+      </div>
+    );
+  }
+
   const paymentMethods = parsePaymentMethods(restaurant.payment_methods);
   const needsBcvRate = enabledPaymentMethods(paymentMethods).some(
     (id) => PAYMENT_METHOD_META[id].convertToVes,
@@ -91,6 +142,14 @@ export default async function PublicMenuPage({
   const openingHours = parseOpeningHours(restaurant.opening_hours);
   const openNow = hasOpeningHours ? isOpenNow(openingHours) : null;
   const todayKey = getDayKey(new Date());
+
+  const orderingAllowed = !hasOpeningHours || openNow === true;
+  const nextOpening = !orderingAllowed ? getNextOpening(openingHours) : null;
+  const closedMessage = orderingAllowed
+    ? null
+    : nextOpening
+      ? `Estamos cerrados. Abrimos ${nextOpening.isToday ? "hoy" : `el ${DAY_LABELS[nextOpening.day].toLowerCase()}`} a las ${nextOpening.time}.`
+      : "Estamos cerrados por el momento.";
 
   return (
     <div className="min-h-screen bg-neutral-50 pb-16 dark:bg-neutral-950">
@@ -241,6 +300,8 @@ export default async function PublicMenuPage({
             paymentMethods={paymentMethods}
             bcvRate={bcvRate}
             deliveryZones={parseDeliveryZones(restaurant.delivery_zones)}
+            orderingAllowed={orderingAllowed}
+            closedMessage={closedMessage}
           />
         )}
 

@@ -29,6 +29,8 @@ export function MenuView({
   paymentMethods,
   bcvRate,
   deliveryZones,
+  orderingAllowed,
+  closedMessage,
 }: {
   categories: Category[];
   items: MenuItem[];
@@ -40,7 +42,10 @@ export function MenuView({
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
   deliveryZones: DeliveryZone[];
+  orderingAllowed: boolean;
+  closedMessage: string | null;
 }) {
+  const canOrder = Boolean(whatsapp) && orderingAllowed;
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<Cart>({});
   const [cartOpen, setCartOpen] = useState(false);
@@ -104,6 +109,11 @@ export function MenuView({
 
   return (
     <div className="mt-6">
+      {closedMessage && (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400">
+          🕒 {closedMessage}
+        </div>
+      )}
       <div className="relative mb-4">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
         <input
@@ -161,7 +171,7 @@ export function MenuView({
                         item={item}
                         currency={currency}
                         themeColor={themeColor}
-                        orderingEnabled={Boolean(whatsapp)}
+                        orderingEnabled={canOrder}
                         noExtrasQty={noExtrasQty}
                         totalQty={totalQty}
                         onNoExtrasQtyChange={(qty) =>
@@ -179,7 +189,7 @@ export function MenuView({
         </div>
       )}
 
-      {whatsapp && itemCount > 0 && !cartOpen && (
+      {canOrder && itemCount > 0 && !cartOpen && (
         <button
           type="button"
           onClick={() => setCartOpen(true)}
@@ -196,7 +206,7 @@ export function MenuView({
         </button>
       )}
 
-      {cartOpen && whatsapp && (
+      {cartOpen && whatsapp && orderingAllowed && (
         <CartSheet
           lines={cartLines}
           currency={currency}

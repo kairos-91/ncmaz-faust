@@ -11,6 +11,7 @@ import {
 import { parseExtrasText } from "@/lib/menu-item-extras";
 import { parseDeliveryZonesText } from "@/lib/delivery-zones";
 import { DAY_KEYS, type DayHours } from "@/lib/opening-hours";
+import { computeExtendedExpiry } from "@/lib/subscription-plans";
 
 export type ActionState = { error?: string } | null;
 
@@ -71,11 +72,18 @@ export async function createRestaurant(
     return { error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
   }
 
+  const { data: trialPlan } = await supabase
+    .from("subscription_plans")
+    .select("duration_days")
+    .eq("key", "trial")
+    .maybeSingle();
+
   const { error } = await supabase.from("restaurants").insert({
     ...parsed.data,
     delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
     opening_hours: parseOpeningHoursForm(formData),
     owner_id: user.id,
+    plan_expires_at: computeExtendedExpiry(null, trialPlan?.duration_days ?? 15),
   });
 
   if (error) {
