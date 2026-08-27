@@ -213,6 +213,7 @@ const es = {
     categories: "Categorías",
     menu: "Menú",
     orders: "Pedidos",
+    reviews: "Reseñas",
     coupons: "Cupones",
     paymentMethods: "Métodos de pago",
     subscription: "Suscripción",
@@ -334,6 +335,16 @@ const es = {
     create: "Crear cupón",
     creating: "Creando...",
     deleteConfirm: (code: string) => `¿Eliminar el cupón "${code}"?`,
+  },
+  reviewsPage: {
+    title: "Reseñas",
+    subtitle: "Lo que dicen tus clientes. Puedes ocultar o eliminar cualquiera.",
+  },
+  reviewManager: {
+    empty: "Aún no tienes reseñas.",
+    visible: "Visible",
+    hidden: "Oculta",
+    deleteConfirm: (name: string) => `¿Eliminar la reseña de "${name}"?`,
   },
   menuPage: {
     title: "Menú",
@@ -734,6 +745,7 @@ const en: typeof es = {
     categories: "Categories",
     menu: "Menu",
     orders: "Orders",
+    reviews: "Reviews",
     coupons: "Coupons",
     paymentMethods: "Payment methods",
     subscription: "Subscription",
@@ -855,6 +867,16 @@ const en: typeof es = {
     create: "Create coupon",
     creating: "Creating...",
     deleteConfirm: (code: string) => `Delete coupon "${code}"?`,
+  },
+  reviewsPage: {
+    title: "Reviews",
+    subtitle: "What your customers are saying. You can hide or delete any of them.",
+  },
+  reviewManager: {
+    empty: "You don't have any reviews yet.",
+    visible: "Visible",
+    hidden: "Hidden",
+    deleteConfirm: (name: string) => `Delete the review from "${name}"?`,
   },
   menuPage: {
     title: "Menu",

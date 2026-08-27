@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { reviewSchema } from "@/lib/validations";
 import type { OrderItemSnapshot } from "@/lib/orders";
 
 export async function createOrder(
@@ -80,4 +81,29 @@ export async function uploadOrderReceipt(
   const url = supabase.storage.from("order-receipts").getPublicUrl(path).data
     .publicUrl;
   return { url };
+}
+
+export async function createReview(
+  restaurantId: string,
+  input: { customerName: string; rating: number; comment: string },
+) {
+  const parsed = reviewSchema.safeParse({
+    customer_name: input.customerName,
+    rating: input.rating,
+    comment: input.comment,
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("reviews").insert({
+    restaurant_id: restaurantId,
+    customer_name: parsed.data.customer_name.trim(),
+    rating: parsed.data.rating,
+    comment: parsed.data.comment?.trim() || null,
+  });
+  if (error) return { error: error.message };
+
+  return { success: true };
 }

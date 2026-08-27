@@ -249,6 +249,36 @@ export interface Database {
         };
         Relationships: [];
       };
+      reviews: {
+        Row: {
+          id: string;
+          restaurant_id: string;
+          customer_name: string;
+          rating: number;
+          comment: string | null;
+          is_visible: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          restaurant_id: string;
+          customer_name: string;
+          rating: number;
+          comment?: string | null;
+          is_visible?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          restaurant_id?: string;
+          customer_name?: string;
+          rating?: number;
+          comment?: string | null;
+          is_visible?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       coupons: {
         Row: {
           id: string;

@@ -133,6 +133,10 @@ o recíbelo como prop `t` (client) donde lo necesites.
      registrar el cupón usado en cada pedido. Los cupones activos y no
      vencidos son legibles públicamente (igual que los métodos de pago)
      para poder validarlos desde el checkout sin sesión.
+   - `supabase/migrations/0015_reviews.sql` — tabla `reviews` (nombre,
+     calificación 1-5, comentario) que los clientes dejan desde el menú
+     público. Visibles por defecto; gestionables (ocultar/eliminar)
+     desde `/admin/reviews`.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API):
 

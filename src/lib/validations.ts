@@ -89,3 +89,10 @@ export const couponSchema = z
     { message: "El porcentaje no puede ser mayor a 100", path: ["discount_value"] },
   );
 export type CouponInput = z.infer<typeof couponSchema>;
+
+export const reviewSchema = z.object({
+  customer_name: z.string().min(1, "Ingresa tu nombre").max(80),
+  rating: z.coerce.number().int().min(1, "Selecciona una calificación").max(5),
+  comment: z.string().max(500).optional().or(z.literal("")),
+});
+export type ReviewInput = z.infer<typeof reviewSchema>;
