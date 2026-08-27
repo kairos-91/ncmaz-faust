@@ -77,11 +77,19 @@ export async function generateMetadata({
   const { slug } = await params;
   const data = await getRestaurant(slug);
   if (!data) return { title: "Menú no encontrado" };
+  const logo = data.restaurant.logo_url ?? undefined;
   return {
     title: data.restaurant.name,
     description:
       data.restaurant.description ??
       `Menú digital de ${data.restaurant.name}`,
+    manifest: `/r/${slug}/manifest.webmanifest`,
+    icons: logo ? { icon: logo, apple: logo } : undefined,
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: data.restaurant.name,
+    },
   };
 }
 
