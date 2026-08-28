@@ -140,6 +140,7 @@ export function AdminNav({
     { href: "/admin", label: t.summary, badge: pendingOrders, ownerOnly: true },
     { href: "/admin/analytics", label: t.analytics, ownerOnly: true },
     { href: "/admin/sales", label: t.sales, ownerOnly: true },
+    { href: "/admin/customers", label: t.customers, ownerOnly: true },
     { href: "/admin/restaurant", label: t.myRestaurant, ownerOnly: true },
     { href: "/admin/categories", label: t.categories, ownerOnly: false },
     { href: "/admin/menu", label: t.menu, ownerOnly: false },
