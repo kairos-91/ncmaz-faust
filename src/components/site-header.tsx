@@ -32,9 +32,9 @@ export async function SiteHeader() {
         {/* Idioma/tema en la esquina superior derecha en móvil: flotan encima
             del botón "Empieza gratis" (position: absolute) para no sumar
             altura al topbar; en md+ vuelven a la fila normal. */}
-        <div className="absolute right-4 top-1.5 flex items-center gap-0.5 sm:right-6 md:hidden">
-          <LanguageToggle locale={locale} />
-          <ThemeToggle />
+        <div className="absolute right-4 top-0 flex items-center gap-0.5 sm:right-6 md:hidden">
+          <LanguageToggle locale={locale} compact />
+          <ThemeToggle compact />
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">

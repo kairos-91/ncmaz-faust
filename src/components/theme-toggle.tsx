@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "levery-theme";
 const listeners = new Set<() => void>();
@@ -25,7 +26,7 @@ function setDark(next: boolean) {
   listeners.forEach((callback) => callback());
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ compact = false }: { compact?: boolean }) {
   const isDark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   // En desarrollo, el remount de Strict Mode borra el "dark" que puso el
@@ -42,12 +43,15 @@ export function ThemeToggle() {
       type="button"
       onClick={() => setDark(!isDark)}
       aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-      className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+      className={cn(
+        "flex items-center justify-center rounded-full text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800",
+        compact ? "h-5 w-5" : "h-9 w-9",
+      )}
     >
       {isDark ? (
-        <Sun className="h-[18px] w-[18px]" />
+        <Sun className={compact ? "h-3 w-3" : "h-[18px] w-[18px]"} />
       ) : (
-        <Moon className="h-[18px] w-[18px]" />
+        <Moon className={compact ? "h-3 w-3" : "h-[18px] w-[18px]"} />
       )}
     </button>
   );
