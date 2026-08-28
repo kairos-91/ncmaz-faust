@@ -513,7 +513,7 @@ export function CheckoutFields({
           style={{ backgroundColor: themeColor }}
         >
           <Check className="h-4 w-4" />
-          {sending ? "Enviando..." : "Enviar pedido por WhatsApp"}
+          {sending ? "Enviando..." : "Enviar pedido"}
         </button>
       )}
     </div>
