@@ -46,48 +46,60 @@ export function AdminNav({
   useEffect(() => {
     if (!restaurantId) return;
     const supabase = createClient();
-    const channel = supabase
-      .channel(`orders-badge-${restaurantId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "orders",
-          filter: `restaurant_id=eq.${restaurantId}`,
-        },
-        (payload) => {
-          if ((payload.new as { status?: string }).status === "pending") {
-            setPendingOrders((n) => n + 1);
-            playNotificationChime();
-          }
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "orders",
-          filter: `restaurant_id=eq.${restaurantId}`,
-        },
-        (payload) => {
-          const oldStatus = (payload.old as { status?: string }).status;
-          const newStatus = (payload.new as { status?: string }).status;
-          if (oldStatus === "pending" && newStatus !== "pending") {
-            setPendingOrders((n) => Math.max(0, n - 1));
-          } else if (oldStatus !== "pending" && newStatus === "pending") {
-            setPendingOrders((n) => n + 1);
-            playNotificationChime();
-          }
-        },
-      )
-      .subscribe((status) => {
-        setRealtimeOffline(status === "CHANNEL_ERROR" || status === "TIMED_OUT");
-      });
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+
+    // Hay que esperar a que la sesión termine de cargar antes de suscribirse:
+    // si el canal se abre antes de que el cliente confirme el usuario logueado,
+    // Realtime lo autentica como visitante anónimo y, como la política RLS de
+    // "orders" solo permite ver pedidos al dueño, nunca llegan los cambios —
+    // sin ningún error visible (el canal igual queda "conectado").
+    supabase.auth.getSession().then(() => {
+      if (cancelled) return;
+      channel = supabase
+        .channel(`orders-badge-${restaurantId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "orders",
+            filter: `restaurant_id=eq.${restaurantId}`,
+          },
+          (payload) => {
+            if ((payload.new as { status?: string }).status === "pending") {
+              setPendingOrders((n) => n + 1);
+              playNotificationChime();
+            }
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "orders",
+            filter: `restaurant_id=eq.${restaurantId}`,
+          },
+          (payload) => {
+            const oldStatus = (payload.old as { status?: string }).status;
+            const newStatus = (payload.new as { status?: string }).status;
+            if (oldStatus === "pending" && newStatus !== "pending") {
+              setPendingOrders((n) => Math.max(0, n - 1));
+            } else if (oldStatus !== "pending" && newStatus === "pending") {
+              setPendingOrders((n) => n + 1);
+              playNotificationChime();
+            }
+          },
+        )
+        .subscribe((status) => {
+          setRealtimeOffline(status === "CHANNEL_ERROR" || status === "TIMED_OUT");
+        });
+    });
 
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+      if (channel) supabase.removeChannel(channel);
     };
   }, [restaurantId]);
 

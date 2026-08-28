@@ -42,40 +42,52 @@ export function OrdersManager({
 
   useEffect(() => {
     const supabase = createClient();
-    const channel = supabase
-      .channel(`orders-list-${restaurantId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "orders",
-          filter: `restaurant_id=eq.${restaurantId}`,
-        },
-        (payload) => {
-          const newOrder = payload.new as Order;
-          setOrders((prev) =>
-            prev.some((o) => o.id === newOrder.id) ? prev : [newOrder, ...prev],
-          );
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "orders",
-          filter: `restaurant_id=eq.${restaurantId}`,
-        },
-        (payload) => {
-          const updated = payload.new as Order;
-          setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
-        },
-      )
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+
+    // Esperar a que la sesión termine de cargar antes de suscribirse: si el
+    // canal se abre antes de que el cliente confirme el usuario logueado,
+    // Realtime lo autentica como visitante anónimo y, como la política RLS
+    // de "orders" solo permite ver pedidos al dueño, nunca llegan los
+    // cambios — sin ningún error visible.
+    supabase.auth.getSession().then(() => {
+      if (cancelled) return;
+      channel = supabase
+        .channel(`orders-list-${restaurantId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "orders",
+            filter: `restaurant_id=eq.${restaurantId}`,
+          },
+          (payload) => {
+            const newOrder = payload.new as Order;
+            setOrders((prev) =>
+              prev.some((o) => o.id === newOrder.id) ? prev : [newOrder, ...prev],
+            );
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "orders",
+            filter: `restaurant_id=eq.${restaurantId}`,
+          },
+          (payload) => {
+            const updated = payload.new as Order;
+            setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+          },
+        )
+        .subscribe();
+    });
 
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+      if (channel) supabase.removeChannel(channel);
     };
   }, [restaurantId]);
 
