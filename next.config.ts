@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "10mb",
     },
   },
+  async redirects() {
+    // El menú público se movió de /r/mi-restaurante a /mi-restaurante.
+    // Se deja este redirect permanente para que los QR ya impresos y los
+    // enlaces ya compartidos con el formato viejo sigan funcionando.
+    return [
+      { source: "/r/:slug", destination: "/:slug", permanent: true },
+      { source: "/r/:slug/:path*", destination: "/:slug/:path*", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

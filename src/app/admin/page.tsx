@@ -69,7 +69,7 @@ export default async function AdminDashboardPage() {
   const monthlyChart = lastNMonths(groupSalesByMonth(orders ?? []), new Date(), 12);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const publicUrl = `${siteUrl}/r/${restaurant.slug}`;
+  const publicUrl = `${siteUrl}/${restaurant.slug}`;
 
   return (
     <div className="space-y-8">

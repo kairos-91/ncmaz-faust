@@ -26,8 +26,8 @@ export async function GET(
     {
       name,
       short_name: name,
-      start_url: `/r/${slug}`,
-      scope: `/r/${slug}`,
+      start_url: `/${slug}`,
+      scope: `/${slug}`,
       display: "standalone",
       background_color: "#ffffff",
       theme_color: restaurant?.theme_color ?? "#f97316",

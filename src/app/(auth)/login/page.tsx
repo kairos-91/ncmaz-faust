@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import Link from "next/link";
 import { getT } from "@/lib/i18n/locale";
 import { LoginForm } from "./login-form";
 
@@ -19,9 +20,9 @@ export default async function LoginPage() {
       </Suspense>
       <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
         {t.auth.login.noAccount}{" "}
-        <a href="/signup" className="font-medium text-neutral-900 underline dark:text-white">
+        <Link href="/signup" className="font-medium text-neutral-900 underline dark:text-white">
           {t.auth.login.signupLink}
-        </a>
+        </Link>
       </p>
     </>
   );

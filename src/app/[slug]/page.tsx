@@ -92,7 +92,7 @@ export async function generateMetadata({
     description:
       data.restaurant.description ??
       `Menú digital de ${data.restaurant.name}`,
-    manifest: `/r/${slug}/manifest.webmanifest`,
+    manifest: `/${slug}/manifest.webmanifest`,
     icons: logo ? { icon: logo, apple: logo } : undefined,
     appleWebApp: {
       capable: true,

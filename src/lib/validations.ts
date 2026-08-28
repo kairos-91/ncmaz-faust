@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isReservedSlug } from "@/lib/reserved-slugs";
 
 export const signupSchema = z.object({
   fullName: z.string().min(2, "Ingresa tu nombre completo"),
@@ -53,6 +54,9 @@ export const restaurantSchema = z.object({
   has_wifi: z.boolean(),
   accepts_pets: z.boolean(),
   delivery_zones: z.string().max(2000).optional().or(z.literal("")),
+}).refine((data) => !isReservedSlug(data.slug), {
+  message: "Esa URL no está disponible, elige otra",
+  path: ["slug"],
 });
 export type RestaurantInput = z.infer<typeof restaurantSchema>;
 

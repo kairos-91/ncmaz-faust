@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -121,9 +122,9 @@ export function SignupForm({ t }: { t: Dictionary["auth"] }) {
         {emailInUse && (
           <p className="text-sm text-red-600">
             {t.signup.errorExists}{" "}
-            <a href="/login" className="font-medium underline">
+            <Link href="/login" className="font-medium underline">
               {t.signup.loginLink}
-            </a>
+            </Link>
           </p>
         )}
         <Button type="submit" className="w-full" disabled={isSubmitting}>

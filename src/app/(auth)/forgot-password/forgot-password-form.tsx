@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { forgotPasswordSchema, type ForgotPasswordInput } from "@/lib/validations";
@@ -40,12 +41,12 @@ export function ForgotPasswordForm({ t }: { t: Dictionary["auth"] }) {
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {t.forgotPassword.success}
         </p>
-        <a
+        <Link
           href="/login"
           className="block text-center text-sm font-medium text-neutral-900 underline dark:text-white"
         >
           {t.forgotPassword.backToLogin}
-        </a>
+        </Link>
       </div>
     );
   }
@@ -67,12 +68,12 @@ export function ForgotPasswordForm({ t }: { t: Dictionary["auth"] }) {
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? t.forgotPassword.submitting : t.forgotPassword.submit}
       </Button>
-      <a
+      <Link
         href="/login"
         className="block text-center text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
       >
         {t.forgotPassword.backToLogin}
-      </a>
+      </Link>
     </form>
   );
 }

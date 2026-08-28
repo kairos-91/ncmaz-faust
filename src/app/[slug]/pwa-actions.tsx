@@ -52,7 +52,7 @@ export function PwaActions({
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
     navigator.serviceWorker
-      .register(`/r/${slug}/sw.js`, { scope: `/r/${slug}` })
+      .register(`/${slug}/sw.js`, { scope: `/${slug}` })
       .catch(() => {});
 
     const onBeforeInstall = (e: Event) => {

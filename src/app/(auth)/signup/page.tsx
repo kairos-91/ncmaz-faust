@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getT } from "@/lib/i18n/locale";
 import { SignupForm } from "./signup-form";
 
@@ -16,9 +17,9 @@ export default async function SignupPage() {
       <SignupForm t={t.auth} />
       <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
         {t.auth.signup.haveAccount}{" "}
-        <a href="/login" className="font-medium text-neutral-900 underline dark:text-white">
+        <Link href="/login" className="font-medium text-neutral-900 underline dark:text-white">
           {t.auth.signup.loginLink}
-        </a>
+        </Link>
       </p>
     </>
   );

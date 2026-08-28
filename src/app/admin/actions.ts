@@ -173,7 +173,7 @@ export async function updateRestaurant(
   }
 
   revalidatePath("/admin/restaurant");
-  revalidatePath(`/r/${parsed.data.slug}`);
+  revalidatePath(`/${parsed.data.slug}`);
   return { error: undefined };
 }
 

@@ -24,7 +24,7 @@ src/app/
     restaurant/             Datos del restaurante + logo
     categories/              CRUD de categorías
     menu/                     CRUD de platos
-  r/[slug]/                Menú público del restaurante (el que ve el cliente)
+  [slug]/                  Menú público del restaurante (el que ve el cliente)
   superadmin/              Panel de Levery (requiere email superadmin)
     restaurants/            Plan y vencimiento de cada restaurante
     payments/                Pagos de suscripción recibidos, con comprobante
@@ -63,7 +63,7 @@ servidor (`getT()` en `src/lib/i18n/locale.ts`) como pasando el diccionario
 como prop a los componentes de cliente.
 
 Fuera de este alcance, intencionalmente:
-- El menú público del cliente (`/r/[slug]`, carrito, checkout) — el
+- El menú público del cliente (`/[slug]`, carrito, checkout) — el
   restaurante suele cargar sus platos en español, así que no se tradujo.
 - Los mensajes de validación de formularios que vienen de
   `src/lib/validations.ts` (zod), que corren en los Server Actions sin
@@ -114,7 +114,7 @@ o recíbelo como prop `t` (client) donde lo necesites.
      cada pedido.
    - `supabase/migrations/0010_opening_hours.sql` — columna
      `restaurants.opening_hours` con el horario semanal configurable desde
-     `/admin/restaurant`, visible en el menú público (`/r/[slug]`) como un
+     `/admin/restaurant`, visible en el menú público (`/[slug]`) como un
      indicador de "Abierto ahora" / "Cerrado ahora" y el horario completo.
    - `supabase/migrations/0011_maps_url.sql` — columna
      `restaurants.maps_url` con el enlace de Google Maps configurable desde

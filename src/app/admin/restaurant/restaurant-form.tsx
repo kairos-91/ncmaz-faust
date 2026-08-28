@@ -55,7 +55,7 @@ export function RestaurantForm({
         <Label htmlFor="slug">{t.urlLabel}</Label>
         <div className="flex items-center overflow-hidden rounded-lg border border-neutral-200 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-200 dark:border-neutral-700 dark:focus-within:border-neutral-500 dark:focus-within:ring-neutral-700">
           <span className="whitespace-nowrap bg-neutral-50 px-3 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
-            /r/
+            /
           </span>
           <input
             id="slug"
