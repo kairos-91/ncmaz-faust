@@ -4,6 +4,7 @@ import { useState } from "react";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 import { formatPrice } from "@/lib/utils";
+import { formatBs } from "@/lib/bcv-rate";
 import type { DailySales, MonthlySales, SalesSummary } from "@/lib/sales";
 import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 import { SalesCharts } from "./sales-charts";
@@ -26,6 +27,7 @@ export function SalesView({
   daily,
   dailyChart,
   monthlyChart,
+  bcvRate,
   locale,
 }: {
   restaurantName: string;
@@ -34,11 +36,13 @@ export function SalesView({
   daily: DailySales[];
   dailyChart: DailySales[];
   monthlyChart: MonthlySales[];
+  bcvRate: number | null;
   locale: Locale;
 }) {
   const dict = getDictionary(locale);
   const t: T = { ...dict.common, ...dict.salesPage };
   const [exporting, setExporting] = useState(false);
+  const bsFor = (amountUsd: number) => (bcvRate ? formatBs(amountUsd, bcvRate) : null);
 
   const exportPdf = () => {
     setExporting(true);
@@ -93,12 +97,25 @@ export function SalesView({
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard label={t.salesToday} value={formatPrice(summary.today, currency)} />
-        <StatCard label={t.salesMonth} value={formatPrice(summary.month, currency)} />
-        <StatCard label={t.salesYear} value={formatPrice(summary.year, currency)} />
+        <StatCard
+          label={t.salesToday}
+          value={formatPrice(summary.today, currency)}
+          subValue={bsFor(summary.today)}
+        />
+        <StatCard
+          label={t.salesMonth}
+          value={formatPrice(summary.month, currency)}
+          subValue={bsFor(summary.month)}
+        />
+        <StatCard
+          label={t.salesYear}
+          value={formatPrice(summary.year, currency)}
+          subValue={bsFor(summary.year)}
+        />
         <StatCard
           label={t.salesAllTime}
           value={formatPrice(summary.allTime, currency)}
+          subValue={bsFor(summary.allTime)}
         />
       </div>
 
@@ -164,12 +181,23 @@ export function SalesView({
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({
+  label,
+  value,
+  subValue,
+}: {
+  label: string;
+  value: string;
+  subValue?: string | null;
+}) {
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
       <p className="text-2xl font-semibold text-neutral-900 dark:text-white">
         {value}
       </p>
+      {subValue && (
+        <p className="text-xs text-neutral-500 dark:text-neutral-500">{subValue}</p>
+      )}
       <p className="text-sm text-neutral-600 dark:text-neutral-400">{label}</p>
     </div>
   );

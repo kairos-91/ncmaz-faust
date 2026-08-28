@@ -10,6 +10,7 @@ import {
   lastNDays,
   lastNMonths,
 } from "@/lib/sales";
+import { getBcvRate } from "@/lib/bcv-rate";
 import { SalesView } from "./sales-view";
 
 export const metadata: Metadata = { title: "Ventas" };
@@ -20,10 +21,13 @@ export default async function SalesPage() {
   const { locale } = await getT();
 
   const supabase = await createClient();
-  const { data: orders } = await supabase
-    .from("orders")
-    .select("total, status, created_at")
-    .eq("restaurant_id", restaurant.id);
+  const [{ data: orders }, bcvRate] = await Promise.all([
+    supabase
+      .from("orders")
+      .select("total, status, created_at")
+      .eq("restaurant_id", restaurant.id),
+    restaurant.currency === "USD" ? getBcvRate() : Promise.resolve(null),
+  ]);
 
   const summary = computeSalesSummary(orders ?? []);
   const daily = groupSalesByDay(orders ?? []);
@@ -38,6 +42,7 @@ export default async function SalesPage() {
       daily={daily}
       dailyChart={dailyChart}
       monthlyChart={monthlyChart}
+      bcvRate={bcvRate?.rate ?? null}
       locale={locale}
     />
   );

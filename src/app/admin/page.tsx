@@ -12,6 +12,7 @@ import {
   lastNMonths,
 } from "@/lib/sales";
 import { formatPrice } from "@/lib/utils";
+import { getBcvRate, formatBs } from "@/lib/bcv-rate";
 import { createRestaurant } from "./actions";
 import { RestaurantForm } from "./restaurant/restaurant-form";
 import { QrCard } from "./qr-card";
@@ -44,7 +45,7 @@ export default async function AdminDashboardPage() {
   }
 
   const supabase = await createClient();
-  const [{ count: categoryCount }, { count: itemCount }, { data: orders }] =
+  const [{ count: categoryCount }, { count: itemCount }, { data: orders }, bcvRate] =
     await Promise.all([
       supabase
         .from("categories")
@@ -58,9 +59,12 @@ export default async function AdminDashboardPage() {
         .from("orders")
         .select("total, status, created_at")
         .eq("restaurant_id", restaurant.id),
+      restaurant.currency === "USD" ? getBcvRate() : Promise.resolve(null),
     ]);
 
   const sales = computeSalesSummary(orders ?? []);
+  const bsFor = (amountUsd: number) =>
+    bcvRate ? formatBs(amountUsd, bcvRate.rate) : null;
   const dailyChart = lastNDays(groupSalesByDay(orders ?? []), new Date(), 30);
   const monthlyChart = lastNMonths(groupSalesByMonth(orders ?? []), new Date(), 12);
 
@@ -89,18 +93,22 @@ export default async function AdminDashboardPage() {
           <StatCard
             label={t.dashboard.salesToday}
             value={formatPrice(sales.today, restaurant.currency)}
+            subValue={bsFor(sales.today)}
           />
           <StatCard
             label={t.dashboard.salesMonth}
             value={formatPrice(sales.month, restaurant.currency)}
+            subValue={bsFor(sales.month)}
           />
           <StatCard
             label={t.dashboard.salesYear}
             value={formatPrice(sales.year, restaurant.currency)}
+            subValue={bsFor(sales.year)}
           />
           <StatCard
             label={t.dashboard.salesAllTime}
             value={formatPrice(sales.allTime, restaurant.currency)}
+            subValue={bsFor(sales.allTime)}
           />
         </div>
       </div>
@@ -138,10 +146,21 @@ export default async function AdminDashboardPage() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: number | string }) {
+function StatCard({
+  label,
+  value,
+  subValue,
+}: {
+  label: string;
+  value: number | string;
+  subValue?: string | null;
+}) {
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
       <p className="text-2xl font-semibold">{value}</p>
+      {subValue && (
+        <p className="text-xs text-neutral-500 dark:text-neutral-500">{subValue}</p>
+      )}
       <p className="text-sm text-neutral-600 dark:text-neutral-400">{label}</p>
     </div>
   );
