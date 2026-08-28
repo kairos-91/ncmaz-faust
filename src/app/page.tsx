@@ -75,7 +75,7 @@ export default async function Home() {
 
         <section
           id="how-it-works"
-          className="bg-white pb-20 pt-16 text-neutral-900 dark:bg-black dark:text-white md:pt-24"
+          className="scroll-mt-20 bg-white pb-20 pt-16 text-neutral-900 dark:bg-black dark:text-white md:pt-24"
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="text-center">

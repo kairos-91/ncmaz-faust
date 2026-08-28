@@ -30,7 +30,7 @@ export async function PricingPlans({
     <section
       id="pricing"
       className={cn(
-        "bg-white py-20 text-neutral-900 dark:bg-black dark:text-white",
+        "scroll-mt-20 bg-white py-20 text-neutral-900 dark:bg-black dark:text-white",
         className,
       )}
     >
