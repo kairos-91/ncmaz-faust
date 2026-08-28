@@ -9,16 +9,31 @@ export function AdminTopBar({
   email,
   locale,
   t,
+  openNow = null,
 }: {
   email: string | null;
   locale: Locale;
   t: Dictionary["adminNav"];
+  openNow?: boolean | null;
 }) {
   return (
     <header className="flex h-16 items-center justify-between gap-3 border-b border-neutral-200 bg-white px-4 dark:border-neutral-800 dark:bg-neutral-900 md:px-10">
-      <Link href="/">
-        <Logo height={44} />
-      </Link>
+      <div className="flex items-center gap-3">
+        <Link href="/">
+          <Logo height={44} />
+        </Link>
+        {openNow !== null && (
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+              openNow
+                ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
+            }`}
+          >
+            ● {openNow ? t.openNow : t.closedNow}
+          </span>
+        )}
+      </div>
       <div className="flex items-center gap-3">
         {email && (
           <span className="hidden max-w-[220px] truncate text-xs text-neutral-500 dark:text-neutral-500 sm:inline">

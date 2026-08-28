@@ -225,6 +225,8 @@ const es = {
     superadminPanel: "Panel superadmin",
     logout: "Cerrar sesión",
     realtimeOffline: "Sin conexión en tiempo real. Recarga la página.",
+    openNow: "Abierto",
+    closedNow: "Cerrado",
   },
   dashboard: {
     createTitle: "Crea el menú de tu restaurante",
@@ -908,6 +910,8 @@ const en: typeof es = {
     superadminPanel: "Superadmin panel",
     logout: "Log out",
     realtimeOffline: "Realtime disconnected. Reload the page.",
+    openNow: "Open",
+    closedNow: "Closed",
   },
   dashboard: {
     createTitle: "Create your restaurant's menu",

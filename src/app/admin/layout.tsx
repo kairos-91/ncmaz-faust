@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { getT } from "@/lib/i18n/locale";
+import { isOpenNow, parseOpeningHours } from "@/lib/opening-hours";
 import { AdminNav } from "./admin-nav";
 import { AdminTopBar } from "./admin-topbar";
 
@@ -25,9 +26,15 @@ export default async function AdminLayout({
     pendingOrders = count ?? 0;
   }
 
+  const hasOpeningHours =
+    Array.isArray(restaurant?.opening_hours) && restaurant.opening_hours.length > 0;
+  const openNow = hasOpeningHours
+    ? isOpenNow(parseOpeningHours(restaurant!.opening_hours))
+    : null;
+
   return (
     <div className="flex min-h-screen flex-1 flex-col bg-neutral-50 dark:bg-neutral-950">
-      <AdminTopBar email={userEmail} locale={locale} t={t.adminNav} />
+      <AdminTopBar email={userEmail} locale={locale} t={t.adminNav} openNow={openNow} />
       <div className="flex flex-1 flex-col md:flex-row">
         <AdminNav
           email={userEmail}
