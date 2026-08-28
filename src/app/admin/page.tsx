@@ -91,6 +91,12 @@ export default async function AdminDashboardPage() {
           initialPendingOrders={pendingOrders}
           label={t.dashboard.viewOrders}
         />
+        <Link href="/admin/categories">
+          <Button variant="secondary">{t.dashboard.manageCategories}</Button>
+        </Link>
+        <Link href="/admin/menu">
+          <Button variant="secondary">{t.dashboard.manageMenu}</Button>
+        </Link>
         <Link href="/admin/subscription">
           <Button variant="secondary">{t.dashboard.viewPlans}</Button>
         </Link>
@@ -138,15 +144,6 @@ export default async function AdminDashboardPage() {
         orderSingular={t.salesPage.orderSingular}
         orderPlural={t.salesPage.orderPlural}
       />
-
-      <div className="flex flex-wrap gap-3">
-        <Link href="/admin/categories">
-          <Button variant="secondary">{t.dashboard.manageCategories}</Button>
-        </Link>
-        <Link href="/admin/menu">
-          <Button variant="secondary">{t.dashboard.manageMenu}</Button>
-        </Link>
-      </div>
 
       <QrCard
         publicUrl={publicUrl}
