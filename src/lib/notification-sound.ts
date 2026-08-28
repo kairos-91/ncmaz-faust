@@ -33,29 +33,33 @@ export function playNotificationChime() {
     compressor.connect(ctx.destination);
 
     const ring = (startAt: number) => {
+      // Frecuencias altas y caída rápida con un ligero deslizamiento hacia
+      // abajo en el tono — así suena como un "tilín" brillante y corto en
+      // vez de un zumbido largo.
       const partials: Array<[freq: number, peak: number, decay: number]> = [
-        [1800, 0.9, 1.3],
-        [3000, 0.55, 1.0],
-        [4500, 0.35, 0.7],
+        [3136, 0.9, 0.55],
+        [5000, 0.5, 0.35],
+        [7040, 0.3, 0.22],
       ];
       partials.forEach(([freq, peak, decay]) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = "sine";
-        osc.frequency.value = freq;
+        osc.frequency.setValueAtTime(freq, startAt);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.93, startAt + decay);
         gain.gain.setValueAtTime(0, startAt);
-        gain.gain.linearRampToValueAtTime(peak, startAt + 0.01);
+        gain.gain.linearRampToValueAtTime(peak, startAt + 0.005);
         gain.gain.exponentialRampToValueAtTime(0.001, startAt + decay);
         osc.connect(gain);
         gain.connect(compressor);
         osc.start(startAt);
-        osc.stop(startAt + decay + 0.1);
+        osc.stop(startAt + decay + 0.05);
       });
     };
 
     const now = ctx.currentTime;
     ring(now);
-    ring(now + 0.32);
+    ring(now + 0.24);
   } catch {
     // Web Audio bloqueado por el navegador — no interrumpe el resto del flujo.
   }
