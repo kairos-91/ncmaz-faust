@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s · Levery",
   },
   description:
-    "Crea el menú digital de tu restaurante en minutos: landing, código QR y panel de administración en un solo lugar.",
+    "Crea el menú digital de tu restaurante en minutos: tienda, código QR y panel de administración en un solo lugar.",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

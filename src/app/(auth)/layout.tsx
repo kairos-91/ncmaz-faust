@@ -25,7 +25,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           <ThemeToggle />
         </div>
         <Link href="/" className="mb-8">
-          <Logo height={40} />
+          <Logo height={56} />
         </Link>
         <div className="w-full max-w-sm rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           {children}

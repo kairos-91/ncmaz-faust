@@ -19,7 +19,7 @@ const es = {
     badge: "Menú digital para restaurantes",
     title: "El menú de tu restaurante, siempre actualizado.",
     description:
-      "Crea una landing y un menú digital con código QR en minutos. Edita platos y precios desde tu panel, sin reimprimir nada.",
+      "Crea una tienda y un menú digital con código QR en minutos. Edita platos y precios desde tu panel, sin reimprimir nada.",
     ctaPrimary: "Crea tu menú gratis",
     ctaSecondary: "Cómo funciona",
   },
