@@ -7,6 +7,7 @@ export type OrderItemSnapshot = {
   qty: number;
   unitPrice: number;
   extraNames: string[];
+  note?: string;
 };
 
 export const ORDER_TYPE_LABELS: Record<string, string> = {
@@ -35,6 +36,7 @@ export function parseOrderItems(json: Json | null | undefined): OrderItemSnapsho
       extraNames: Array.isArray(entry.extraNames)
         ? entry.extraNames.map((n) => String(n))
         : [],
+      note: typeof entry.note === "string" && entry.note ? entry.note : undefined,
     }));
 }
 

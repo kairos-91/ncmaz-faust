@@ -11,7 +11,7 @@ import type { DeliveryZone } from "@/lib/delivery-zones";
 import type { Category, MenuItem } from "@/lib/supabase/database.types";
 import { CheckoutFields } from "./checkout-fields";
 
-type CartLine = { itemId: string; extraNames: string[]; qty: number };
+type CartLine = { itemId: string; extraNames: string[]; qty: number; note?: string };
 type Cart = Record<string, CartLine>;
 
 function cartKey(itemId: string, extraNames: string[]) {
@@ -93,14 +93,23 @@ export function MenuView({
     setCart((prev) => {
       const next = { ...prev };
       if (qty <= 0) delete next[key];
-      else next[key] = { itemId, extraNames, qty };
+      else next[key] = { itemId, extraNames, qty, note: prev[key]?.note };
       return next;
+    });
+  };
+
+  const setLineNote = (itemId: string, extraNames: string[], note: string) => {
+    const key = cartKey(itemId, extraNames);
+    setCart((prev) => {
+      const existing = prev[key];
+      if (!existing) return prev;
+      return { ...prev, [key]: { ...existing, note: note || undefined } };
     });
   };
 
   const clearCart = () => setCart({});
 
-  const addLine = (itemId: string, extraNames: string[]) => {
+  const addLine = (itemId: string, extraNames: string[], note?: string) => {
     const key = cartKey(itemId, extraNames);
     setCart((prev) => ({
       ...prev,
@@ -108,6 +117,7 @@ export function MenuView({
         itemId,
         extraNames,
         qty: (prev[key]?.qty ?? 0) + 1,
+        note: note || prev[key]?.note,
       },
     }));
   };
@@ -117,10 +127,17 @@ export function MenuView({
       item: items.find((i) => i.id === line.itemId),
       qty: line.qty,
       extraNames: line.extraNames,
+      note: line.note,
     }))
     .filter(
-      (line): line is { item: MenuItem; qty: number; extraNames: string[] } =>
-        Boolean(line.item),
+      (
+        line,
+      ): line is {
+        item: MenuItem;
+        qty: number;
+        extraNames: string[];
+        note: string | undefined;
+      } => Boolean(line.item),
     );
 
   const lineUnitPrice = (item: MenuItem, extraNames: string[]) =>
@@ -213,6 +230,7 @@ export function MenuView({
                   .map((item) => {
                     const noExtrasQty =
                       cart[cartKey(item.id, [])]?.qty ?? 0;
+                    const noExtrasNote = cart[cartKey(item.id, [])]?.note ?? "";
                     const totalQty = Object.values(cart)
                       .filter((line) => line.itemId === item.id)
                       .reduce((sum, line) => sum + line.qty, 0);
@@ -224,12 +242,16 @@ export function MenuView({
                         themeColor={themeColor}
                         orderingEnabled={canOrder}
                         noExtrasQty={noExtrasQty}
+                        noExtrasNote={noExtrasNote}
                         totalQty={totalQty}
                         onNoExtrasQtyChange={(qty) =>
                           setLineQty(item.id, [], qty)
                         }
-                        onAddWithExtras={(extraNames) =>
-                          addLine(item.id, extraNames)
+                        onNoExtrasNoteChange={(note) =>
+                          setLineNote(item.id, [], note)
+                        }
+                        onAddWithExtras={(extraNames, note) =>
+                          addLine(item.id, extraNames, note)
                         }
                       />
                     );
@@ -285,8 +307,10 @@ function MenuItemCard({
   themeColor,
   orderingEnabled,
   noExtrasQty,
+  noExtrasNote,
   totalQty,
   onNoExtrasQtyChange,
+  onNoExtrasNoteChange,
   onAddWithExtras,
 }: {
   item: MenuItem;
@@ -294,14 +318,18 @@ function MenuItemCard({
   themeColor: string;
   orderingEnabled: boolean;
   noExtrasQty: number;
+  noExtrasNote: string;
   totalQty: number;
   onNoExtrasQtyChange: (qty: number) => void;
-  onAddWithExtras: (extraNames: string[]) => void;
+  onNoExtrasNoteChange: (note: string) => void;
+  onAddWithExtras: (extraNames: string[], note?: string) => void;
 }) {
   const extras = parseExtras(item.extras);
   const hasExtras = extras.length > 0;
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [pickerNote, setPickerNote] = useState("");
+  const [noteOpen, setNoteOpen] = useState(false);
 
   const toggleExtra = (name: string) => {
     setSelected((prev) =>
@@ -310,8 +338,9 @@ function MenuItemCard({
   };
 
   const confirmAdd = () => {
-    onAddWithExtras(selected);
+    onAddWithExtras(selected, pickerNote.trim() || undefined);
     setSelected([]);
+    setPickerNote("");
     setPickerOpen(false);
   };
 
@@ -360,28 +389,56 @@ function MenuItemCard({
             </div>
           )}
           {orderingEnabled && !hasExtras && (
-            <div className="mt-2 flex items-center gap-3">
-              {noExtrasQty === 0 ? (
-                <button
-                  type="button"
-                  onClick={() => onNoExtrasQtyChange(1)}
-                  className="rounded-full border px-3 py-1 text-xs font-medium"
-                  style={{ borderColor: themeColor, color: themeColor }}
-                >
-                  + Agregar
-                </button>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <QtyButton onClick={() => onNoExtrasQtyChange(noExtrasQty - 1)}>
-                    <Minus className="h-3.5 w-3.5" />
-                  </QtyButton>
-                  <span className="w-4 text-center text-sm font-medium text-neutral-900 dark:text-white">
-                    {noExtrasQty}
-                  </span>
-                  <QtyButton onClick={() => onNoExtrasQtyChange(noExtrasQty + 1)}>
-                    <Plus className="h-3.5 w-3.5" />
-                  </QtyButton>
-                </div>
+            <div className="mt-2">
+              <div className="flex items-center gap-3">
+                {noExtrasQty === 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => onNoExtrasQtyChange(1)}
+                    className="rounded-full border px-3 py-1 text-xs font-medium"
+                    style={{ borderColor: themeColor, color: themeColor }}
+                  >
+                    + Agregar
+                  </button>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <QtyButton onClick={() => onNoExtrasQtyChange(noExtrasQty - 1)}>
+                        <Minus className="h-3.5 w-3.5" />
+                      </QtyButton>
+                      <span className="w-4 text-center text-sm font-medium text-neutral-900 dark:text-white">
+                        {noExtrasQty}
+                      </span>
+                      <QtyButton onClick={() => onNoExtrasQtyChange(noExtrasQty + 1)}>
+                        <Plus className="h-3.5 w-3.5" />
+                      </QtyButton>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setNoteOpen((v) => !v)}
+                      className="text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
+                    >
+                      {noExtrasNote ? "📝 Editar nota" : "📝 Agregar nota"}
+                    </button>
+                  </>
+                )}
+              </div>
+              {noExtrasQty > 0 && noteOpen && (
+                <textarea
+                  autoFocus
+                  value={noExtrasNote}
+                  onChange={(e) => onNoExtrasNoteChange(e.target.value)}
+                  onBlur={() => setNoteOpen(false)}
+                  maxLength={140}
+                  rows={2}
+                  placeholder="Ej: sin cebolla, término medio..."
+                  className="mt-2 w-full rounded-lg border border-neutral-200 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                />
+              )}
+              {noExtrasQty > 0 && !noteOpen && noExtrasNote && (
+                <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                  📝 {noExtrasNote}
+                </p>
               )}
             </div>
           )}
@@ -433,11 +490,25 @@ function MenuItemCard({
               </label>
             ))}
           </div>
+          <div>
+            <p className="mb-1 text-xs font-medium text-neutral-700 dark:text-neutral-300">
+              Nota (opcional)
+            </p>
+            <textarea
+              value={pickerNote}
+              onChange={(e) => setPickerNote(e.target.value)}
+              maxLength={140}
+              rows={2}
+              placeholder="Ej: sin cebolla, término medio..."
+              className="w-full rounded-lg border border-neutral-200 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+            />
+          </div>
           <div className="flex items-center justify-between gap-2 pt-1">
             <button
               type="button"
               onClick={() => {
                 setSelected([]);
+                setPickerNote("");
                 setPickerOpen(false);
               }}
               className="text-xs font-medium text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-white"
@@ -495,7 +566,7 @@ function CartSheet({
   onClose,
   onOrderPlaced,
 }: {
-  lines: { item: MenuItem; qty: number; extraNames: string[] }[];
+  lines: { item: MenuItem; qty: number; extraNames: string[]; note?: string }[];
   currency: string;
   themeColor: string;
   restaurantId: string;
@@ -540,7 +611,7 @@ function CartSheet({
               </p>
             ) : (
               <div className="space-y-3">
-                {lines.map(({ item, qty, extraNames }) => (
+                {lines.map(({ item, qty, extraNames, note }) => (
                   <div
                     key={`${item.id}::${extraNames.join("|")}`}
                     className="flex items-center justify-between gap-3"
@@ -552,6 +623,11 @@ function CartSheet({
                       {extraNames.length > 0 && (
                         <p className="truncate text-xs text-neutral-500 dark:text-neutral-500">
                           + {extraNames.join(", ")}
+                        </p>
+                      )}
+                      {note && (
+                        <p className="truncate text-xs text-neutral-500 dark:text-neutral-500">
+                          📝 {note}
                         </p>
                       )}
                       <p className="text-xs text-neutral-600 dark:text-neutral-400">

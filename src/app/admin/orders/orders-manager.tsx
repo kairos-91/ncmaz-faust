@@ -276,22 +276,26 @@ function OrderCard({
         </p>
         <ul className="mt-1 space-y-1">
           {items.map((line, i) => (
-            <li
-              key={i}
-              className="flex items-start justify-between gap-3 text-sm text-neutral-700 dark:text-neutral-300"
-            >
-              <span>
-                {line.qty}x {line.name}
-                {line.extraNames.length > 0 && (
-                  <span className="text-neutral-500 dark:text-neutral-500">
-                    {" "}
-                    (+ {line.extraNames.join(", ")})
-                  </span>
-                )}
-              </span>
-              <span className="shrink-0 font-medium text-neutral-900 dark:text-white">
-                {formatPrice(line.unitPrice * line.qty, currency)}
-              </span>
+            <li key={i} className="text-sm text-neutral-700 dark:text-neutral-300">
+              <div className="flex items-start justify-between gap-3">
+                <span>
+                  {line.qty}x {line.name}
+                  {line.extraNames.length > 0 && (
+                    <span className="text-neutral-500 dark:text-neutral-500">
+                      {" "}
+                      (+ {line.extraNames.join(", ")})
+                    </span>
+                  )}
+                </span>
+                <span className="shrink-0 font-medium text-neutral-900 dark:text-white">
+                  {formatPrice(line.unitPrice * line.qty, currency)}
+                </span>
+              </div>
+              {line.note && (
+                <p className="text-xs text-neutral-500 dark:text-neutral-500">
+                  📝 {line.note}
+                </p>
+              )}
             </li>
           ))}
         </ul>
