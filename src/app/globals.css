@@ -6,3 +6,10 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
+html {
+  /* Tailwind usa rem para tamaños de texto y espaciados; subir el
+     tamaño base agranda todo el sitio de forma proporcional (texto,
+     paddings, íconos) sin tocar cada clase una por una. */
+  font-size: 17.5px;
+}
