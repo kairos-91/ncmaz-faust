@@ -58,7 +58,7 @@ export function PwaActions({
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
     navigator.serviceWorker
-      .register(`/r/${slug}/sw.js`, { scope: `/r/${slug}/` })
+      .register(`/r/${slug}/sw.js`, { scope: `/r/${slug}` })
       .catch(() => {});
 
     const onBeforeInstall = (e: Event) => {
@@ -99,7 +99,12 @@ export function PwaActions({
         setNotifState(permission === "denied" ? "denied" : "default");
         return;
       }
-      const registration = await navigator.serviceWorker.ready;
+      const registration = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Tiempo de espera agotado")), 8000),
+        ),
+      ]);
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapidKey),
