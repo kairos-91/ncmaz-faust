@@ -3,6 +3,23 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  Home,
+  BarChart3,
+  TrendingUp,
+  Users,
+  Store,
+  Tags,
+  UtensilsCrossed,
+  ClipboardList,
+  Star,
+  Ticket,
+  Bell,
+  UserPlus,
+  CreditCard,
+  Sparkles,
+  ShieldCheck,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "./actions";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -137,25 +154,31 @@ export function AdminNav({
   }, [restaurantId]);
 
   const allLinks = [
-    { href: "/admin", label: t.summary, badge: pendingOrders, ownerOnly: true },
-    { href: "/admin/analytics", label: t.analytics, ownerOnly: true },
-    { href: "/admin/sales", label: t.sales, ownerOnly: true },
-    { href: "/admin/customers", label: t.customers, ownerOnly: true },
-    { href: "/admin/restaurant", label: t.myRestaurant, ownerOnly: true },
-    { href: "/admin/categories", label: t.categories, ownerOnly: false },
-    { href: "/admin/menu", label: t.menu, ownerOnly: false },
+    { href: "/admin", label: t.summary, icon: Home, badge: pendingOrders, ownerOnly: true },
+    { href: "/admin/analytics", label: t.analytics, icon: BarChart3, ownerOnly: true },
+    { href: "/admin/sales", label: t.sales, icon: TrendingUp, ownerOnly: true },
+    { href: "/admin/customers", label: t.customers, icon: Users, ownerOnly: true },
+    { href: "/admin/restaurant", label: t.myRestaurant, icon: Store, ownerOnly: true },
+    { href: "/admin/categories", label: t.categories, icon: Tags, ownerOnly: false },
+    { href: "/admin/menu", label: t.menu, icon: UtensilsCrossed, ownerOnly: false },
     {
       href: "/admin/orders",
       label: t.orders,
+      icon: ClipboardList,
       badge: pendingOrders,
       ownerOnly: false,
     },
-    { href: "/admin/reviews", label: t.reviews, ownerOnly: true },
-    { href: "/admin/coupons", label: t.coupons, ownerOnly: true },
-    { href: "/admin/notifications", label: t.notifications, ownerOnly: true },
-    { href: "/admin/team", label: t.team, ownerOnly: true },
-    { href: "/admin/payment-methods", label: t.paymentMethods, ownerOnly: true },
-    { href: "/admin/subscription", label: t.subscription, ownerOnly: true },
+    { href: "/admin/reviews", label: t.reviews, icon: Star, ownerOnly: true },
+    { href: "/admin/coupons", label: t.coupons, icon: Ticket, ownerOnly: true },
+    { href: "/admin/notifications", label: t.notifications, icon: Bell, ownerOnly: true },
+    { href: "/admin/team", label: t.team, icon: UserPlus, ownerOnly: true },
+    {
+      href: "/admin/payment-methods",
+      label: t.paymentMethods,
+      icon: CreditCard,
+      ownerOnly: true,
+    },
+    { href: "/admin/subscription", label: t.subscription, icon: Sparkles, ownerOnly: true },
   ];
   const links = allLinks.filter((link) => !isStaff || !link.ownerOnly);
 
@@ -184,6 +207,7 @@ export function AdminNav({
                   "bg-neutral-900 text-white hover:bg-neutral-900 dark:bg-white dark:text-neutral-900 dark:hover:bg-white",
               )}
             >
+              <link.icon className="h-4 w-4 shrink-0" />
               {link.label}
               {!!link.badge && (
                 <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-semibold text-white">
@@ -195,8 +219,9 @@ export function AdminNav({
           {isSuperadmin(email) && (
             <Link
               href="/superadmin"
-              className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-lime-700 hover:bg-lime-50 dark:text-lime-400 dark:hover:bg-lime-400/10"
+              className="flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-lime-700 hover:bg-lime-50 dark:text-lime-400 dark:hover:bg-lime-400/10"
             >
+              <ShieldCheck className="h-4 w-4 shrink-0" />
               {t.superadminPanel}
             </Link>
           )}
