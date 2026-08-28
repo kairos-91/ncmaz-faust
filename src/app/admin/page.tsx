@@ -111,7 +111,8 @@ export default async function AdminDashboardPage() {
         currency={restaurant.currency}
         dailyTitle={t.salesPage.dailyChartTitle}
         monthlyTitle={t.salesPage.monthlyChartTitle}
-        ordersCount={t.salesPage.ordersCount}
+        orderSingular={t.salesPage.orderSingular}
+        orderPlural={t.salesPage.orderPlural}
       />
 
       <div className="flex flex-wrap gap-3">

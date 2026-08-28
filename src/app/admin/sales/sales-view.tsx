@@ -108,7 +108,8 @@ export function SalesView({
         currency={currency}
         dailyTitle={t.dailyChartTitle}
         monthlyTitle={t.monthlyChartTitle}
-        ordersCount={t.ordersCount}
+        orderSingular={t.orderSingular}
+        orderPlural={t.orderPlural}
       />
 
       <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">

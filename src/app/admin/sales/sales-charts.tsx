@@ -44,12 +44,15 @@ function dayTooltipLabel(day: string) {
   });
 }
 
+// Sin notation:"compact": Node (SSR) y Chromium (cliente) formatean números
+// compactos con ICU distinto (ej. "USD 0,0" vs "USD 0" para 0), lo que
+// provoca un error de hidratación. El formato agrupado simple sí coincide
+// byte a byte entre servidor y navegador.
 function compactCurrency(value: number, currency: string) {
   return new Intl.NumberFormat("es-VE", {
     style: "currency",
     currency,
-    notation: "compact",
-    maximumFractionDigits: 1,
+    maximumFractionDigits: 0,
   }).format(value);
 }
 
@@ -79,11 +82,13 @@ function ChartCard({
 export function DailySalesChart({
   data,
   currency,
-  ordersCount,
+  orderSingular,
+  orderPlural,
 }: {
   data: DailySales[];
   currency: string;
-  ordersCount: (n: number) => string;
+  orderSingular: string;
+  orderPlural: string;
 }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const maxValue = Math.max(0, ...data.map((d) => d.total));
@@ -182,7 +187,8 @@ export function DailySalesChart({
             {formatPrice(active.total, currency)}
           </p>
           <p className="text-neutral-500 dark:text-neutral-400">
-            {dayTooltipLabel(active.day)} · {ordersCount(active.count)}
+            {dayTooltipLabel(active.day)} · {active.count}{" "}
+            {active.count === 1 ? orderSingular : orderPlural}
           </p>
         </div>
       )}
@@ -336,19 +342,26 @@ export function SalesCharts({
   currency,
   dailyTitle,
   monthlyTitle,
-  ordersCount,
+  orderSingular,
+  orderPlural,
 }: {
   daily: DailySales[];
   monthly: MonthlySales[];
   currency: string;
   dailyTitle: string;
   monthlyTitle: string;
-  ordersCount: (n: number) => string;
+  orderSingular: string;
+  orderPlural: string;
 }) {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <ChartCard title={dailyTitle}>
-        <DailySalesChart data={daily} currency={currency} ordersCount={ordersCount} />
+        <DailySalesChart
+          data={daily}
+          currency={currency}
+          orderSingular={orderSingular}
+          orderPlural={orderPlural}
+        />
       </ChartCard>
       <ChartCard title={monthlyTitle}>
         <MonthlySalesChart data={monthly} currency={currency} />
