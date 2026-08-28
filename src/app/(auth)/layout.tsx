@@ -19,16 +19,14 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         <p className="mt-4 max-w-sm text-neutral-300">{t.hero.description}</p>
       </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center bg-neutral-50 px-4 py-12 dark:bg-neutral-950">
-        <div className="mb-8 flex w-full max-w-sm items-center justify-between">
-          <Link href="/">
-            <Logo height={40} />
-          </Link>
-          <div className="flex items-center gap-1">
-            <LanguageToggle locale={locale} />
-            <ThemeToggle />
-          </div>
+      <div className="relative flex flex-1 flex-col items-center justify-center bg-neutral-50 px-4 py-12 dark:bg-neutral-950">
+        <div className="fixed right-4 top-4 flex items-center gap-1 md:right-8 md:top-8">
+          <LanguageToggle locale={locale} />
+          <ThemeToggle />
         </div>
+        <Link href="/" className="mb-8">
+          <Logo height={40} />
+        </Link>
         <div className="w-full max-w-sm rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           {children}
         </div>
