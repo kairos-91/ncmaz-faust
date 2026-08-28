@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isSuperadmin } from "@/lib/superadmin";
 import { getT } from "@/lib/i18n/locale";
 import { SuperadminNav } from "./superadmin-nav";
+import { SuperadminTopBar } from "./superadmin-topbar";
 
 export default async function SuperadminLayout({
   children,
@@ -23,16 +24,14 @@ export default async function SuperadminLayout({
     .eq("status", "pending");
 
   return (
-    <div className="flex min-h-screen flex-1 flex-col bg-neutral-50 dark:bg-neutral-950 md:flex-row">
-      <SuperadminNav
-        email={user.email ?? null}
-        locale={locale}
-        t={t.superadminNav}
-        pendingPayments={count ?? 0}
-      />
-      <main className="flex-1 px-4 py-8 md:px-10">
-        <div className="mx-auto max-w-4xl">{children}</div>
-      </main>
+    <div className="flex min-h-screen flex-1 flex-col bg-neutral-50 dark:bg-neutral-950">
+      <SuperadminTopBar email={user.email ?? null} locale={locale} t={t.superadminNav} />
+      <div className="flex flex-1 flex-col md:flex-row">
+        <SuperadminNav t={t.superadminNav} pendingPayments={count ?? 0} />
+        <main className="flex-1 px-4 py-8 md:px-10">
+          <div className="mx-auto max-w-4xl">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }

@@ -625,8 +625,7 @@ const es = {
     plans: "Planes",
     paymentMethods: "Métodos de pago",
     badge: "Superadmin",
-    backToRestaurant: "← Volver a mi restaurante",
-    theme: "Tema",
+    backToRestaurant: "Volver a mi restaurante",
     logout: "Cerrar sesión",
   },
   superadminRestaurantsPage: {
@@ -1323,8 +1322,7 @@ const en: typeof es = {
     plans: "Plans",
     paymentMethods: "Payment methods",
     badge: "Superadmin",
-    backToRestaurant: "← Back to my restaurant",
-    theme: "Theme",
+    backToRestaurant: "Back to my restaurant",
     logout: "Log out",
   },
   superadminRestaurantsPage: {
