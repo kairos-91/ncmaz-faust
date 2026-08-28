@@ -21,25 +21,20 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { signOut } from "./actions";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { LanguageToggle } from "@/components/language-toggle";
 import { Logo } from "@/components/logo";
 import { isSuperadmin } from "@/lib/superadmin";
 import { createClient } from "@/lib/supabase/client";
 import { playNotificationChime, unlockNotificationSound } from "@/lib/notification-sound";
-import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 export function AdminNav({
   email,
-  locale,
   t,
   pendingOrders: initialPendingOrders = 0,
   isStaff = false,
   restaurantId = null,
 }: {
   email: string | null;
-  locale: Locale;
   t: Dictionary["adminNav"];
   pendingOrders?: number;
   isStaff?: boolean;
@@ -185,16 +180,10 @@ export function AdminNav({
   return (
     <aside className="flex w-full shrink-0 flex-col border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 md:h-screen md:w-56 md:border-r md:sticky md:top-0">
       <div className="md:flex md:min-h-0 md:flex-1 md:flex-col">
-        <div className="flex items-center justify-between px-5 py-5 md:block md:shrink-0">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <Logo height={36} />
-            </Link>
-            <div className="flex items-center gap-1 md:hidden">
-              <LanguageToggle locale={locale} />
-              <ThemeToggle />
-            </div>
-          </div>
+        <div className="px-5 py-5 md:shrink-0">
+          <Link href="/">
+            <Logo height={36} />
+          </Link>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-2 md:flex-1 md:flex-col md:overflow-y-auto md:pb-2">
           {links.map((link) => (
@@ -227,34 +216,14 @@ export function AdminNav({
           )}
         </nav>
       </div>
-      <div className="shrink-0 border-t border-neutral-100 px-5 py-4 dark:border-neutral-800">
-        {realtimeOffline && (
-          <p className="mb-2 flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
+      {realtimeOffline && (
+        <div className="shrink-0 border-t border-neutral-100 px-5 py-3 dark:border-neutral-800">
+          <p className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
             {t.realtimeOffline}
           </p>
-        )}
-        <div className="mb-2 hidden items-center justify-between md:flex">
-          <span className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
-            {t.theme}
-          </span>
-          <div className="flex items-center gap-1">
-            <LanguageToggle locale={locale} />
-            <ThemeToggle />
-          </div>
         </div>
-        <p className="mb-2 truncate text-xs text-neutral-600 dark:text-neutral-500">
-          {email}
-        </p>
-        <form action={signOut}>
-          <button
-            type="submit"
-            className="text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-          >
-            {t.logout}
-          </button>
-        </form>
-      </div>
+      )}
     </aside>
   );
 }

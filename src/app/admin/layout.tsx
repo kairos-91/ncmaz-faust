@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { getT } from "@/lib/i18n/locale";
 import { AdminNav } from "./admin-nav";
+import { AdminTopBar } from "./admin-topbar";
 
 export default async function AdminLayout({
   children,
@@ -25,18 +26,20 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-1 flex-col bg-neutral-50 dark:bg-neutral-950 md:flex-row">
-      <AdminNav
-        email={userEmail}
-        locale={locale}
-        t={t.adminNav}
-        pendingOrders={pendingOrders}
-        isStaff={role === "staff"}
-        restaurantId={restaurant?.id ?? null}
-      />
-      <main className="flex-1 px-4 py-8 md:px-10">
-        <div className="mx-auto max-w-6xl">{children}</div>
-      </main>
+    <div className="flex min-h-screen flex-1 flex-col bg-neutral-50 dark:bg-neutral-950">
+      <AdminTopBar email={userEmail} locale={locale} t={t.adminNav} />
+      <div className="flex flex-1 flex-col md:flex-row">
+        <AdminNav
+          email={userEmail}
+          t={t.adminNav}
+          pendingOrders={pendingOrders}
+          isStaff={role === "staff"}
+          restaurantId={restaurant?.id ?? null}
+        />
+        <main className="flex-1 px-4 py-8 md:px-10">
+          <div className="mx-auto max-w-6xl">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }
