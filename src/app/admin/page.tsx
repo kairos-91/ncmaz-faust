@@ -4,12 +4,19 @@ import { redirect } from "next/navigation";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
-import { computeSalesSummary } from "@/lib/sales";
+import {
+  computeSalesSummary,
+  groupSalesByDay,
+  groupSalesByMonth,
+  lastNDays,
+  lastNMonths,
+} from "@/lib/sales";
 import { formatPrice } from "@/lib/utils";
 import { createRestaurant } from "./actions";
 import { RestaurantForm } from "./restaurant/restaurant-form";
 import { QrCard } from "./qr-card";
 import { Button } from "@/components/ui/button";
+import { SalesCharts } from "./sales/sales-charts";
 
 export const metadata: Metadata = { title: "Resumen" };
 
@@ -54,6 +61,8 @@ export default async function AdminDashboardPage() {
     ]);
 
   const sales = computeSalesSummary(orders ?? []);
+  const dailyChart = lastNDays(groupSalesByDay(orders ?? []), new Date(), 30);
+  const monthlyChart = lastNMonths(groupSalesByMonth(orders ?? []), new Date(), 12);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const publicUrl = `${siteUrl}/r/${restaurant.slug}`;
@@ -95,6 +104,15 @@ export default async function AdminDashboardPage() {
           />
         </div>
       </div>
+
+      <SalesCharts
+        daily={dailyChart}
+        monthly={monthlyChart}
+        currency={restaurant.currency}
+        dailyTitle={t.salesPage.dailyChartTitle}
+        monthlyTitle={t.salesPage.monthlyChartTitle}
+        ordersCount={t.salesPage.ordersCount}
+      />
 
       <div className="flex flex-wrap gap-3">
         <Link href="/admin/sales">
