@@ -98,6 +98,8 @@ export function MenuView({
     });
   };
 
+  const clearCart = () => setCart({});
+
   const addLine = (itemId: string, extraNames: string[]) => {
     const key = cartKey(itemId, extraNames);
     setCart((prev) => ({
@@ -270,6 +272,7 @@ export function MenuView({
             setLineQty(itemId, extraNames, qty)
           }
           onClose={() => setCartOpen(false)}
+          onOrderPlaced={clearCart}
         />
       )}
     </div>
@@ -490,6 +493,7 @@ function CartSheet({
   deliveryZones,
   onQtyChange,
   onClose,
+  onOrderPlaced,
 }: {
   lines: { item: MenuItem; qty: number; extraNames: string[] }[];
   currency: string;
@@ -502,7 +506,9 @@ function CartSheet({
   deliveryZones: DeliveryZone[];
   onQtyChange: (itemId: string, extraNames: string[], qty: number) => void;
   onClose: () => void;
+  onOrderPlaced: () => void;
 }) {
+  const [justPlacedOrder, setJustPlacedOrder] = useState(false);
   const unitPrice = (item: MenuItem, extraNames: string[]) =>
     item.price + extrasTotal(parseExtras(item.extras), extraNames);
   const total = lines.reduce(
@@ -526,60 +532,64 @@ function CartSheet({
           </button>
         </div>
 
-        {lines.length === 0 ? (
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            Tu pedido está vacío.
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {lines.map(({ item, qty, extraNames }) => (
-              <div
-                key={`${item.id}::${extraNames.join("|")}`}
-                className="flex items-center justify-between gap-3"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-neutral-900 dark:text-white">
-                    {item.name}
-                  </p>
-                  {extraNames.length > 0 && (
-                    <p className="truncate text-xs text-neutral-500 dark:text-neutral-500">
-                      + {extraNames.join(", ")}
-                    </p>
-                  )}
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                    {formatPrice(unitPrice(item, extraNames), currency)} c/u
-                  </p>
-                </div>
-                <div className="flex shrink-0 items-center gap-3">
-                  <QtyButton
-                    onClick={() => onQtyChange(item.id, extraNames, qty - 1)}
+        {!justPlacedOrder && (
+          <>
+            {lines.length === 0 ? (
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                Tu pedido está vacío.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {lines.map(({ item, qty, extraNames }) => (
+                  <div
+                    key={`${item.id}::${extraNames.join("|")}`}
+                    className="flex items-center justify-between gap-3"
                   >
-                    <Minus className="h-3.5 w-3.5" />
-                  </QtyButton>
-                  <span className="w-4 text-center text-sm font-medium text-neutral-900 dark:text-white">
-                    {qty}
-                  </span>
-                  <QtyButton
-                    onClick={() => onQtyChange(item.id, extraNames, qty + 1)}
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                  </QtyButton>
-                </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-neutral-900 dark:text-white">
+                        {item.name}
+                      </p>
+                      {extraNames.length > 0 && (
+                        <p className="truncate text-xs text-neutral-500 dark:text-neutral-500">
+                          + {extraNames.join(", ")}
+                        </p>
+                      )}
+                      <p className="text-xs text-neutral-600 dark:text-neutral-400">
+                        {formatPrice(unitPrice(item, extraNames), currency)} c/u
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <QtyButton
+                        onClick={() => onQtyChange(item.id, extraNames, qty - 1)}
+                      >
+                        <Minus className="h-3.5 w-3.5" />
+                      </QtyButton>
+                      <span className="w-4 text-center text-sm font-medium text-neutral-900 dark:text-white">
+                        {qty}
+                      </span>
+                      <QtyButton
+                        onClick={() => onQtyChange(item.id, extraNames, qty + 1)}
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </QtyButton>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+
+            <div className="mt-5 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-neutral-800">
+              <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                Total
+              </span>
+              <span className="text-lg font-semibold text-neutral-900 dark:text-white">
+                {formatPrice(total, currency)}
+              </span>
+            </div>
+          </>
         )}
 
-        <div className="mt-5 flex items-center justify-between border-t border-neutral-100 pt-4 dark:border-neutral-800">
-          <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-            Total
-          </span>
-          <span className="text-lg font-semibold text-neutral-900 dark:text-white">
-            {formatPrice(total, currency)}
-          </span>
-        </div>
-
-        {lines.length > 0 && (
+        {(lines.length > 0 || justPlacedOrder) && (
           <CheckoutFields
             restaurantId={restaurantId}
             restaurantName={restaurantName}
@@ -591,6 +601,10 @@ function CartSheet({
             paymentMethods={paymentMethods}
             bcvRate={bcvRate}
             deliveryZones={deliveryZones}
+            onOrderPlaced={() => {
+              setJustPlacedOrder(true);
+              onOrderPlaced();
+            }}
           />
         )}
       </div>

@@ -53,6 +53,7 @@ export function CheckoutFields({
   paymentMethods,
   bcvRate,
   deliveryZones,
+  onOrderPlaced,
 }: {
   restaurantId: string;
   restaurantName: string;
@@ -64,6 +65,7 @@ export function CheckoutFields({
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
   deliveryZones: DeliveryZone[];
+  onOrderPlaced: () => void;
 }) {
   const [orderType, setOrderType] = useState<OrderType | null>(null);
   const [customerName, setCustomerName] = useState("");
@@ -75,6 +77,7 @@ export function CheckoutFields({
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [placedWhatsappHref, setPlacedWhatsappHref] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
     bankPaidFrom: "",
     reference: "",
@@ -262,7 +265,7 @@ export function CheckoutFields({
           </p>
         </div>
         <a
-          href={whatsappHref}
+          href={placedWhatsappHref ?? "#"}
           target="_blank"
           rel="noopener noreferrer"
           className="flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white"
@@ -529,7 +532,9 @@ export function CheckoutFields({
               receiptUrl: receiptUrl ?? undefined,
             });
             setSending(false);
+            setPlacedWhatsappHref(whatsappHref);
             setOrderPlaced(true);
+            onOrderPlaced();
           }}
           className="flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
           style={{ backgroundColor: themeColor }}
