@@ -15,9 +15,9 @@ export function AdminTopBar({
   t: Dictionary["adminNav"];
 }) {
   return (
-    <header className="flex items-center justify-between gap-3 border-b border-neutral-200 bg-white px-4 py-2.5 dark:border-neutral-800 dark:bg-neutral-900 md:px-10">
+    <header className="flex h-16 items-center justify-between gap-3 border-b border-neutral-200 bg-white px-4 dark:border-neutral-800 dark:bg-neutral-900 md:px-10">
       <Link href="/">
-        <Logo height={32} />
+        <Logo height={44} />
       </Link>
       <div className="flex items-center gap-3">
         {email && (
