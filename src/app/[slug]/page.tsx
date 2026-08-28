@@ -249,7 +249,7 @@ export default async function PublicMenuPage({
           )}
           <div className="mt-2">
             <details className="group">
-                <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-1.5 text-xs">
+                <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-2 text-xs">
                   {hasOpeningHours && (
                     <span
                       className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${
@@ -261,11 +261,25 @@ export default async function PublicMenuPage({
                       ● {openNow ? "Abierto ahora" : "Cerrado ahora"}
                     </span>
                   )}
-                  <span className="text-neutral-500 underline-offset-2 group-open:hidden dark:text-neutral-500">
-                    Más información
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-semibold group-open:hidden"
+                    style={{
+                      borderColor: restaurant.theme_color,
+                      color: restaurant.theme_color,
+                      backgroundColor: `${restaurant.theme_color}1A`,
+                    }}
+                  >
+                    ℹ️ Más información
                   </span>
-                  <span className="hidden text-neutral-500 group-open:inline dark:text-neutral-500">
-                    Ocultar información
+                  <span
+                    className="hidden items-center gap-1 rounded-full border px-3 py-1 text-sm font-semibold group-open:inline-flex"
+                    style={{
+                      borderColor: restaurant.theme_color,
+                      color: restaurant.theme_color,
+                      backgroundColor: `${restaurant.theme_color}1A`,
+                    }}
+                  >
+                    ℹ️ Ocultar información
                   </span>
                 </summary>
 
