@@ -29,7 +29,7 @@ export default async function Home() {
     <>
       <SiteHeader />
       <main className="flex-1">
-        <section className="relative overflow-hidden bg-neutral-50 dark:bg-neutral-950">
+        <section className="relative min-h-[560px] overflow-hidden bg-neutral-50 dark:bg-neutral-950 md:min-h-[680px]">
           <div className="absolute inset-0">
             <Image
               src="/hero-banner.jpg"
@@ -41,7 +41,7 @@ export default async function Home() {
             <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40 dark:from-neutral-950 dark:via-neutral-950/90 dark:to-neutral-950/50" />
           </div>
 
-          <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
+          <div className="relative mx-auto flex h-full max-w-6xl flex-col justify-center px-4 py-16 sm:px-6 md:py-20">
             <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
               {t.hero.badge}
             </span>
@@ -75,7 +75,7 @@ export default async function Home() {
 
         <section
           id="how-it-works"
-          className="bg-white pb-20 pt-12 text-neutral-900 dark:bg-black dark:text-white md:pt-14"
+          className="bg-white pb-20 pt-16 text-neutral-900 dark:bg-black dark:text-white md:pt-24"
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="text-center">
