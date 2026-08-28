@@ -208,7 +208,7 @@ export default async function PublicMenuPage({
       </div>
 
       <div className="relative mx-auto max-w-2xl px-4">
-        <div className="relative z-10 -mt-10 flex items-end gap-4">
+        <div className="relative z-10 -mt-10 flex items-end justify-center gap-4">
           <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-neutral-50 bg-white shadow-sm dark:border-neutral-950 dark:bg-neutral-900">
             {restaurant.logo_url ? (
               <Image
@@ -230,12 +230,12 @@ export default async function PublicMenuPage({
           </div>
         </div>
 
-        <div className="mt-3">
+        <div className="mt-3 text-center">
           <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
             {restaurant.name}
           </h1>
           {avgRating !== null && (
-            <p className="mt-1 flex w-fit items-center gap-1 text-sm text-neutral-600 dark:text-neutral-400">
+            <p className="mx-auto mt-1 flex w-fit items-center gap-1 text-sm text-neutral-600 dark:text-neutral-400">
               <span className="text-amber-400">★</span>
               <span className="font-medium text-neutral-900 dark:text-white">
                 {avgRating}
@@ -249,7 +249,7 @@ export default async function PublicMenuPage({
           )}
           <div className="mt-2">
             <details className="group">
-                <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 text-xs">
+                <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-1.5 text-xs">
                   {hasOpeningHours && (
                     <span
                       className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${
