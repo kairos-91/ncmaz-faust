@@ -159,7 +159,9 @@ function StatCard({
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
       <p className="text-2xl font-semibold">{value}</p>
       {subValue && (
-        <p className="text-xs text-neutral-500 dark:text-neutral-500">{subValue}</p>
+        <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+          {subValue}
+        </p>
       )}
       <p className="text-sm text-neutral-600 dark:text-neutral-400">{label}</p>
     </div>
