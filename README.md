@@ -176,8 +176,13 @@ o recíbelo como prop `t` (client) donde lo necesites.
    - `supabase/migrations/0021_reviews_admin_only.sql` — quita la
      política que permitía leer las reseñas públicamente: ahora solo el
      dueño las ve (en `/admin/reviews`). El menú público ya no muestra el
-     listado ni el promedio de calificación, solo el botón para dejar una
-     reseña nueva.
+     listado, solo el botón para dejar una reseña nueva.
+   - `supabase/migrations/0022_public_restaurant_rating.sql` — función
+     `restaurant_rating(uuid)` (security definer, igual que
+     `is_restaurant_owner`) que calcula el promedio y la cantidad de
+     reseñas visibles sin exponer las filas individuales; se usa para
+     mostrar "★ 4.8" junto al nombre del restaurante en el menú público
+     sin depender de la política de lectura pública que se quitó en 0021.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

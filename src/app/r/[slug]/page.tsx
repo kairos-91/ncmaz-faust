@@ -54,24 +54,27 @@ async function getRestaurant(slug: string) {
     .maybeSingle();
   if (!restaurant) return null;
 
-  const [{ data: categories }, { data: items }] = await Promise.all([
-    supabase
-      .from("categories")
-      .select("*")
-      .eq("restaurant_id", restaurant.id)
-      .order("sort_order"),
-    supabase
-      .from("menu_items")
-      .select("*")
-      .eq("restaurant_id", restaurant.id)
-      .eq("is_available", true)
-      .order("sort_order"),
-  ]);
+  const [{ data: categories }, { data: items }, { data: ratingRows }] =
+    await Promise.all([
+      supabase
+        .from("categories")
+        .select("*")
+        .eq("restaurant_id", restaurant.id)
+        .order("sort_order"),
+      supabase
+        .from("menu_items")
+        .select("*")
+        .eq("restaurant_id", restaurant.id)
+        .eq("is_available", true)
+        .order("sort_order"),
+      supabase.rpc("restaurant_rating", { p_restaurant_id: restaurant.id }),
+    ]);
 
   return {
     restaurant,
     categories: categories ?? [],
     items: items ?? [],
+    avgRating: ratingRows?.[0]?.avg_rating ?? null,
   };
 }
 
@@ -108,7 +111,7 @@ export default async function PublicMenuPage({
   const data = await getRestaurant(slug);
   if (!data) notFound();
 
-  const { restaurant, categories, items } = data;
+  const { restaurant, categories, items, avgRating } = data;
 
   const isSubscriptionExpired =
     restaurant.plan_expires_at !== null &&
@@ -231,6 +234,14 @@ export default async function PublicMenuPage({
           <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
             {restaurant.name}
           </h1>
+          {avgRating !== null && (
+            <p className="mt-1 flex w-fit items-center gap-1 text-sm text-neutral-600 dark:text-neutral-400">
+              <span className="text-amber-400">★</span>
+              <span className="font-medium text-neutral-900 dark:text-white">
+                {avgRating}
+              </span>
+            </p>
+          )}
           {restaurant.description && (
             <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
               {restaurant.description}

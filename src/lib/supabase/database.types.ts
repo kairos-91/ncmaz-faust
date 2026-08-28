@@ -505,6 +505,10 @@ export interface Database {
         Args: { p_restaurant_id: string; p_email: string };
         Returns: undefined;
       };
+      restaurant_rating: {
+        Args: { p_restaurant_id: string };
+        Returns: { avg_rating: number | null; review_count: number }[];
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
