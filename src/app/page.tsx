@@ -14,6 +14,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { PricingPlans } from "@/components/pricing-plans";
 import { FaqSection } from "@/components/faq-section";
 import { TestimonialsSection } from "@/components/testimonials-section";
+import { WhatsAppFloatingButton } from "@/components/whatsapp-floating-button";
 import { getT } from "@/lib/i18n/locale";
 
 const STEP_ICONS = [Store, Palette, UtensilsCrossed, MessageCircle, QrCode, RefreshCw];
@@ -135,6 +136,10 @@ export default async function Home() {
         </section>
       </main>
       <SiteFooter />
+      <WhatsAppFloatingButton
+        ariaLabel={t.floatingWhatsapp.ariaLabel}
+        message={t.floatingWhatsapp.message}
+      />
     </>
   );
 }

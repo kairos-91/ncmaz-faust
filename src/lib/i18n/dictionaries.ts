@@ -15,6 +15,10 @@ const es = {
     login: "Inicia sesión",
     startFree: "Empieza gratis",
   },
+  floatingWhatsapp: {
+    ariaLabel: "Chatea con nosotros por WhatsApp",
+    message: "Hola, tengo una pregunta sobre Levery.",
+  },
   hero: {
     badge: "Menú digital para restaurantes",
     title: "El menú de tu restaurante, siempre actualizado.",
@@ -701,6 +705,10 @@ const en: typeof es = {
     pricing: "Pricing",
     login: "Log in",
     startFree: "Start free",
+  },
+  floatingWhatsapp: {
+    ariaLabel: "Chat with us on WhatsApp",
+    message: "Hi, I have a question about Levery.",
   },
   hero: {
     badge: "Digital menu for restaurants",

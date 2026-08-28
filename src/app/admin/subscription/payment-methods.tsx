@@ -21,9 +21,8 @@ import {
   type ConfirmPaymentValues,
 } from "@/components/confirm-payment-fields";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import { SUPPORT_WHATSAPP_NUMBER } from "@/lib/support";
 import { createSubscriptionPayment, uploadPaymentProof } from "./actions";
-
-const SUPPORT_WHATSAPP = "584120000000";
 
 export function PaymentMethods({
   restaurantId,
@@ -112,7 +111,7 @@ export function PaymentMethods({
   ]
     .filter(Boolean)
     .join(" ");
-  const whatsappHref = `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`;
+  const whatsappHref = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
   if (methods.length === 0) {
     return (
@@ -121,7 +120,7 @@ export function PaymentMethods({
           {t.noMethodsTitle(plan.name)}
         </p>
         <a
-          href={`https://wa.me/${SUPPORT_WHATSAPP}`}
+          href={`https://wa.me/${SUPPORT_WHATSAPP_NUMBER}`}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700"
