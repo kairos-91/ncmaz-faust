@@ -28,6 +28,7 @@ export function AdminNav({
   const allLinks = [
     { href: "/admin", label: t.summary, ownerOnly: true },
     { href: "/admin/analytics", label: t.analytics, ownerOnly: true },
+    { href: "/admin/sales", label: t.sales, ownerOnly: true },
     { href: "/admin/restaurant", label: t.myRestaurant, ownerOnly: true },
     { href: "/admin/categories", label: t.categories, ownerOnly: false },
     { href: "/admin/menu", label: t.menu, ownerOnly: false },

@@ -14,7 +14,7 @@ export const DAY_KEYS: DayKey[] = ["mon", "tue", "wed", "thu", "fri", "sat", "su
 // El servidor (Vercel) corre en UTC, pero los horarios se cargan en hora
 // de Venezuela. Todo el cálculo de "abierto/cerrado" debe hacerse en esa
 // zona horaria, no en la del proceso, o el horario queda desfasado ~4-5h.
-const RESTAURANT_TIMEZONE = "America/Caracas";
+export const RESTAURANT_TIMEZONE = "America/Caracas";
 
 const WEEKDAY_TO_DAY_KEY: Record<string, DayKey> = {
   Sun: "sun",

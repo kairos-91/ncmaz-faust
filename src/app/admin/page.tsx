@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
+import { computeSalesSummary } from "@/lib/sales";
+import { formatPrice } from "@/lib/utils";
 import { createRestaurant } from "./actions";
 import { RestaurantForm } from "./restaurant/restaurant-form";
 import { QrCard } from "./qr-card";
@@ -35,16 +37,23 @@ export default async function AdminDashboardPage() {
   }
 
   const supabase = await createClient();
-  const [{ count: categoryCount }, { count: itemCount }] = await Promise.all([
-    supabase
-      .from("categories")
-      .select("id", { count: "exact", head: true })
-      .eq("restaurant_id", restaurant.id),
-    supabase
-      .from("menu_items")
-      .select("id", { count: "exact", head: true })
-      .eq("restaurant_id", restaurant.id),
-  ]);
+  const [{ count: categoryCount }, { count: itemCount }, { data: orders }] =
+    await Promise.all([
+      supabase
+        .from("categories")
+        .select("id", { count: "exact", head: true })
+        .eq("restaurant_id", restaurant.id),
+      supabase
+        .from("menu_items")
+        .select("id", { count: "exact", head: true })
+        .eq("restaurant_id", restaurant.id),
+      supabase
+        .from("orders")
+        .select("total, status, created_at")
+        .eq("restaurant_id", restaurant.id),
+    ]);
+
+  const sales = computeSalesSummary(orders ?? []);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const publicUrl = `${siteUrl}/r/${restaurant.slug}`;
@@ -63,7 +72,34 @@ export default async function AdminDashboardPage() {
         <StatCard label={t.dashboard.dishesLabel} value={itemCount ?? 0} />
       </div>
 
+      <div>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-600 dark:text-neutral-400">
+          {t.dashboard.salesTitle}
+        </h2>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <StatCard
+            label={t.dashboard.salesToday}
+            value={formatPrice(sales.today, restaurant.currency)}
+          />
+          <StatCard
+            label={t.dashboard.salesMonth}
+            value={formatPrice(sales.month, restaurant.currency)}
+          />
+          <StatCard
+            label={t.dashboard.salesYear}
+            value={formatPrice(sales.year, restaurant.currency)}
+          />
+          <StatCard
+            label={t.dashboard.salesAllTime}
+            value={formatPrice(sales.allTime, restaurant.currency)}
+          />
+        </div>
+      </div>
+
       <div className="flex flex-wrap gap-3">
+        <Link href="/admin/sales">
+          <Button variant="secondary">{t.dashboard.viewSales}</Button>
+        </Link>
         <Link href="/admin/categories">
           <Button variant="secondary">{t.dashboard.manageCategories}</Button>
         </Link>
@@ -83,7 +119,7 @@ export default async function AdminDashboardPage() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: number }) {
+function StatCard({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
       <p className="text-2xl font-semibold">{value}</p>
