@@ -183,9 +183,9 @@ export function AdminNav({
   const links = allLinks.filter((link) => !isStaff || !link.ownerOnly);
 
   return (
-    <aside className="flex w-full shrink-0 flex-col justify-between border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 md:h-screen md:w-56 md:border-r md:sticky md:top-0">
-      <div>
-        <div className="flex items-center justify-between px-5 py-5 md:block">
+    <aside className="flex w-full shrink-0 flex-col border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 md:h-screen md:w-56 md:border-r md:sticky md:top-0">
+      <div className="md:flex md:min-h-0 md:flex-1 md:flex-col">
+        <div className="flex items-center justify-between px-5 py-5 md:block md:shrink-0">
           <div className="flex items-center justify-between">
             <Link href="/">
               <Logo height={36} />
@@ -196,7 +196,7 @@ export function AdminNav({
             </div>
           </div>
         </div>
-        <nav className="flex gap-1 overflow-x-auto px-3 pb-2 md:flex-col md:overflow-visible md:pb-0">
+        <nav className="flex gap-1 overflow-x-auto px-3 pb-2 md:flex-1 md:flex-col md:overflow-y-auto md:pb-2">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -227,7 +227,7 @@ export function AdminNav({
           )}
         </nav>
       </div>
-      <div className="border-t border-neutral-100 px-5 py-4 dark:border-neutral-800">
+      <div className="shrink-0 border-t border-neutral-100 px-5 py-4 dark:border-neutral-800">
         {realtimeOffline && (
           <p className="mb-2 flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
