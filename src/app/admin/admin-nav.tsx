@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -32,16 +32,47 @@ export function AdminNav({
   const [pendingOrders, setPendingOrders] = useState(initialPendingOrders);
   const [prevInitial, setPrevInitial] = useState(initialPendingOrders);
   const [realtimeOffline, setRealtimeOffline] = useState(false);
+  const [unseenPending, setUnseenPending] = useState(0);
+  const unseenPendingRef = useRef(0);
+  const [prevPathname, setPrevPathname] = useState(pathname);
   if (initialPendingOrders !== prevInitial) {
     setPrevInitial(initialPendingOrders);
     setPendingOrders(initialPendingOrders);
   }
+  // Visitar /admin/orders cuenta como "ya vi los pedidos nuevos".
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    if (pathname === "/admin/orders") setUnseenPending(0);
+  }
+
+  useEffect(() => {
+    unseenPendingRef.current = unseenPending;
+  }, [unseenPending]);
 
   useEffect(() => {
     const unlock = () => unlockNotificationSound();
     document.addEventListener("pointerdown", unlock, { once: true });
     return () => document.removeEventListener("pointerdown", unlock);
   }, []);
+
+  // Repite la campanita cada 20s (hasta 5 veces) mientras haya un pedido
+  // nuevo sin revisar, para que se note aunque no estés mirando la
+  // pantalla justo cuando llegó.
+  const hasUnseenPending = unseenPending > 0;
+  useEffect(() => {
+    if (!hasUnseenPending) return;
+    let repeats = 0;
+    const interval = setInterval(() => {
+      if (unseenPendingRef.current === 0) {
+        clearInterval(interval);
+        return;
+      }
+      repeats += 1;
+      playNotificationChime();
+      if (repeats >= 5) clearInterval(interval);
+    }, 20000);
+    return () => clearInterval(interval);
+  }, [hasUnseenPending]);
 
   useEffect(() => {
     if (!restaurantId) return;
@@ -69,6 +100,7 @@ export function AdminNav({
           (payload) => {
             if ((payload.new as { status?: string }).status === "pending") {
               setPendingOrders((n) => n + 1);
+              setUnseenPending((n) => n + 1);
               playNotificationChime();
             }
           },
@@ -88,6 +120,7 @@ export function AdminNav({
               setPendingOrders((n) => Math.max(0, n - 1));
             } else if (oldStatus !== "pending" && newStatus === "pending") {
               setPendingOrders((n) => n + 1);
+              setUnseenPending((n) => n + 1);
               playNotificationChime();
             }
           },

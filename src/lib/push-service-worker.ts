@@ -18,7 +18,8 @@ self.addEventListener("push", (event) => {
     body: payload.body || "",
     icon: payload.icon || "/icon.png",
     badge: payload.icon || "/icon.png",
-    vibrate: [200, 100, 200],
+    vibrate: [300, 100, 300, 100, 300, 100, 300],
+    requireInteraction: true,
     data: { url: payload.url || "/" },
   };
   event.waitUntil(self.registration.showNotification(title, options));
