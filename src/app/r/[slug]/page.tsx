@@ -19,13 +19,12 @@ import {
   type DayKey,
 } from "@/lib/opening-hours";
 import { parseServices, type ServiceId } from "@/lib/restaurant-services";
-import { averageRating } from "@/lib/reviews";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SocialLinks } from "@/components/social-links";
 import { Logo } from "@/components/logo";
 import { MenuView } from "./menu-view";
-import { ReviewsSection } from "./reviews-section";
 import { PwaActions } from "./pwa-actions";
+import { WriteReviewButton } from "./write-review-button";
 
 type Params = { slug: string };
 
@@ -55,7 +54,7 @@ async function getRestaurant(slug: string) {
     .maybeSingle();
   if (!restaurant) return null;
 
-  const [{ data: categories }, { data: items }, { data: reviews }] = await Promise.all([
+  const [{ data: categories }, { data: items }] = await Promise.all([
     supabase
       .from("categories")
       .select("*")
@@ -67,19 +66,12 @@ async function getRestaurant(slug: string) {
       .eq("restaurant_id", restaurant.id)
       .eq("is_available", true)
       .order("sort_order"),
-    supabase
-      .from("reviews")
-      .select("*")
-      .eq("restaurant_id", restaurant.id)
-      .eq("is_visible", true)
-      .order("created_at", { ascending: false }),
   ]);
 
   return {
     restaurant,
     categories: categories ?? [],
     items: items ?? [],
-    reviews: reviews ?? [],
   };
 }
 
@@ -116,7 +108,7 @@ export default async function PublicMenuPage({
   const data = await getRestaurant(slug);
   if (!data) notFound();
 
-  const { restaurant, categories, items, reviews } = data;
+  const { restaurant, categories, items } = data;
 
   const isSubscriptionExpired =
     restaurant.plan_expires_at !== null &&
@@ -239,20 +231,6 @@ export default async function PublicMenuPage({
           <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
             {restaurant.name}
           </h1>
-          {reviews.length > 0 && (
-            <a
-              href="#resenas"
-              className="mt-1 flex w-fit items-center gap-1 text-sm text-neutral-600 dark:text-neutral-400"
-            >
-              <span className="text-amber-400">★</span>
-              <span className="font-medium text-neutral-900 dark:text-white">
-                {averageRating(reviews)}
-              </span>
-              <span>
-                ({reviews.length} {reviews.length === 1 ? "reseña" : "reseñas"})
-              </span>
-            </a>
-          )}
           {restaurant.description && (
             <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
               {restaurant.description}
@@ -379,11 +357,17 @@ export default async function PublicMenuPage({
                     </ul>
                   )}
 
-                  <PwaActions
-                    slug={slug}
-                    restaurantId={restaurant.id}
-                    themeColor={restaurant.theme_color}
-                  />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <PwaActions
+                      slug={slug}
+                      restaurantId={restaurant.id}
+                      themeColor={restaurant.theme_color}
+                    />
+                    <WriteReviewButton
+                      restaurantId={restaurant.id}
+                      themeColor={restaurant.theme_color}
+                    />
+                  </div>
                 </div>
               </details>
             </div>
@@ -409,12 +393,6 @@ export default async function PublicMenuPage({
             closedMessage={closedMessage}
           />
         )}
-
-        <ReviewsSection
-          restaurantId={restaurant.id}
-          reviews={reviews}
-          themeColor={restaurant.theme_color}
-        />
 
         <p className="mt-12 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-400 dark:text-neutral-600">
           Hecho con{" "}

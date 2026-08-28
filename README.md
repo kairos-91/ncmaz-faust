@@ -173,6 +173,11 @@ o recíbelo como prop `t` (client) donde lo necesites.
      "Recibir promociones" en el menú público. RLS: cualquiera puede
      suscribirse a un restaurante publicado, solo el dueño puede leer o
      borrar sus suscripciones.
+   - `supabase/migrations/0021_reviews_admin_only.sql` — quita la
+     política que permitía leer las reseñas públicamente: ahora solo el
+     dueño las ve (en `/admin/reviews`). El menú público ya no muestra el
+     listado ni el promedio de calificación, solo el botón para dejar una
+     reseña nueva.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
