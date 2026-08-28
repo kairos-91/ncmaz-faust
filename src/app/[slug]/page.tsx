@@ -262,24 +262,24 @@ export default async function PublicMenuPage({
                     </span>
                   )}
                   <span
-                    className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-semibold group-open:hidden"
+                    className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold group-open:hidden"
                     style={{
                       borderColor: restaurant.theme_color,
                       color: restaurant.theme_color,
                       backgroundColor: `${restaurant.theme_color}1A`,
                     }}
                   >
-                    ℹ️ Más información
+                    Más información
                   </span>
                   <span
-                    className="hidden items-center gap-1 rounded-full border px-3 py-1 text-sm font-semibold group-open:inline-flex"
+                    className="hidden items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold group-open:inline-flex"
                     style={{
                       borderColor: restaurant.theme_color,
                       color: restaurant.theme_color,
                       backgroundColor: `${restaurant.theme_color}1A`,
                     }}
                   >
-                    ℹ️ Ocultar información
+                    Ocultar información
                   </span>
                 </summary>
 
