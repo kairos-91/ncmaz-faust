@@ -34,9 +34,9 @@ export function playNotificationChime() {
 
     const ring = (startAt: number) => {
       const partials: Array<[freq: number, peak: number, decay: number]> = [
-        [880, 0.9, 1.5],
-        [1479, 0.55, 1.2],
-        [2217, 0.35, 0.8],
+        [1568, 0.9, 1.3],
+        [2637, 0.55, 1.0],
+        [3951, 0.35, 0.7],
       ];
       partials.forEach(([freq, peak, decay]) => {
         const osc = ctx.createOscillator();
