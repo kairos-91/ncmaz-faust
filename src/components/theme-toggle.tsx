@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useLayoutEffect, useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 
 const STORAGE_KEY = "levery-theme";
@@ -27,6 +27,15 @@ function setDark(next: boolean) {
 
 export function ThemeToggle() {
   const isDark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  // En desarrollo, el remount de Strict Mode borra el "dark" que puso el
+  // script inline de layout.tsx (solo gestiona los atributos que vienen del
+  // JSX). Reaplicarlo aquí es un no-op en producción — ver la guía de Next.js
+  // "preventing-flash-before-hydration" (sección Themes).
+  useLayoutEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === "dark") document.documentElement.classList.add("dark");
+  }, []);
 
   return (
     <button

@@ -75,3 +75,57 @@ export function groupSalesByDay(orders: SalesOrder[]): DailySales[] {
   }
   return [...byDay.values()].sort((a, b) => b.day.localeCompare(a.day));
 }
+
+export type MonthlySales = { month: string; total: number };
+
+export function groupSalesByMonth(orders: SalesOrder[]): MonthlySales[] {
+  const accepted = acceptedOnly(orders);
+  const byMonth = new Map<string, number>();
+  for (const order of accepted) {
+    const { year, month } = caracasParts(new Date(order.created_at));
+    const key = `${year}-${month}`;
+    byMonth.set(key, (byMonth.get(key) ?? 0) + order.total);
+  }
+  return [...byMonth.entries()]
+    .map(([month, total]) => ({ month, total }))
+    .sort((a, b) => a.month.localeCompare(b.month));
+}
+
+// Rellena con ceros para que los gráficos siempre tengan un eje continuo,
+// aunque no haya ventas todos los días/meses.
+export function lastNDays(
+  daily: DailySales[],
+  now: Date = new Date(),
+  n = 30,
+): DailySales[] {
+  const byDay = new Map(daily.map((d) => [d.day, d]));
+  const result: DailySales[] = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const key = caracasDayKey(new Date(now.getTime() - i * 86400000));
+    result.push(byDay.get(key) ?? { day: key, count: 0, total: 0 });
+  }
+  return result;
+}
+
+export function lastNMonths(
+  monthly: MonthlySales[],
+  now: Date = new Date(),
+  n = 12,
+): MonthlySales[] {
+  const byMonth = new Map(monthly.map((m) => [m.month, m.total]));
+  const { year, month } = caracasParts(now);
+  const y = Number(year);
+  const m = Number(month);
+  const result: MonthlySales[] = [];
+  for (let i = n - 1; i >= 0; i--) {
+    let targetYear = y;
+    let targetMonth = m - i;
+    while (targetMonth <= 0) {
+      targetMonth += 12;
+      targetYear -= 1;
+    }
+    const key = `${targetYear}-${String(targetMonth).padStart(2, "0")}`;
+    result.push({ month: key, total: byMonth.get(key) ?? 0 });
+  }
+  return result;
+}

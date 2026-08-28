@@ -4,8 +4,9 @@ import { useState } from "react";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 import { formatPrice } from "@/lib/utils";
-import type { DailySales, SalesSummary } from "@/lib/sales";
+import type { DailySales, MonthlySales, SalesSummary } from "@/lib/sales";
 import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
+import { SalesCharts } from "./sales-charts";
 
 type T = Dictionary["common"] & Dictionary["salesPage"];
 
@@ -23,12 +24,16 @@ export function SalesView({
   currency,
   summary,
   daily,
+  dailyChart,
+  monthlyChart,
   locale,
 }: {
   restaurantName: string;
   currency: string;
   summary: SalesSummary;
   daily: DailySales[];
+  dailyChart: DailySales[];
+  monthlyChart: MonthlySales[];
   locale: Locale;
 }) {
   const dict = getDictionary(locale);
@@ -96,6 +101,15 @@ export function SalesView({
           value={formatPrice(summary.allTime, currency)}
         />
       </div>
+
+      <SalesCharts
+        daily={dailyChart}
+        monthly={monthlyChart}
+        currency={currency}
+        dailyTitle={t.dailyChartTitle}
+        monthlyTitle={t.monthlyChartTitle}
+        ordersCount={t.ordersCount}
+      />
 
       <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-3 flex items-center justify-between">

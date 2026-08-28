@@ -3,7 +3,13 @@ import { redirect } from "next/navigation";
 import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
-import { computeSalesSummary, groupSalesByDay } from "@/lib/sales";
+import {
+  computeSalesSummary,
+  groupSalesByDay,
+  groupSalesByMonth,
+  lastNDays,
+  lastNMonths,
+} from "@/lib/sales";
 import { SalesView } from "./sales-view";
 
 export const metadata: Metadata = { title: "Ventas" };
@@ -21,6 +27,8 @@ export default async function SalesPage() {
 
   const summary = computeSalesSummary(orders ?? []);
   const daily = groupSalesByDay(orders ?? []);
+  const dailyChart = lastNDays(daily, new Date(), 30);
+  const monthlyChart = lastNMonths(groupSalesByMonth(orders ?? []), new Date(), 12);
 
   return (
     <SalesView
@@ -28,6 +36,8 @@ export default async function SalesPage() {
       currency={restaurant.currency}
       summary={summary}
       daily={daily}
+      dailyChart={dailyChart}
+      monthlyChart={monthlyChart}
       locale={locale}
     />
   );
