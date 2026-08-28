@@ -10,6 +10,7 @@ import { LanguageToggle } from "@/components/language-toggle";
 import { Logo } from "@/components/logo";
 import { isSuperadmin } from "@/lib/superadmin";
 import { createClient } from "@/lib/supabase/client";
+import { playNotificationChime, unlockNotificationSound } from "@/lib/notification-sound";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 
 export function AdminNav({
@@ -30,10 +31,17 @@ export function AdminNav({
   const pathname = usePathname();
   const [pendingOrders, setPendingOrders] = useState(initialPendingOrders);
   const [prevInitial, setPrevInitial] = useState(initialPendingOrders);
+  const [realtimeOffline, setRealtimeOffline] = useState(false);
   if (initialPendingOrders !== prevInitial) {
     setPrevInitial(initialPendingOrders);
     setPendingOrders(initialPendingOrders);
   }
+
+  useEffect(() => {
+    const unlock = () => unlockNotificationSound();
+    document.addEventListener("pointerdown", unlock, { once: true });
+    return () => document.removeEventListener("pointerdown", unlock);
+  }, []);
 
   useEffect(() => {
     if (!restaurantId) return;
@@ -51,6 +59,7 @@ export function AdminNav({
         (payload) => {
           if ((payload.new as { status?: string }).status === "pending") {
             setPendingOrders((n) => n + 1);
+            playNotificationChime();
           }
         },
       )
@@ -69,10 +78,13 @@ export function AdminNav({
             setPendingOrders((n) => Math.max(0, n - 1));
           } else if (oldStatus !== "pending" && newStatus === "pending") {
             setPendingOrders((n) => n + 1);
+            playNotificationChime();
           }
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        setRealtimeOffline(status === "CHANNEL_ERROR" || status === "TIMED_OUT");
+      });
 
     return () => {
       supabase.removeChannel(channel);
@@ -145,6 +157,12 @@ export function AdminNav({
         </nav>
       </div>
       <div className="border-t border-neutral-100 px-5 py-4 dark:border-neutral-800">
+        {realtimeOffline && (
+          <p className="mb-2 flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
+            {t.realtimeOffline}
+          </p>
+        )}
         <div className="mb-2 hidden items-center justify-between md:flex">
           <span className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
             {t.theme}
