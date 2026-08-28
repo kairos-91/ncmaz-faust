@@ -54,6 +54,8 @@ export const restaurantSchema = z.object({
   has_wifi: z.boolean(),
   accepts_pets: z.boolean(),
   delivery_zones: z.string().max(2000).optional().or(z.literal("")),
+  packaging_fee_enabled: z.boolean(),
+  packaging_fee: z.coerce.number().min(0, "El costo no puede ser negativo"),
 }).refine((data) => !isReservedSlug(data.slug), {
   message: "Esa URL no está disponible, elige otra",
   path: ["slug"],

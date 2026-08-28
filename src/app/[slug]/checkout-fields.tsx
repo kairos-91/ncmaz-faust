@@ -53,6 +53,8 @@ export function CheckoutFields({
   paymentMethods,
   bcvRate,
   deliveryZones,
+  packagingFeeEnabled,
+  packagingFeeAmount,
   onOrderPlaced,
 }: {
   restaurantId: string;
@@ -65,6 +67,8 @@ export function CheckoutFields({
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
   deliveryZones: DeliveryZone[];
+  packagingFeeEnabled: boolean;
+  packagingFeeAmount: number;
   onOrderPlaced: () => void;
 }) {
   const [orderType, setOrderType] = useState<OrderType | null>(null);
@@ -94,7 +98,11 @@ export function CheckoutFields({
       ? (deliveryZones.find((z) => z.name === deliveryZone)?.fee ?? 0)
       : 0;
   const discountAmount = appliedCoupon ? computeDiscount(appliedCoupon, total) : 0;
-  const grandTotal = total + deliveryFee - discountAmount;
+  const packagingFee =
+    packagingFeeEnabled && (orderType === "delivery" || orderType === "pickup")
+      ? packagingFeeAmount
+      : 0;
+  const grandTotal = total + deliveryFee + packagingFee - discountAmount;
 
   const applyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
@@ -180,6 +188,9 @@ export function CheckoutFields({
         `🛵 Envío (${deliveryZone}): ${formatPrice(deliveryFee, currency)}`,
       );
     }
+    if (packagingFee > 0) {
+      parts.push(`🍱 Empaque: ${formatPrice(packagingFee, currency)}`);
+    }
     if (appliedCoupon) {
       parts.push(
         `🎟️ Cupón (${appliedCoupon.code}): -${formatPrice(discountAmount, currency)}`,
@@ -235,6 +246,7 @@ export function CheckoutFields({
     grandTotal,
     deliveryFee,
     deliveryZone,
+    packagingFee,
     appliedCoupon,
     discountAmount,
     amountBs,
@@ -329,6 +341,12 @@ export function CheckoutFields({
           ))}
         </div>
       </div>
+
+      {packagingFee > 0 && (
+        <p className="text-sm font-medium text-neutral-900 dark:text-white">
+          Empaque: {formatPrice(packagingFee, currency)}
+        </p>
+      )}
 
       {orderType === "delivery" && (
         <div className="space-y-3">
@@ -514,6 +532,7 @@ export function CheckoutFields({
               tableNumber: orderType === "dine_in" ? table : undefined,
               deliveryZone: orderType === "delivery" ? deliveryZone || undefined : undefined,
               deliveryFee,
+              packagingFee: packagingFee || undefined,
               couponCode: appliedCoupon?.code,
               discountAmount: discountAmount || undefined,
               items: lines.map((l) => ({

@@ -414,6 +414,8 @@ export default async function PublicMenuPage({
             paymentMethods={paymentMethods}
             bcvRate={bcvRate}
             deliveryZones={parseDeliveryZones(restaurant.delivery_zones)}
+            packagingFeeEnabled={restaurant.packaging_fee_enabled}
+            packagingFeeAmount={restaurant.packaging_fee}
             orderingAllowed={orderingAllowed}
             closedMessage={closedMessage}
           />

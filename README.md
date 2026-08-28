@@ -195,6 +195,11 @@ o recíbelo como prop `t` (client) donde lo necesites.
      que el panel admin (insignia de pedidos pendientes en el menú y la
      lista de `/admin/orders`) se actualice solo, sin necesidad de F5,
      cuando entra un pedido nuevo o cambia de estado.
+   - `supabase/migrations/0025_packaging_fee.sql` — agrega
+     `packaging_fee_enabled`/`packaging_fee` a `restaurants` (configurable
+     en Mi restaurante) y `packaging_fee` a `orders`. Si está activado, el
+     costo se suma al total del carrito solo en pedidos delivery y para
+     retirar (no en "comer en el local").
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

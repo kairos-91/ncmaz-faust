@@ -29,6 +29,8 @@ export function MenuView({
   paymentMethods,
   bcvRate,
   deliveryZones,
+  packagingFeeEnabled,
+  packagingFeeAmount,
   orderingAllowed,
   closedMessage,
 }: {
@@ -42,6 +44,8 @@ export function MenuView({
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
   deliveryZones: DeliveryZone[];
+  packagingFeeEnabled: boolean;
+  packagingFeeAmount: number;
   orderingAllowed: boolean;
   closedMessage: string | null;
 }) {
@@ -290,6 +294,8 @@ export function MenuView({
           paymentMethods={paymentMethods}
           bcvRate={bcvRate}
           deliveryZones={deliveryZones}
+          packagingFeeEnabled={packagingFeeEnabled}
+          packagingFeeAmount={packagingFeeAmount}
           onQtyChange={(itemId, extraNames, qty) =>
             setLineQty(itemId, extraNames, qty)
           }
@@ -562,6 +568,8 @@ function CartSheet({
   paymentMethods,
   bcvRate,
   deliveryZones,
+  packagingFeeEnabled,
+  packagingFeeAmount,
   onQtyChange,
   onClose,
   onOrderPlaced,
@@ -575,6 +583,8 @@ function CartSheet({
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
   deliveryZones: DeliveryZone[];
+  packagingFeeEnabled: boolean;
+  packagingFeeAmount: number;
   onQtyChange: (itemId: string, extraNames: string[], qty: number) => void;
   onClose: () => void;
   onOrderPlaced: () => void;
@@ -677,6 +687,8 @@ function CartSheet({
             paymentMethods={paymentMethods}
             bcvRate={bcvRate}
             deliveryZones={deliveryZones}
+            packagingFeeEnabled={packagingFeeEnabled}
+            packagingFeeAmount={packagingFeeAmount}
             onOrderPlaced={() => {
               setJustPlacedOrder(true);
               onOrderPlaced();

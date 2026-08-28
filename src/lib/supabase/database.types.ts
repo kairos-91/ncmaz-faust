@@ -36,6 +36,8 @@ export interface Database {
           services: Json;
           has_wifi: boolean;
           accepts_pets: boolean;
+          packaging_fee_enabled: boolean;
+          packaging_fee: number;
           created_at: string;
           updated_at: string;
         };
@@ -65,6 +67,8 @@ export interface Database {
           services?: Json;
           has_wifi?: boolean;
           accepts_pets?: boolean;
+          packaging_fee_enabled?: boolean;
+          packaging_fee?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -94,6 +98,8 @@ export interface Database {
           services?: Json;
           has_wifi?: boolean;
           accepts_pets?: boolean;
+          packaging_fee_enabled?: boolean;
+          packaging_fee?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -196,6 +202,7 @@ export interface Database {
           delivery_fee: number;
           coupon_code: string | null;
           discount_amount: number;
+          packaging_fee: number;
           created_at: string;
           updated_at: string;
         };
@@ -220,6 +227,7 @@ export interface Database {
           delivery_fee?: number;
           coupon_code?: string | null;
           discount_amount?: number;
+          packaging_fee?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -244,6 +252,7 @@ export interface Database {
           delivery_fee?: number;
           coupon_code?: string | null;
           discount_amount?: number;
+          packaging_fee?: number;
           created_at?: string;
           updated_at?: string;
         };

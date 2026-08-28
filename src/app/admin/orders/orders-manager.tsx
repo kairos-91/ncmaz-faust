@@ -218,6 +218,11 @@ function OrderCard({
               📍 {order.address}
             </p>
           )}
+          {order.packaging_fee > 0 && (
+            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+              🍱 {t.packagingFee}: {formatPrice(order.packaging_fee, currency)}
+            </p>
+          )}
           {order.order_type === "dine_in" && order.table_number && (
             <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
               {t.table}: {order.table_number}

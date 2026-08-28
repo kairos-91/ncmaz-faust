@@ -84,6 +84,8 @@ function parseRestaurantForm(formData: FormData) {
     has_wifi: formData.get("has_wifi") === "on",
     accepts_pets: formData.get("accepts_pets") === "on",
     delivery_zones: formData.get("delivery_zones") ?? "",
+    packaging_fee_enabled: formData.get("packaging_fee_enabled") === "on",
+    packaging_fee: formData.get("packaging_fee") || "0",
   });
 }
 

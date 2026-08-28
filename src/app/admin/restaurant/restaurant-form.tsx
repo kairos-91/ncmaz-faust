@@ -188,6 +188,32 @@ export function RestaurantForm({
       </div>
 
       <div>
+        <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <input
+            type="checkbox"
+            name="packaging_fee_enabled"
+            defaultChecked={restaurant?.packaging_fee_enabled ?? false}
+            className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
+          />
+          {t.packagingFeeEnableLabel}
+        </label>
+        <div className="mt-2 max-w-[160px]">
+          <Label htmlFor="packaging_fee">{t.packagingFeeAmountLabel}</Label>
+          <Input
+            id="packaging_fee"
+            name="packaging_fee"
+            type="number"
+            min="0"
+            step="0.01"
+            defaultValue={restaurant?.packaging_fee ?? 0}
+          />
+        </div>
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.packagingFeeHint}
+        </p>
+      </div>
+
+      <div>
         <Label>{t.servicesLabel}</Label>
         <div className="mt-2 flex flex-wrap gap-4">
           {SERVICE_IDS.map((id) => (
