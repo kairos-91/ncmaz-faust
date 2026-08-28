@@ -560,6 +560,16 @@ const es = {
     save: "Guardar métodos de pago",
     saving: "Guardando...",
   },
+  platformWhatsappForm: {
+    title: "WhatsApp de soporte",
+    subtitle:
+      "Este número se usa en el botón flotante del home y como contacto de soporte cuando un restaurante todavía no puede pagar su suscripción.",
+    label: "Número de WhatsApp",
+    placeholder: "584121234567",
+    hint: "Formato internacional, solo números (código de país + número, sin espacios ni +).",
+    save: "Guardar número",
+    saving: "Guardando...",
+  },
   subscriptionPage: {
     title: "Suscripción",
     subtitle:
@@ -1247,6 +1257,16 @@ const en: typeof es = {
     convertNotice: "Charged in Bs at the BCV rate",
     selectBank: "Select your bank",
     save: "Save payment methods",
+    saving: "Saving...",
+  },
+  platformWhatsappForm: {
+    title: "Support WhatsApp",
+    subtitle:
+      "This number is used by the home page's floating button and as the support contact when a restaurant can't pay its subscription yet.",
+    label: "WhatsApp number",
+    placeholder: "584121234567",
+    hint: "International format, digits only (country code + number, no spaces or +).",
+    save: "Save number",
     saving: "Saving...",
   },
   subscriptionPage: {

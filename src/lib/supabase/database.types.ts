@@ -523,16 +523,19 @@ export interface Database {
         Row: {
           id: boolean;
           payment_methods: Json;
+          whatsapp_number: string;
           updated_at: string;
         };
         Insert: {
           id?: boolean;
           payment_methods?: Json;
+          whatsapp_number?: string;
           updated_at?: string;
         };
         Update: {
           id?: boolean;
           payment_methods?: Json;
+          whatsapp_number?: string;
           updated_at?: string;
         };
         Relationships: [];
@@ -583,6 +586,10 @@ export interface Database {
       get_coupon_usage: {
         Args: { p_restaurant_id: string; p_code: string; p_customer_phone: string };
         Returns: { total_uses: number; customer_uses: number }[];
+      };
+      get_platform_whatsapp_number: {
+        Args: Record<string, never>;
+        Returns: string;
       };
     };
     Enums: Record<string, never>;

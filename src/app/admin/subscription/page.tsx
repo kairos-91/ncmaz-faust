@@ -7,6 +7,7 @@ import { parsePaymentMethods } from "@/lib/payment-methods";
 import { getActivePlans } from "@/components/pricing-plans";
 import { daysUntil } from "@/lib/subscription-plans";
 import { getT } from "@/lib/i18n/locale";
+import { getSupportWhatsappNumber } from "@/lib/support";
 import { SubscriptionView } from "./subscription-view";
 
 export const metadata: Metadata = { title: "Suscripción" };
@@ -17,11 +18,13 @@ export default async function SubscriptionPage() {
   const { locale, t } = await getT();
 
   const supabase = await createClient();
-  const [plans, { data: settings }, bcvRate] = await Promise.all([
-    getActivePlans(),
-    supabase.from("platform_settings").select("payment_methods").single(),
-    getBcvRate(),
-  ]);
+  const [plans, { data: settings }, bcvRate, supportWhatsappNumber] =
+    await Promise.all([
+      getActivePlans(),
+      supabase.from("platform_settings").select("payment_methods").single(),
+      getBcvRate(),
+      getSupportWhatsappNumber(),
+    ]);
 
   return (
     <div className="space-y-6">
@@ -38,6 +41,7 @@ export default async function SubscriptionPage() {
         daysLeft={daysUntil(restaurant.plan_expires_at)}
         plans={plans}
         platformPaymentMethods={parsePaymentMethods(settings?.payment_methods)}
+        supportWhatsappNumber={supportWhatsappNumber}
         bcvRate={bcvRate}
         locale={locale}
       />

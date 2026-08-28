@@ -1,4 +1,4 @@
-import { SUPPORT_WHATSAPP_NUMBER } from "@/lib/support";
+import { getSupportWhatsappNumber } from "@/lib/support";
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -8,14 +8,15 @@ function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export function WhatsAppFloatingButton({
+export async function WhatsAppFloatingButton({
   ariaLabel,
   message,
 }: {
   ariaLabel: string;
   message: string;
 }) {
-  const href = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  const whatsappNumber = await getSupportWhatsappNumber();
+  const href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
   return (
     <a

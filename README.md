@@ -211,6 +211,11 @@ o recíbelo como prop `t` (client) donde lo necesites.
      agrega los planes "Emprendedor" ($9/mes, antes $15) y "Asistido"
      ($19/mes, antes $29) a `subscription_plans`, con las mismas
      funciones que el plan "Pro".
+   - `supabase/migrations/0028_platform_whatsapp.sql` — agrega
+     `whatsapp_number` a `platform_settings` (configurable desde
+     `/superadmin/payment-methods`) y la función `get_platform_whatsapp_number`
+     (security definer) para que el botón flotante de WhatsApp del home
+     pueda leerlo sin sesión.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

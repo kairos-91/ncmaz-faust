@@ -16,6 +16,7 @@ export function SubscriptionView({
   daysLeft,
   plans,
   platformPaymentMethods,
+  supportWhatsappNumber,
   bcvRate,
   locale,
 }: {
@@ -25,6 +26,7 @@ export function SubscriptionView({
   daysLeft: number | null;
   plans: SubscriptionPlan[];
   platformPaymentMethods: PaymentMethodValues;
+  supportWhatsappNumber: string;
   bcvRate: BcvRate | null;
   locale: Locale;
 }) {
@@ -154,6 +156,7 @@ export function SubscriptionView({
           restaurantName={restaurantName}
           plan={selectedPlan}
           platformPaymentMethods={platformPaymentMethods}
+          supportWhatsappNumber={supportWhatsappNumber}
           bcvRate={bcvRate}
           locale={locale}
           t={paymentT}

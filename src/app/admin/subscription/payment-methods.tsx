@@ -21,7 +21,6 @@ import {
   type ConfirmPaymentValues,
 } from "@/components/confirm-payment-fields";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
-import { SUPPORT_WHATSAPP_NUMBER } from "@/lib/support";
 import { createSubscriptionPayment, uploadPaymentProof } from "./actions";
 
 export function PaymentMethods({
@@ -29,6 +28,7 @@ export function PaymentMethods({
   restaurantName,
   plan,
   platformPaymentMethods,
+  supportWhatsappNumber,
   bcvRate,
   locale,
   t,
@@ -37,6 +37,7 @@ export function PaymentMethods({
   restaurantName: string;
   plan: SubscriptionPlan;
   platformPaymentMethods: PaymentMethodValues;
+  supportWhatsappNumber: string;
   bcvRate: BcvRate | null;
   locale: Locale;
   t: Dictionary["subscriptionPaymentMethods"];
@@ -111,7 +112,7 @@ export function PaymentMethods({
   ]
     .filter(Boolean)
     .join(" ");
-  const whatsappHref = `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  const whatsappHref = `https://wa.me/${supportWhatsappNumber}?text=${encodeURIComponent(message)}`;
 
   if (methods.length === 0) {
     return (
@@ -120,7 +121,7 @@ export function PaymentMethods({
           {t.noMethodsTitle(plan.name)}
         </p>
         <a
-          href={`https://wa.me/${SUPPORT_WHATSAPP_NUMBER}`}
+          href={`https://wa.me/${supportWhatsappNumber}`}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700"

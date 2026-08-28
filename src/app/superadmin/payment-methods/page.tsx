@@ -3,13 +3,17 @@ import { createClient } from "@/lib/supabase/server";
 import { parsePaymentMethods } from "@/lib/payment-methods";
 import { getT } from "@/lib/i18n/locale";
 import { PlatformPaymentMethodsForm } from "./payment-methods-form";
+import { PlatformWhatsappForm } from "./platform-whatsapp-form";
 
 export const metadata: Metadata = { title: "Métodos de pago · Superadmin" };
 
 export default async function SuperadminPaymentMethodsPage() {
   const supabase = await createClient();
   const [{ data: settings }, { t }] = await Promise.all([
-    supabase.from("platform_settings").select("payment_methods").single(),
+    supabase
+      .from("platform_settings")
+      .select("payment_methods, whatsapp_number")
+      .single(),
     getT(),
   ]);
 
@@ -23,6 +27,10 @@ export default async function SuperadminPaymentMethodsPage() {
           {t.superadminPaymentMethodsPage.subtitle}
         </p>
       </div>
+      <PlatformWhatsappForm
+        whatsappNumber={settings?.whatsapp_number ?? ""}
+        t={t.platformWhatsappForm}
+      />
       <PlatformPaymentMethodsForm
         values={parsePaymentMethods(settings?.payment_methods)}
         t={t.paymentMethodsForm}

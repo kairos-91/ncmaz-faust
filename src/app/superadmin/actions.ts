@@ -204,3 +204,27 @@ export async function updatePlatformPaymentMethods(
   revalidatePath("/admin/subscription");
   return { error: undefined };
 }
+
+// ── WhatsApp de soporte de Levery ─────────────────────────────────
+
+export async function updatePlatformWhatsapp(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase } = await requireSuperadmin();
+
+  const whatsappNumber = String(formData.get("whatsapp_number") ?? "")
+    .trim()
+    .replace(/[^0-9]/g, "");
+
+  const { error } = await supabase
+    .from("platform_settings")
+    .update({ whatsapp_number: whatsappNumber })
+    .eq("id", true);
+  if (error) return { error: error.message };
+
+  revalidatePath("/superadmin/payment-methods");
+  revalidatePath("/admin/subscription");
+  revalidatePath("/");
+  return { error: undefined };
+}
