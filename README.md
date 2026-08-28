@@ -207,6 +207,10 @@ o recíbelo como prop `t` (client) donde lo necesites.
      función `get_coupon_usage` (security definer) para que el checkout
      público pueda contar cuántas veces se usó un cupón sin pasar por la
      política de "orders" (solo el dueño puede leerlas).
+   - `supabase/migrations/0027_add_asistido_emprendedor_plans.sql` —
+     agrega los planes "Emprendedor" ($9/mes, antes $15) y "Asistido"
+     ($19/mes, antes $29) a `subscription_plans`, con las mismas
+     funciones que el plan "Pro".
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
