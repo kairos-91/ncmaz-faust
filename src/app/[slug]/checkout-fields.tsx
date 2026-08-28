@@ -88,6 +88,7 @@ export function CheckoutFields({
   const [sending, setSending] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedWhatsappHref, setPlacedWhatsappHref] = useState<string | null>(null);
+  const [orderError, setOrderError] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
     bankPaidFrom: "",
     reference: "",
@@ -610,13 +611,18 @@ export function CheckoutFields({
         </div>
       )}
 
+      {orderError && (
+        <p className="text-sm text-red-600">{orderError}</p>
+      )}
+
       {canSubmit && (
         <button
           type="button"
           disabled={sending}
           onClick={async () => {
             setSending(true);
-            await createOrder(restaurantId, {
+            setOrderError(null);
+            const result = await createOrder(restaurantId, {
               orderType: orderType!,
               customerName,
               customerPhone,
@@ -645,6 +651,12 @@ export function CheckoutFields({
               receiptUrl: receiptUrl ?? undefined,
             });
             setSending(false);
+            if ("error" in result) {
+              setOrderError(
+                "No se pudo enviar el pedido. Verifica tu conexión e intenta de nuevo.",
+              );
+              return;
+            }
             setPlacedWhatsappHref(whatsappHref);
             setOrderPlaced(true);
             onOrderPlaced();
