@@ -21,7 +21,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/logo";
 import { isSuperadmin } from "@/lib/superadmin";
 import { createClient } from "@/lib/supabase/client";
 import { playNotificationChime, unlockNotificationSound } from "@/lib/notification-sound";
@@ -180,12 +179,7 @@ export function AdminNav({
   return (
     <aside className="flex w-full shrink-0 flex-col border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 md:h-screen md:w-56 md:border-r md:sticky md:top-0">
       <div className="md:flex md:min-h-0 md:flex-1 md:flex-col">
-        <div className="px-5 py-5 md:shrink-0">
-          <Link href="/">
-            <Logo height={36} />
-          </Link>
-        </div>
-        <nav className="flex gap-1 overflow-x-auto px-3 pb-2 md:flex-1 md:flex-col md:overflow-y-auto md:pb-2">
+        <nav className="flex gap-1 overflow-x-auto px-3 pb-2 pt-3 md:flex-1 md:flex-col md:overflow-y-auto md:pb-2 md:pt-4">
           {links.map((link) => (
             <Link
               key={link.href}
