@@ -34,6 +34,14 @@ const ORDER_TYPES: { id: OrderType; label: string; icon: typeof Bike }[] = [
   { id: "dine_in", label: "Comer en el local", icon: UtensilsCrossed },
 ];
 
+const ORDER_TYPE_EMOJI: Record<OrderType, string> = {
+  delivery: "🛵",
+  pickup: "🥡",
+  dine_in: "🍽️",
+};
+
+const DIVIDER = "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄";
+
 export function CheckoutFields({
   restaurantId,
   restaurantName,
@@ -148,57 +156,67 @@ export function CheckoutFields({
         const unitPrice =
           l.item.price + extrasTotal(parseExtras(l.item.extras), l.extraNames);
         const extrasText =
-          l.extraNames.length > 0 ? ` (+ ${l.extraNames.join(", ")})` : "";
-        return `${l.qty}x ${l.item.name}${extrasText} - ${formatPrice(unitPrice * l.qty, currency)}`;
+          l.extraNames.length > 0 ? `\n   ➕ ${l.extraNames.join(", ")}` : "";
+        return `▪️ *${l.qty}x* ${l.item.name}${extrasText}\n   ${formatPrice(unitPrice * l.qty, currency)}`;
       })
       .join("\n");
 
     const parts = [
-      `Hola! Quiero hacer un pedido en ${restaurantName}:`,
-      "",
+      `🔔 *¡NUEVO PEDIDO!* 🔔`,
+      `🏪 ${restaurantName}`,
+      DIVIDER,
+      `🧾 *Pedido*`,
       lineText,
-      "",
+      DIVIDER,
+      `💰 *Resumen*`,
       `Subtotal: ${formatPrice(total, currency)}`,
     ];
     if (orderType === "delivery" && deliveryZone) {
       parts.push(
-        `Envío (${deliveryZone}): ${formatPrice(deliveryFee, currency)}`,
+        `🛵 Envío (${deliveryZone}): ${formatPrice(deliveryFee, currency)}`,
       );
     }
     if (appliedCoupon) {
       parts.push(
-        `Cupón (${appliedCoupon.code}): -${formatPrice(discountAmount, currency)}`,
+        `🎟️ Cupón (${appliedCoupon.code}): -${formatPrice(discountAmount, currency)}`,
       );
     }
     parts.push(
-      `Total: ${formatPrice(grandTotal, currency)}${amountBs ? ` (${amountBs})` : ""}`,
-      "",
-      `Tipo de pedido: ${orderTypeLabel}`,
+      `✅ *Total: ${formatPrice(grandTotal, currency)}${amountBs ? ` (${amountBs})` : ""}*`,
+      DIVIDER,
+      `📦 *Entrega*`,
+      `${ORDER_TYPE_EMOJI[orderType]} ${orderTypeLabel}`,
     );
     if (orderType === "delivery" && deliveryZone) {
-      parts.push(`Zona de envío: ${deliveryZone}`);
+      parts.push(`📍 Zona: ${deliveryZone}`);
     }
     if (orderType === "delivery" && address.trim()) {
-      parts.push(`Dirección: ${address.trim()}`);
+      parts.push(`🏠 Dirección: ${address.trim()}`);
     }
     if (orderType === "dine_in" && table.trim()) {
-      parts.push(`Mesa: ${table.trim()}`);
+      parts.push(`🍽️ Mesa: ${table.trim()}`);
     }
     if (activeMeta) {
-      parts.push(`Método de pago: ${activeMeta.label}`);
+      parts.push(DIVIDER, `💳 *Pago*`, activeMeta.label);
       if (confirmValues.bankPaidFrom) {
-        parts.push(`Banco desde el que pagó: ${confirmValues.bankPaidFrom}`);
+        parts.push(`🏦 Banco: ${confirmValues.bankPaidFrom}`);
       }
       if (confirmValues.reference) {
-        parts.push(`Referencia: ${confirmValues.reference}`);
+        parts.push(`🔢 Referencia: ${confirmValues.reference}`);
       }
       if (confirmValues.amountPaid) {
-        parts.push(`Monto pagado: Bs ${confirmValues.amountPaid}`);
+        parts.push(`💵 Monto pagado: Bs ${confirmValues.amountPaid}`);
       }
       parts.push(
-        receiptUrl ? `Comprobante: ${receiptUrl}` : "Adjunto el comprobante.",
+        receiptUrl ? `🧾 Comprobante: ${receiptUrl}` : "🧾 Adjunto el comprobante.",
       );
     }
+    parts.push(
+      DIVIDER,
+      `👤 *Cliente*`,
+      customerName.trim(),
+      `📱 ${customerPhone.trim()}`,
+    );
 
     const phone = whatsapp.replace(/[^0-9]/g, "");
     return `https://wa.me/${phone}?text=${encodeURIComponent(parts.join("\n"))}`;
@@ -222,6 +240,8 @@ export function CheckoutFields({
     confirmValues.amountPaid,
     receiptUrl,
     restaurantName,
+    customerName,
+    customerPhone,
     whatsapp,
   ]);
 
