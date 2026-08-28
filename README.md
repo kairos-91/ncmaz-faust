@@ -200,6 +200,13 @@ o recíbelo como prop `t` (client) donde lo necesites.
      en Mi restaurante) y `packaging_fee` a `orders`. Si está activado, el
      costo se suma al total del carrito solo en pedidos delivery y para
      retirar (no en "comer en el local").
+   - `supabase/migrations/0026_coupon_conditions.sql` — agrega condiciones
+     y límites opcionales a `coupons`: monto mínimo de pedido, tope de
+     usos (total y por cliente), fecha de inicio, horario y días de la
+     semana válidos, y restricción a ciertos métodos de pago. Incluye la
+     función `get_coupon_usage` (security definer) para que el checkout
+     público pueda contar cuántas veces se usó un cupón sin pasar por la
+     política de "orders" (solo el dueño puede leerlas).
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

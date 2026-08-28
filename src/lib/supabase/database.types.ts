@@ -372,6 +372,14 @@ export interface Database {
           discount_value: number;
           is_active: boolean;
           expires_at: string | null;
+          min_order_amount: number;
+          max_total_uses: number | null;
+          max_uses_per_customer: number | null;
+          starts_at: string | null;
+          valid_time_start: string | null;
+          valid_time_end: string | null;
+          valid_days: Json;
+          valid_payment_methods: Json;
           created_at: string;
         };
         Insert: {
@@ -382,6 +390,14 @@ export interface Database {
           discount_value: number;
           is_active?: boolean;
           expires_at?: string | null;
+          min_order_amount?: number;
+          max_total_uses?: number | null;
+          max_uses_per_customer?: number | null;
+          starts_at?: string | null;
+          valid_time_start?: string | null;
+          valid_time_end?: string | null;
+          valid_days?: Json;
+          valid_payment_methods?: Json;
           created_at?: string;
         };
         Update: {
@@ -392,6 +408,14 @@ export interface Database {
           discount_value?: number;
           is_active?: boolean;
           expires_at?: string | null;
+          min_order_amount?: number;
+          max_total_uses?: number | null;
+          max_uses_per_customer?: number | null;
+          starts_at?: string | null;
+          valid_time_start?: string | null;
+          valid_time_end?: string | null;
+          valid_days?: Json;
+          valid_payment_methods?: Json;
           created_at?: string;
         };
         Relationships: [];
@@ -555,6 +579,10 @@ export interface Database {
       delete_admin_push_subscription: {
         Args: { p_endpoint: string };
         Returns: undefined;
+      };
+      get_coupon_usage: {
+        Args: { p_restaurant_id: string; p_code: string; p_customer_phone: string };
+        Returns: { total_uses: number; customer_uses: number }[];
       };
     };
     Enums: Record<string, never>;

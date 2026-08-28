@@ -45,6 +45,15 @@ export function getDayKey(date: Date): DayKey {
   return getZonedParts(date).day;
 }
 
+// Día de la semana y minutos transcurridos del día, en hora de Venezuela.
+// Lo usa también la validación de horario de los cupones.
+export function getZonedDayAndMinutes(date: Date): {
+  day: DayKey;
+  minutesOfDay: number;
+} {
+  return getZonedParts(date);
+}
+
 export function formatTime12h(time: string): string {
   const [hStr, mStr] = time.split(":");
   const h = Number(hStr) || 0;

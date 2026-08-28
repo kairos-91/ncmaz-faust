@@ -89,6 +89,12 @@ export const couponSchema = z
     discount_type: z.enum(["percent", "fixed"]),
     discount_value: z.coerce.number().positive("Debe ser mayor a 0"),
     expires_at: z.string().optional().or(z.literal("")),
+    min_order_amount: z.coerce.number().min(0, "No puede ser negativo"),
+    max_total_uses: z.coerce.number().int().min(0, "No puede ser negativo"),
+    max_uses_per_customer: z.coerce.number().int().min(0, "No puede ser negativo"),
+    starts_at: z.string().optional().or(z.literal("")),
+    valid_time_start: z.string().optional().or(z.literal("")),
+    valid_time_end: z.string().optional().or(z.literal("")),
   })
   .refine(
     (data) => data.discount_type !== "percent" || data.discount_value <= 100,

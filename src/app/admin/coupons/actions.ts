@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { couponSchema } from "@/lib/validations";
+import { DAY_KEYS } from "@/lib/opening-hours";
+import { PAYMENT_METHOD_IDS } from "@/lib/payment-methods";
 
 type ActionState = { error?: string } | null;
 
@@ -36,10 +38,25 @@ export async function createCoupon(
     discount_type: formData.get("discount_type"),
     discount_value: formData.get("discount_value"),
     expires_at: formData.get("expires_at") || undefined,
+    min_order_amount: formData.get("min_order_amount") || "0",
+    max_total_uses: formData.get("max_total_uses") || "0",
+    max_uses_per_customer: formData.get("max_uses_per_customer") || "0",
+    starts_at: formData.get("starts_at") || undefined,
+    valid_time_start: formData.get("valid_time_start") || undefined,
+    valid_time_end: formData.get("valid_time_end") || undefined,
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
   }
+
+  const validDays = formData
+    .getAll("valid_days")
+    .map(String)
+    .filter((d) => (DAY_KEYS as string[]).includes(d));
+  const validPaymentMethods = formData
+    .getAll("valid_payment_methods")
+    .map(String)
+    .filter((m) => (PAYMENT_METHOD_IDS as string[]).includes(m));
 
   const { error } = await supabase.from("coupons").insert({
     restaurant_id: restaurantId,
@@ -49,6 +66,17 @@ export async function createCoupon(
     expires_at: parsed.data.expires_at
       ? new Date(parsed.data.expires_at).toISOString()
       : null,
+    min_order_amount: parsed.data.min_order_amount,
+    max_total_uses: parsed.data.max_total_uses > 0 ? parsed.data.max_total_uses : null,
+    max_uses_per_customer:
+      parsed.data.max_uses_per_customer > 0 ? parsed.data.max_uses_per_customer : null,
+    starts_at: parsed.data.starts_at
+      ? new Date(parsed.data.starts_at).toISOString()
+      : null,
+    valid_time_start: parsed.data.valid_time_start || null,
+    valid_time_end: parsed.data.valid_time_end || null,
+    valid_days: validDays,
+    valid_payment_methods: validPaymentMethods,
   });
   if (error) {
     return {

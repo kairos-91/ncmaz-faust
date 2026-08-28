@@ -14,7 +14,13 @@ import {
 import { bankLabel } from "@/lib/venezuelan-banks";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
 import type { DeliveryZone } from "@/lib/delivery-zones";
-import { computeDiscount, type Coupon } from "@/lib/coupons";
+import {
+  computeDiscount,
+  parseValidDays,
+  parseValidPaymentMethods,
+  validateCoupon,
+  type Coupon,
+} from "@/lib/coupons";
 import { PaymentDetailsCard } from "@/components/payment-details-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -89,6 +95,10 @@ export function CheckoutFields({
   });
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponUsage, setCouponUsage] = useState<{
+    totalUses: number;
+    customerUses: number;
+  } | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [checkingCoupon, setCheckingCoupon] = useState(false);
 
@@ -97,11 +107,22 @@ export function CheckoutFields({
     orderType === "delivery"
       ? (deliveryZones.find((z) => z.name === deliveryZone)?.fee ?? 0)
       : 0;
-  const discountAmount = appliedCoupon ? computeDiscount(appliedCoupon, total) : 0;
   const packagingFee =
     packagingFeeEnabled && (orderType === "delivery" || orderType === "pickup")
       ? packagingFeeAmount
       : 0;
+  const couponValidity = useMemo(() => {
+    if (!appliedCoupon) return null;
+    return validateCoupon(appliedCoupon, {
+      orderTotal: total,
+      currency,
+      paymentMethodId: methodId,
+      totalUses: couponUsage?.totalUses,
+      customerUses: couponUsage?.customerUses,
+    });
+  }, [appliedCoupon, total, currency, methodId, couponUsage]);
+  const discountAmount =
+    appliedCoupon && couponValidity?.valid ? computeDiscount(appliedCoupon, total) : 0;
   const grandTotal = total + deliveryFee + packagingFee - discountAmount;
 
   const applyCoupon = async () => {
@@ -112,21 +133,71 @@ export function CheckoutFields({
     const supabase = createClient();
     const { data } = await supabase
       .from("coupons")
-      .select("id, code, discount_type, discount_value, is_active, expires_at")
+      .select(
+        "id, code, discount_type, discount_value, is_active, expires_at, min_order_amount, max_total_uses, max_uses_per_customer, starts_at, valid_time_start, valid_time_end, valid_days, valid_payment_methods",
+      )
       .eq("restaurant_id", restaurantId)
       .eq("code", code)
       .maybeSingle();
-    setCheckingCoupon(false);
     if (!data) {
+      setCheckingCoupon(false);
       setCouponError("Ese cupón no existe o ya venció.");
       setAppliedCoupon(null);
+      setCouponUsage(null);
       return;
     }
-    setAppliedCoupon(data);
+
+    const coupon: Coupon = {
+      id: data.id,
+      code: data.code,
+      discount_type: data.discount_type,
+      discount_value: data.discount_value,
+      is_active: data.is_active,
+      expires_at: data.expires_at,
+      min_order_amount: data.min_order_amount,
+      max_total_uses: data.max_total_uses,
+      max_uses_per_customer: data.max_uses_per_customer,
+      starts_at: data.starts_at,
+      valid_time_start: data.valid_time_start,
+      valid_time_end: data.valid_time_end,
+      valid_days: parseValidDays(data.valid_days),
+      valid_payment_methods: parseValidPaymentMethods(data.valid_payment_methods),
+    };
+
+    let usage = { totalUses: 0, customerUses: 0 };
+    if (coupon.max_total_uses !== null || coupon.max_uses_per_customer !== null) {
+      const { data: usageRows } = await supabase.rpc("get_coupon_usage", {
+        p_restaurant_id: restaurantId,
+        p_code: coupon.code,
+        p_customer_phone: customerPhone.trim(),
+      });
+      const row = usageRows?.[0];
+      if (row) usage = { totalUses: row.total_uses, customerUses: row.customer_uses };
+    }
+
+    setCheckingCoupon(false);
+
+    const result = validateCoupon(coupon, {
+      orderTotal: total,
+      currency,
+      paymentMethodId: methodId,
+      totalUses: usage.totalUses,
+      customerUses: usage.customerUses,
+    });
+    if (!result.valid) {
+      setCouponError(result.reason ?? "Este cupón no se puede usar.");
+      setAppliedCoupon(null);
+      setCouponUsage(null);
+      return;
+    }
+
+    setAppliedCoupon(coupon);
+    setCouponUsage(usage);
   };
 
   const removeCoupon = () => {
     setAppliedCoupon(null);
+    setCouponUsage(null);
     setCouponCode("");
     setCouponError(null);
   };
@@ -191,7 +262,7 @@ export function CheckoutFields({
     if (packagingFee > 0) {
       parts.push(`🍱 Empaque: ${formatPrice(packagingFee, currency)}`);
     }
-    if (appliedCoupon) {
+    if (appliedCoupon && discountAmount > 0) {
       parts.push(
         `🎟️ Cupón (${appliedCoupon.code}): -${formatPrice(discountAmount, currency)}`,
       );
@@ -409,14 +480,35 @@ export function CheckoutFields({
           ¿Tienes un cupón?
         </label>
         {appliedCoupon ? (
-          <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm dark:border-green-900/40 dark:bg-green-900/20">
-            <span className="font-medium text-green-700 dark:text-green-400">
-              {appliedCoupon.code} aplicado · -{formatPrice(discountAmount, currency)}
+          <div
+            className={cn(
+              "flex items-center justify-between rounded-lg border px-3 py-2 text-sm",
+              couponValidity?.valid
+                ? "border-green-200 bg-green-50 dark:border-green-900/40 dark:bg-green-900/20"
+                : "border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-900/20",
+            )}
+          >
+            <span
+              className={cn(
+                "font-medium",
+                couponValidity?.valid
+                  ? "text-green-700 dark:text-green-400"
+                  : "text-amber-700 dark:text-amber-400",
+              )}
+            >
+              {couponValidity?.valid
+                ? `${appliedCoupon.code} aplicado · -${formatPrice(discountAmount, currency)}`
+                : `${appliedCoupon.code}: ${couponValidity?.reason ?? "no se puede aplicar ahora"}`}
             </span>
             <button
               type="button"
               onClick={removeCoupon}
-              className="text-xs font-medium text-green-700 underline dark:text-green-400"
+              className={cn(
+                "text-xs font-medium underline",
+                couponValidity?.valid
+                  ? "text-green-700 dark:text-green-400"
+                  : "text-amber-700 dark:text-amber-400",
+              )}
             >
               Quitar
             </button>
@@ -533,7 +625,7 @@ export function CheckoutFields({
               deliveryZone: orderType === "delivery" ? deliveryZone || undefined : undefined,
               deliveryFee,
               packagingFee: packagingFee || undefined,
-              couponCode: appliedCoupon?.code,
+              couponCode: couponValidity?.valid ? appliedCoupon?.code : undefined,
               discountAmount: discountAmount || undefined,
               items: lines.map((l) => ({
                 name: l.item.name,
