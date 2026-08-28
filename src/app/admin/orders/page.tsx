@@ -4,6 +4,7 @@ import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
 import { OrdersManager } from "./orders-manager";
+import { NotifyOrdersButton } from "./notify-orders-button";
 
 export const metadata: Metadata = { title: "Pedidos" };
 
@@ -21,11 +22,14 @@ export default async function OrdersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold">{t.ordersPage.title}</h1>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          {t.ordersPage.subtitle}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-semibold">{t.ordersPage.title}</h1>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            {t.ordersPage.subtitle}
+          </p>
+        </div>
+        <NotifyOrdersButton restaurantId={restaurant.id} t={t.notifyOrders} />
       </div>
       <OrdersManager
         restaurantId={restaurant.id}

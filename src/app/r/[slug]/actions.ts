@@ -1,8 +1,58 @@
 "use server";
 
+import webpush from "web-push";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { reviewSchema } from "@/lib/validations";
-import type { OrderItemSnapshot } from "@/lib/orders";
+import { ORDER_TYPE_LABELS, type OrderItemSnapshot } from "@/lib/orders";
+import { formatPrice } from "@/lib/utils";
+
+async function notifyAdminsOfNewOrder(
+  restaurantId: string,
+  input: {
+    orderType: string;
+    customerName: string;
+    total: number;
+    currency: string;
+  },
+) {
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+  const vapidSubject = process.env.VAPID_SUBJECT;
+  if (!vapidPublicKey || !vapidPrivateKey || !vapidSubject) return;
+
+  const supabase = await createClient();
+  const { data: subscriptions } = await supabase.rpc("get_admin_push_subscriptions", {
+    p_restaurant_id: restaurantId,
+  });
+  if (!subscriptions || subscriptions.length === 0) return;
+
+  webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
+  const orderTypeLabel = ORDER_TYPE_LABELS[input.orderType] ?? input.orderType;
+  const payload = JSON.stringify({
+    title: "🔔 ¡Nuevo pedido!",
+    body: `${input.customerName} · ${orderTypeLabel} · ${formatPrice(input.total, input.currency)}`,
+    url: "/admin/orders",
+  });
+
+  await Promise.all(
+    subscriptions.map(async (sub) => {
+      try {
+        await webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+          payload,
+        );
+      } catch (err: unknown) {
+        const statusCode = (err as { statusCode?: number })?.statusCode;
+        if (statusCode === 404 || statusCode === 410) {
+          await supabase.rpc("delete_admin_push_subscription", {
+            p_endpoint: sub.endpoint,
+          });
+        }
+      }
+    }),
+  );
+}
 
 export async function createOrder(
   restaurantId: string,
@@ -56,6 +106,15 @@ export async function createOrder(
     .select("id")
     .single();
   if (error) return { error: error.message };
+
+  after(() =>
+    notifyAdminsOfNewOrder(restaurantId, {
+      orderType: input.orderType,
+      customerName: input.customerName.trim(),
+      total: input.total,
+      currency: input.currency,
+    }).catch(() => {}),
+  );
 
   return { id: data.id };
 }

@@ -30,7 +30,16 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && request.nextUrl.pathname.startsWith("/admin")) {
+  // El service worker debe poder actualizarse aunque la sesión haya
+  // expirado o el usuario cierre sesión en otra pestaña — si esta ruta
+  // quedara detrás del login, el navegador aborta la actualización del
+  // SW por venir "redirigida" (no es un problema de datos: el script es
+  // estático, sin nada específico del restaurante).
+  if (
+    !user &&
+    request.nextUrl.pathname.startsWith("/admin") &&
+    request.nextUrl.pathname !== "/admin/sw.js"
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", request.nextUrl.pathname);

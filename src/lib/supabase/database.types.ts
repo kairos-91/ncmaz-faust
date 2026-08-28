@@ -294,6 +294,36 @@ export interface Database {
         };
         Relationships: [];
       };
+      admin_push_subscriptions: {
+        Row: {
+          id: string;
+          restaurant_id: string;
+          user_id: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          restaurant_id: string;
+          user_id: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          restaurant_id?: string;
+          user_id?: string;
+          endpoint?: string;
+          p256dh?: string;
+          auth?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       reviews: {
         Row: {
           id: string;
@@ -508,6 +538,14 @@ export interface Database {
       restaurant_rating: {
         Args: { p_restaurant_id: string };
         Returns: { avg_rating: number | null; review_count: number }[];
+      };
+      get_admin_push_subscriptions: {
+        Args: { p_restaurant_id: string };
+        Returns: { endpoint: string; p256dh: string; auth: string }[];
+      };
+      delete_admin_push_subscription: {
+        Args: { p_endpoint: string };
+        Returns: undefined;
       };
     };
     Enums: Record<string, never>;

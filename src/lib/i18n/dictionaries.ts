@@ -457,6 +457,13 @@ const es = {
     title: "Pedidos",
     subtitle: "Pedidos hechos desde tu menú público. Acepta o rechaza cada uno.",
   },
+  notifyOrders: {
+    enable: "🔔 Recibir alerta de pedidos nuevos",
+    enabling: "Activando...",
+    enabled: "🔔 Alertas activadas",
+    denied: "Bloqueaste las notificaciones. Actívalas desde los ajustes del navegador.",
+    error: "No pudimos activar las notificaciones. Intenta de nuevo.",
+  },
   ordersManager: {
     filters: { pending: "Pendientes", accepted: "Aceptados", rejected: "Rechazados", all: "Todos" },
     empty: "No hay pedidos en esta categoría.",
@@ -1063,6 +1070,13 @@ const en: typeof es = {
   ordersPage: {
     title: "Orders",
     subtitle: "Orders placed from your public menu. Accept or reject each one.",
+  },
+  notifyOrders: {
+    enable: "🔔 Get alerted on new orders",
+    enabling: "Enabling...",
+    enabled: "🔔 Alerts enabled",
+    denied: "You blocked notifications. Enable them from your browser settings.",
+    error: "We couldn't enable notifications. Try again.",
   },
   ordersManager: {
     filters: { pending: "Pending", accepted: "Accepted", rejected: "Rejected", all: "All" },

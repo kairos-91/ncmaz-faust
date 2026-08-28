@@ -442,6 +442,34 @@ export async function updateOrderStatus(
   revalidatePath("/admin/orders");
 }
 
+export async function subscribeAdminToPush(
+  restaurantId: string,
+  subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
+) {
+  const { supabase, user } = await requireStaffAccess(restaurantId);
+  const { error } = await supabase.from("admin_push_subscriptions").upsert(
+    {
+      restaurant_id: restaurantId,
+      user_id: user.id,
+      endpoint: subscription.endpoint,
+      p256dh: subscription.keys.p256dh,
+      auth: subscription.keys.auth,
+    },
+    { onConflict: "restaurant_id,endpoint" },
+  );
+  if (error) return { error: error.message };
+  return { success: true };
+}
+
+export async function unsubscribeAdminFromPush(restaurantId: string, endpoint: string) {
+  const { supabase } = await requireStaffAccess(restaurantId);
+  await supabase
+    .from("admin_push_subscriptions")
+    .delete()
+    .eq("restaurant_id", restaurantId)
+    .eq("endpoint", endpoint);
+}
+
 export async function signOut() {
   const { supabase } = await requireUser();
   await supabase.auth.signOut();

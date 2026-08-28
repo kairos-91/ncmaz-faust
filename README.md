@@ -183,6 +183,13 @@ o recíbelo como prop `t` (client) donde lo necesites.
      reseñas visibles sin exponer las filas individuales; se usa para
      mostrar "★ 4.8" junto al nombre del restaurante en el menú público
      sin depender de la política de lectura pública que se quitó en 0021.
+   - `supabase/migrations/0023_admin_push_subscriptions.sql` — tabla
+     `admin_push_subscriptions` (distinta de `push_subscriptions`, que es
+     de los clientes) para avisarle al dueño/staff, con notificación del
+     sistema, cuando entra un pedido nuevo. Incluye las funciones
+     `get_admin_push_subscriptions`/`delete_admin_push_subscription`
+     (security definer) porque `createOrder()` la dispara un cliente sin
+     sesión y necesita leer/limpiar esas suscripciones sin pasar por RLS.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
