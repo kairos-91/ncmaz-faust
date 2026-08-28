@@ -36,7 +36,7 @@ export default async function Home() {
               alt=""
               fill
               priority
-              className="object-cover object-center"
+              className="object-cover object-bottom"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40 dark:from-neutral-950 dark:via-neutral-950/90 dark:to-neutral-950/50" />
           </div>
@@ -79,7 +79,7 @@ export default async function Home() {
         >
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <div className="text-center">
-              <h2 className="text-3xl font-bold uppercase tracking-wide text-neutral-900 dark:text-white sm:text-4xl">
+              <h2 className="text-3xl font-bold tracking-wide text-neutral-900 dark:text-white sm:text-4xl">
                 {t.howItWorks.heading}
               </h2>
               <span className="mx-auto mt-3 block h-1 w-16 rounded-full bg-lime-500 dark:bg-lime-400" />
@@ -97,7 +97,7 @@ export default async function Home() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-lime-100 text-lime-700 dark:bg-lime-400/10 dark:text-lime-400">
                     <Icon className="h-6 w-6" />
                   </div>
-                  <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-neutral-900 dark:text-white">
+                  <h3 className="mt-5 text-sm font-bold tracking-wide text-neutral-900 dark:text-white">
                     {title}
                   </h3>
                   <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">

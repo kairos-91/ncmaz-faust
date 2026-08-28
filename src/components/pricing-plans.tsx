@@ -36,7 +36,7 @@ export async function PricingPlans({
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="text-center">
-          <Heading className="text-3xl font-bold uppercase tracking-wide text-neutral-900 dark:text-white sm:text-4xl">
+          <Heading className="text-3xl font-bold tracking-wide text-neutral-900 dark:text-white sm:text-4xl">
             {t.pricingSection.heading}
           </Heading>
           <span className="mx-auto mt-3 block h-1 w-16 rounded-full bg-lime-500 dark:bg-lime-400" />
@@ -62,7 +62,7 @@ export async function PricingPlans({
                 </span>
               )}
 
-              <p className="text-center text-sm font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+              <p className="text-center text-sm font-semibold tracking-wide text-neutral-500 dark:text-neutral-400">
                 {plan.name}
               </p>
 

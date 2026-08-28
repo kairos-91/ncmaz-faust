@@ -10,7 +10,7 @@ export function FaqSection({ t }: { t: Dictionary["faq"] }) {
     <section className="bg-white py-20 dark:bg-neutral-950">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="text-center">
-          <h2 className="text-3xl font-bold uppercase tracking-wide text-neutral-900 dark:text-white sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-wide text-neutral-900 dark:text-white sm:text-4xl">
             {t.heading}
           </h2>
           <span className="mx-auto mt-3 block h-1 w-16 rounded-full bg-lime-500 dark:bg-lime-400" />

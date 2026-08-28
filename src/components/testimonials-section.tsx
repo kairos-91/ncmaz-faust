@@ -8,7 +8,7 @@ export async function TestimonialsSection() {
     <section className="bg-neutral-950 py-20 text-white">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-lime-400">
+          <p className="text-sm font-semibold tracking-widest text-lime-400">
             {t.testimonials.label}
           </p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
