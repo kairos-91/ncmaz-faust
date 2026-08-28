@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -8,25 +9,78 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import { Logo } from "@/components/logo";
 import { isSuperadmin } from "@/lib/superadmin";
+import { createClient } from "@/lib/supabase/client";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 
 export function AdminNav({
   email,
   locale,
   t,
-  pendingOrders = 0,
+  pendingOrders: initialPendingOrders = 0,
   isStaff = false,
+  restaurantId = null,
 }: {
   email: string | null;
   locale: Locale;
   t: Dictionary["adminNav"];
   pendingOrders?: number;
   isStaff?: boolean;
+  restaurantId?: string | null;
 }) {
   const pathname = usePathname();
+  const [pendingOrders, setPendingOrders] = useState(initialPendingOrders);
+  const [prevInitial, setPrevInitial] = useState(initialPendingOrders);
+  if (initialPendingOrders !== prevInitial) {
+    setPrevInitial(initialPendingOrders);
+    setPendingOrders(initialPendingOrders);
+  }
+
+  useEffect(() => {
+    if (!restaurantId) return;
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`orders-badge-${restaurantId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "orders",
+          filter: `restaurant_id=eq.${restaurantId}`,
+        },
+        (payload) => {
+          if ((payload.new as { status?: string }).status === "pending") {
+            setPendingOrders((n) => n + 1);
+          }
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "orders",
+          filter: `restaurant_id=eq.${restaurantId}`,
+        },
+        (payload) => {
+          const oldStatus = (payload.old as { status?: string }).status;
+          const newStatus = (payload.new as { status?: string }).status;
+          if (oldStatus === "pending" && newStatus !== "pending") {
+            setPendingOrders((n) => Math.max(0, n - 1));
+          } else if (oldStatus !== "pending" && newStatus === "pending") {
+            setPendingOrders((n) => n + 1);
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [restaurantId]);
 
   const allLinks = [
-    { href: "/admin", label: t.summary, ownerOnly: true },
+    { href: "/admin", label: t.summary, badge: pendingOrders, ownerOnly: true },
     { href: "/admin/analytics", label: t.analytics, ownerOnly: true },
     { href: "/admin/sales", label: t.sales, ownerOnly: true },
     { href: "/admin/restaurant", label: t.myRestaurant, ownerOnly: true },

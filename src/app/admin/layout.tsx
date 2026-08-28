@@ -32,6 +32,7 @@ export default async function AdminLayout({
         t={t.adminNav}
         pendingOrders={pendingOrders}
         isStaff={role === "staff"}
+        restaurantId={restaurant?.id ?? null}
       />
       <main className="flex-1 px-4 py-8 md:px-10">
         <div className="mx-auto max-w-3xl">{children}</div>

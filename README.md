@@ -190,6 +190,11 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `get_admin_push_subscriptions`/`delete_admin_push_subscription`
      (security definer) porque `createOrder()` la dispara un cliente sin
      sesión y necesita leer/limpiar esas suscripciones sin pasar por RLS.
+   - `supabase/migrations/0024_orders_realtime.sql` — agrega `orders` a
+     la publicación `supabase_realtime` (y `replica identity full`) para
+     que el panel admin (insignia de pedidos pendientes en el menú y la
+     lista de `/admin/orders`) se actualice solo, sin necesidad de F5,
+     cuando entra un pedido nuevo o cambia de estado.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import { Bike, Check, Store, UtensilsCrossed, X } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { parseOrderItems, type OrderStatus } from "@/lib/orders";
 import { PAYMENT_METHOD_META, type PaymentMethodId } from "@/lib/payment-methods";
 import { updateOrderStatus } from "@/app/admin/actions";
+import { createClient } from "@/lib/supabase/client";
 import type { Order } from "@/lib/supabase/database.types";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 
@@ -21,7 +22,7 @@ const ORDER_TYPE_ICONS = {
 export function OrdersManager({
   restaurantId,
   currency,
-  orders,
+  orders: initialOrders,
   locale,
   t,
 }: {
@@ -32,6 +33,52 @@ export function OrdersManager({
   t: T;
 }) {
   const [filter, setFilter] = useState<OrderStatus | "all">("pending");
+  const [orders, setOrders] = useState(initialOrders);
+  const [prevInitialOrders, setPrevInitialOrders] = useState(initialOrders);
+  if (initialOrders !== prevInitialOrders) {
+    setPrevInitialOrders(initialOrders);
+    setOrders(initialOrders);
+  }
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`orders-list-${restaurantId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "orders",
+          filter: `restaurant_id=eq.${restaurantId}`,
+        },
+        (payload) => {
+          const newOrder = payload.new as Order;
+          setOrders((prev) =>
+            prev.some((o) => o.id === newOrder.id) ? prev : [newOrder, ...prev],
+          );
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "orders",
+          filter: `restaurant_id=eq.${restaurantId}`,
+        },
+        (payload) => {
+          const updated = payload.new as Order;
+          setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [restaurantId]);
+
   const visibleOrders =
     filter === "all" ? orders : orders.filter((o) => o.status === filter);
 
