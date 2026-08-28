@@ -99,10 +99,30 @@ export function SubscriptionView({
                 </span>
               </div>
 
-              {isCurrent ? (
+              {isCurrent && plan.priceUsd === 0 ? (
                 <span className="mt-5 flex items-center justify-center gap-1.5 rounded-full bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
                   <Check className="h-4 w-4" /> {t.currentPlanBadge}
                 </span>
+              ) : isCurrent ? (
+                <div className="mt-5 flex flex-col items-center gap-2">
+                  <span className="flex items-center justify-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                    <Check className="h-3.5 w-3.5" /> {t.currentPlanBadge}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSelectedId(selectedId === plan.id ? null : plan.id)
+                    }
+                    className={cn(
+                      "rounded-full px-4 py-2 text-sm font-semibold",
+                      selectedId === plan.id
+                        ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+                        : "bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700",
+                    )}
+                  >
+                    {selectedId === plan.id ? t.hidePayment : t.renew}
+                  </button>
+                </div>
               ) : plan.priceUsd === 0 ? (
                 <span className="mt-5 flex items-center justify-center rounded-full px-4 py-2 text-sm text-neutral-400 dark:text-neutral-600">
                   {t.freePlanBadge}

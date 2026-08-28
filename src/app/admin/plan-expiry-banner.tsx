@@ -16,6 +16,14 @@ export function PlanExpiryBanner({
   subscriptionT: Pick<Dictionary["subscriptionView"], "daysLeft" | "dueToday" | "daysOverdue">;
 }) {
   const urgent = daysLeft <= 3;
+  const overdue = daysLeft < 0;
+  const title = overdue
+    ? isPaidPlan
+      ? t.proTitleOverdue
+      : t.trialTitleOverdue
+    : isPaidPlan
+      ? t.proTitle
+      : t.trialTitle;
   const timeText =
     daysLeft > 0
       ? subscriptionT.daysLeft(daysLeft)
@@ -46,7 +54,7 @@ export function PlanExpiryBanner({
                 : "text-amber-800 dark:text-amber-300"
             }`}
           >
-            {isPaidPlan ? t.proTitle : t.trialTitle}
+            {title}
           </p>
           <p
             className={`mt-0.5 text-sm ${
