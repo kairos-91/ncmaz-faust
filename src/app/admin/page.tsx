@@ -18,6 +18,7 @@ import { RestaurantForm } from "./restaurant/restaurant-form";
 import { QrCard } from "./qr-card";
 import { Button } from "@/components/ui/button";
 import { SalesCharts } from "./sales/sales-charts";
+import { OrdersButton } from "./orders-button";
 
 export const metadata: Metadata = { title: "Resumen" };
 
@@ -63,6 +64,7 @@ export default async function AdminDashboardPage() {
     ]);
 
   const sales = computeSalesSummary(orders ?? []);
+  const pendingOrders = (orders ?? []).filter((o) => o.status === "pending").length;
   const bsFor = (amountUsd: number) =>
     bcvRate ? formatBs(amountUsd, bcvRate.rate) : null;
   const dailyChart = lastNDays(groupSalesByDay(orders ?? []), new Date(), 30);
@@ -78,6 +80,20 @@ export default async function AdminDashboardPage() {
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {restaurant.is_published ? t.dashboard.published : t.dashboard.unpublished}
         </p>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <Link href="/admin/sales">
+          <Button variant="secondary">{t.dashboard.viewSales}</Button>
+        </Link>
+        <OrdersButton
+          restaurantId={restaurant.id}
+          initialPendingOrders={pendingOrders}
+          label={t.dashboard.viewOrders}
+        />
+        <Link href="/admin/subscription">
+          <Button variant="secondary">{t.dashboard.viewPlans}</Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -124,23 +140,24 @@ export default async function AdminDashboardPage() {
       />
 
       <div className="flex flex-wrap gap-3">
-        <Link href="/admin/sales">
-          <Button variant="secondary">{t.dashboard.viewSales}</Button>
-        </Link>
         <Link href="/admin/categories">
           <Button variant="secondary">{t.dashboard.manageCategories}</Button>
         </Link>
         <Link href="/admin/menu">
           <Button variant="secondary">{t.dashboard.manageMenu}</Button>
         </Link>
-        <Link href="/admin/subscription">
-          <Button variant="secondary">{t.dashboard.viewPlans}</Button>
-        </Link>
       </div>
 
       <QrCard
         publicUrl={publicUrl}
-        t={{ qrTitle: t.dashboard.qrTitle, qrHint: t.dashboard.qrHint }}
+        slug={restaurant.slug}
+        themeColor={restaurant.theme_color}
+        restaurantLogoUrl={restaurant.logo_url}
+        t={{
+          qrTitle: t.dashboard.qrTitle,
+          qrHint: t.dashboard.qrHint,
+          ...t.qrCustomizer,
+        }}
       />
     </div>
   );
