@@ -39,6 +39,10 @@ export function QrCard({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const qrRef = useRef<QRCodeStyling | null>(null);
+  // Instancia aparte, nunca visible, solo para exportar en alta resolución:
+  // así la descarga sale nítida en impresión aunque la vista previa en
+  // pantalla se mantenga chica.
+  const qrExportRef = useRef<QRCodeStyling | null>(null);
 
   const logoImage =
     logoOption === "restaurant"
@@ -47,6 +51,18 @@ export function QrCard({
         ? customLogo ?? undefined
         : undefined;
 
+  const styleOptions = (scale: number) => ({
+    qrOptions: { errorCorrectionLevel: "H" as const },
+    imageOptions: { crossOrigin: "anonymous", margin: 6 * scale, imageSize: 0.35 },
+    dotsOptions: { type: SHAPE_DOT_TYPE[shape], color: dotColor },
+    cornersSquareOptions: {
+      type: shape === "square" ? ("square" as const) : ("extra-rounded" as const),
+    },
+    cornersDotOptions: { type: shape === "square" ? ("square" as const) : ("dot" as const) },
+    backgroundOptions: { color: bgColor },
+    image: logoImage,
+  });
+
   useEffect(() => {
     qrRef.current = new QRCodeStyling({
       width: 220,
@@ -54,36 +70,31 @@ export function QrCard({
       type: "svg",
       data: publicUrl,
       margin: 8,
-      qrOptions: { errorCorrectionLevel: "H" },
-      imageOptions: { crossOrigin: "anonymous", margin: 6, imageSize: 0.35 },
-      dotsOptions: { type: SHAPE_DOT_TYPE[shape], color: dotColor },
-      cornersSquareOptions: {
-        type: shape === "square" ? "square" : "extra-rounded",
-      },
-      cornersDotOptions: { type: shape === "square" ? "square" : "dot" },
-      backgroundOptions: { color: bgColor },
-      image: logoImage,
+      ...styleOptions(1),
     });
     if (containerRef.current) {
       containerRef.current.innerHTML = "";
       qrRef.current.append(containerRef.current);
     }
+
+    qrExportRef.current = new QRCodeStyling({
+      width: 1024,
+      height: 1024,
+      type: "canvas",
+      data: publicUrl,
+      margin: 40,
+      ...styleOptions(1024 / 220),
+    });
     // Solo se crea una vez, con los valores iniciales; los cambios
     // posteriores de color/forma/logo los aplica el efecto de abajo con
-    // .update() en la misma instancia.
+    // .update() en las mismas instancias.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publicUrl]);
 
   useEffect(() => {
-    qrRef.current?.update({
-      dotsOptions: { type: SHAPE_DOT_TYPE[shape], color: dotColor },
-      cornersSquareOptions: {
-        type: shape === "square" ? "square" : "extra-rounded",
-      },
-      cornersDotOptions: { type: shape === "square" ? "square" : "dot" },
-      backgroundOptions: { color: bgColor },
-      image: logoImage,
-    });
+    qrRef.current?.update(styleOptions(1));
+    qrExportRef.current?.update(styleOptions(1024 / 220));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shape, dotColor, bgColor, logoImage]);
 
   const handleCustomLogo = (file: File | undefined) => {
@@ -113,7 +124,9 @@ export function QrCard({
           type="button"
           variant="secondary"
           size="sm"
-          onClick={() => qrRef.current?.download({ name: `qr-${slug}`, extension: "png" })}
+          onClick={() =>
+            qrExportRef.current?.download({ name: `qr-${slug}`, extension: "png" })
+          }
         >
           {t.download}
         </Button>
