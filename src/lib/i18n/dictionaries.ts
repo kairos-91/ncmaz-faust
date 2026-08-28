@@ -539,6 +539,14 @@ const es = {
     freePlanBadge: "Plan gratuito",
     hidePayment: "Ocultar formas de pago",
   },
+  planBanner: {
+    trialTitle: "¡Tu prueba gratis está por vencer!",
+    proTitle: "Tu plan Pro está por vencer",
+    trialHint: "Activa el plan Pro para no perder tu menú publicado y seguir recibiendo pedidos.",
+    proHint: "Renueva para seguir recibiendo pedidos sin interrupciones.",
+    activate: "Activar plan Pro",
+    renew: "Renovar plan",
+  },
   subscriptionPaymentMethods: {
     payPlan: (name: string, price: string) => `Paga tu plan ${name} (${price})`,
     instructions:
@@ -1180,6 +1188,14 @@ const en: typeof es = {
     currentPlanBadge: "Current plan",
     freePlanBadge: "Free plan",
     hidePayment: "Hide payment methods",
+  },
+  planBanner: {
+    trialTitle: "Your free trial is about to end!",
+    proTitle: "Your Pro plan is about to expire",
+    trialHint: "Activate the Pro plan so you don't lose your published menu and keep receiving orders.",
+    proHint: "Renew to keep receiving orders without interruptions.",
+    activate: "Activate Pro plan",
+    renew: "Renew plan",
   },
   subscriptionPaymentMethods: {
     payPlan: (name: string, price: string) => `Pay for your ${name} plan (${price})`,

@@ -19,6 +19,8 @@ import { QrCard } from "./qr-card";
 import { Button } from "@/components/ui/button";
 import { SalesCharts } from "./sales/sales-charts";
 import { OrdersButton } from "./orders-button";
+import { PlanExpiryBanner } from "./plan-expiry-banner";
+import { daysUntil } from "@/lib/subscription-plans";
 
 export const metadata: Metadata = { title: "Resumen" };
 
@@ -46,7 +48,7 @@ export default async function AdminDashboardPage() {
   }
 
   const supabase = await createClient();
-  const [{ count: categoryCount }, { count: itemCount }, { data: orders }, bcvRate] =
+  const [{ count: categoryCount }, { count: itemCount }, { data: orders }, bcvRate, { data: currentPlanRow }] =
     await Promise.all([
       supabase
         .from("categories")
@@ -61,7 +63,15 @@ export default async function AdminDashboardPage() {
         .select("total, status, created_at")
         .eq("restaurant_id", restaurant.id),
       restaurant.currency === "USD" ? getBcvRate() : Promise.resolve(null),
+      supabase
+        .from("subscription_plans")
+        .select("duration_days")
+        .eq("key", restaurant.plan)
+        .maybeSingle(),
     ]);
+
+  const planDaysLeft = daysUntil(restaurant.plan_expires_at);
+  const isPaidPlan = restaurant.plan === "pro" || restaurant.plan === "annual";
 
   const sales = computeSalesSummary(orders ?? []);
   const pendingOrders = (orders ?? []).filter((o) => o.status === "pending").length;
@@ -81,6 +91,16 @@ export default async function AdminDashboardPage() {
           {restaurant.is_published ? t.dashboard.published : t.dashboard.unpublished}
         </p>
       </div>
+
+      {planDaysLeft !== null && planDaysLeft <= 7 && (
+        <PlanExpiryBanner
+          isPaidPlan={isPaidPlan}
+          daysLeft={planDaysLeft}
+          planDurationDays={currentPlanRow?.duration_days ?? null}
+          t={t.planBanner}
+          subscriptionT={t.subscriptionView}
+        />
+      )}
 
       <div className="flex flex-wrap gap-3">
         <Link href="/admin/sales">
