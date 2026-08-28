@@ -216,6 +216,8 @@ export function CheckoutFields({
       `👤 *Cliente*`,
       customerName.trim(),
       `📱 ${customerPhone.trim()}`,
+      DIVIDER,
+      `🙏 Gracias por tu compra`,
     );
 
     const phone = whatsapp.replace(/[^0-9]/g, "");
