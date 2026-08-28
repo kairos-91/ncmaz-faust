@@ -66,6 +66,7 @@ export function CheckoutFields({
   const [methodId, setMethodId] = useState<PaymentMethodId | null>(null);
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
     bankPaidFrom: "",
     reference: "",
@@ -223,6 +224,34 @@ export function CheckoutFields({
     restaurantName,
     whatsapp,
   ]);
+
+  if (orderPlaced) {
+    return (
+      <div className="mt-5 flex flex-col items-center gap-3 border-t border-neutral-100 pt-6 text-center dark:border-neutral-800">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+          <Check className="h-7 w-7 text-green-600 dark:text-green-400" />
+        </div>
+        <div>
+          <p className="text-base font-semibold text-neutral-900 dark:text-white">
+            ¡Pedido enviado con éxito!
+          </p>
+          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+            Ahora envíalo por WhatsApp para que el restaurante lo reciba y confirme.
+          </p>
+        </div>
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white"
+          style={{ backgroundColor: themeColor }}
+        >
+          <Check className="h-4 w-4" />
+          Enviar pedido por WhatsApp
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-5 space-y-4 border-t border-neutral-100 pt-4 dark:border-neutral-800">
@@ -478,7 +507,7 @@ export function CheckoutFields({
               receiptUrl: receiptUrl ?? undefined,
             });
             setSending(false);
-            window.open(whatsappHref, "_blank", "noopener,noreferrer");
+            setOrderPlaced(true);
           }}
           className="flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
           style={{ backgroundColor: themeColor }}
