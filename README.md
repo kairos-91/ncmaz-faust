@@ -219,6 +219,11 @@ o recíbelo como prop `t` (client) donde lo necesites.
    - `supabase/migrations/0029_partner_restaurants.sql` — agrega
      `is_partner` a `restaurants` (solo el superadmin puede activarlo,
      desde /superadmin/restaurants) para la sección "Aliados" del home.
+   - `supabase/migrations/0030_vaquita_hot_demo_menu.sql` — carga un
+     menú completo (7 categorías, 23 platos con toppings/extras) para
+     el restaurante demo "Vaquita Hot" (slug `vaquita-hot`, debe existir
+     de antemano). Es seguro correrla más de una vez: si detecta que ya
+     tiene el menú cargado, no inserta nada de nuevo.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   QrCode,
   Palette,
@@ -31,34 +32,49 @@ export default async function Home() {
       <SiteHeader />
       <main className="flex-1">
         <section className="bg-gradient-to-b from-lime-50 via-white to-white dark:from-lime-400/5 dark:via-neutral-950 dark:to-neutral-950">
-          <div className="mx-auto flex max-w-6xl flex-col items-start px-4 pb-16 pt-24 sm:px-6 md:pb-24 md:pt-32">
-            <span className="inline-flex items-center rounded-full bg-orange-100 px-4 py-1.5 text-sm font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
-              {t.hero.badge}
-            </span>
-            <h1 className="mt-5 max-w-3xl text-5xl font-semibold tracking-tight text-neutral-900 dark:text-white sm:text-6xl md:text-7xl">
-              {t.hero.title}
-            </h1>
-            <p className="mt-5 max-w-lg text-xl text-neutral-600 dark:text-neutral-400">
-              {t.hero.description}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/signup">
-                <Button
-                  size="lg"
-                  className="dark:bg-lime-400 dark:text-neutral-950 dark:hover:bg-lime-300"
-                >
-                  {t.hero.ctaPrimary}
-                </Button>
-              </Link>
-              <Link href="#how-it-works">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
-                >
-                  {t.hero.ctaSecondary}
-                </Button>
-              </Link>
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-24 sm:px-6 md:grid-cols-2 md:pb-24 md:pt-32">
+            <div className="flex flex-col items-start">
+              <span className="inline-flex items-center rounded-full bg-orange-100 px-4 py-1.5 text-sm font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
+                {t.hero.badge}
+              </span>
+              <h1 className="mt-5 text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white sm:text-5xl lg:text-6xl">
+                {t.hero.title}
+              </h1>
+              <p className="mt-5 max-w-lg text-xl text-neutral-600 dark:text-neutral-400">
+                {t.hero.description}
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/signup">
+                  <Button
+                    size="lg"
+                    className="dark:bg-lime-400 dark:text-neutral-950 dark:hover:bg-lime-300"
+                  >
+                    {t.hero.ctaPrimary}
+                  </Button>
+                </Link>
+                <Link href="#how-it-works">
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    className="dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
+                  >
+                    {t.hero.ctaSecondary}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="flex justify-center md:justify-end">
+              <div className="animate-float overflow-hidden rounded-[2.5rem] border-8 border-neutral-900 bg-neutral-900 shadow-2xl">
+                <Image
+                  src="/hero-menu-preview.png"
+                  alt="Vista previa del menú digital en un celular"
+                  width={260}
+                  height={563}
+                  className="block h-auto w-[260px]"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </section>
