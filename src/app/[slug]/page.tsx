@@ -258,7 +258,7 @@ export default async function PublicMenuPage({
                           : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
                       }`}
                     >
-                      ● {openNow ? "Abierto ahora" : "Cerrado ahora"}
+                      ● {openNow ? "Abierto" : "Cerrado"}
                     </span>
                   )}
                   <span
