@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Minus, Plus, Search, UtensilsCrossed } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
-import { formatBs, formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
+import { formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
 import {
   PAYMENT_METHOD_META,
   enabledPaymentMethods,
@@ -295,105 +295,6 @@ export function CreateOrderForm({
         </div>
 
         <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-          <p className="mb-3 text-sm font-medium text-neutral-900 dark:text-white">
-            {t.paymentMethodLabel}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {methods.map((id) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => {
-                  const next = methodId === id ? null : id;
-                  setMethodId(next);
-                  if (next !== "efectivo") {
-                    setNeedsChange(null);
-                    setChangeFor("");
-                  }
-                }}
-                className={cn(
-                  "rounded-full border px-3 py-1.5 text-xs font-medium",
-                  methodId === id
-                    ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
-                    : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
-                )}
-              >
-                {PAYMENT_METHOD_META[id].label}
-              </button>
-            ))}
-          </div>
-
-          {isCash && (
-            <div className="mt-4 space-y-3">
-              <p className="text-sm font-medium text-neutral-900 dark:text-white">
-                {t.cashChangeQuestion}
-              </p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setNeedsChange(true)}
-                  className={cn(
-                    "rounded-full border px-3 py-1.5 text-xs font-medium",
-                    needsChange === true
-                      ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
-                      : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
-                  )}
-                >
-                  {t.yes}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setNeedsChange(false);
-                    setChangeFor("");
-                  }}
-                  className={cn(
-                    "rounded-full border px-3 py-1.5 text-xs font-medium",
-                    needsChange === false
-                      ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
-                      : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
-                  )}
-                >
-                  {t.no}
-                </button>
-              </div>
-              {needsChange && (
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
-                    {t.changeForLabel}
-                  </label>
-                  <input
-                    value={changeFor}
-                    onChange={(e) => setChangeFor(e.target.value)}
-                    placeholder={t.changeForPlaceholder}
-                    className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
-                  />
-                </div>
-              )}
-            </div>
-          )}
-
-          {activeMeta && (
-            <div className="mt-4">
-              {amountBsRaw && bcvRate && (
-                <p className="mb-3 text-sm font-semibold text-neutral-900 dark:text-white">
-                  {t.amountPaidLabel}: Bs {amountBsRaw}
-                  <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-400">
-                    (tasa BCV Bs {bcvRate.rate.toFixed(2)})
-                  </span>
-                </p>
-              )}
-              <ConfirmPaymentFields
-                values={confirmValues}
-                onChange={setConfirm}
-                upload={uploadOrderReceipt.bind(null, restaurantId)}
-                onReceiptUploaded={setReceiptUrl}
-              />
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
           <div className="relative mb-4">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input
@@ -514,6 +415,105 @@ export function CreateOrderForm({
             </div>
           )}
         </div>
+
+        <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
+          <p className="mb-3 text-sm font-medium text-neutral-900 dark:text-white">
+            {t.paymentMethodLabel}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {methods.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => {
+                  const next = methodId === id ? null : id;
+                  setMethodId(next);
+                  if (next !== "efectivo") {
+                    setNeedsChange(null);
+                    setChangeFor("");
+                  }
+                }}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-xs font-medium",
+                  methodId === id
+                    ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                    : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
+                )}
+              >
+                {PAYMENT_METHOD_META[id].label}
+              </button>
+            ))}
+          </div>
+
+          {isCash && (
+            <div className="mt-4 space-y-3">
+              <p className="text-sm font-medium text-neutral-900 dark:text-white">
+                {t.cashChangeQuestion}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setNeedsChange(true)}
+                  className={cn(
+                    "rounded-full border px-3 py-1.5 text-xs font-medium",
+                    needsChange === true
+                      ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                      : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
+                  )}
+                >
+                  {t.yes}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNeedsChange(false);
+                    setChangeFor("");
+                  }}
+                  className={cn(
+                    "rounded-full border px-3 py-1.5 text-xs font-medium",
+                    needsChange === false
+                      ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                      : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
+                  )}
+                >
+                  {t.no}
+                </button>
+              </div>
+              {needsChange && (
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                    {t.changeForLabel}
+                  </label>
+                  <input
+                    value={changeFor}
+                    onChange={(e) => setChangeFor(e.target.value)}
+                    placeholder={t.changeForPlaceholder}
+                    className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeMeta && (
+            <div className="mt-4">
+              {amountBsRaw && bcvRate && (
+                <p className="mb-3 text-sm font-semibold text-neutral-900 dark:text-white">
+                  {t.amountPaidLabel}: Bs {amountBsRaw}
+                  <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-400">
+                    (tasa BCV Bs {bcvRate.rate.toFixed(2)})
+                  </span>
+                </p>
+              )}
+              <ConfirmPaymentFields
+                values={confirmValues}
+                onChange={setConfirm}
+                upload={uploadOrderReceipt.bind(null, restaurantId)}
+                onReceiptUploaded={setReceiptUrl}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="lg:col-span-1">
@@ -571,7 +571,7 @@ export function CreateOrderForm({
 
           {activeMeta?.convertToVes && bcvRate && (
             <p className="text-right text-sm font-semibold text-neutral-900 dark:text-white">
-              {t.totalBs}: {formatBs(total, bcvRate.rate)}
+              {t.totalBs}: {formatBsAmount(total, bcvRate.rate)}
               <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-400">
                 (tasa BCV Bs {bcvRate.rate.toFixed(2)})
               </span>

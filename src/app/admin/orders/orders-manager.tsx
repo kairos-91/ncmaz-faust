@@ -6,7 +6,7 @@ import { Bike, Check, Store, UtensilsCrossed, X } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { parseOrderItems, type OrderStatus } from "@/lib/orders";
 import { PAYMENT_METHOD_META, type PaymentMethodId } from "@/lib/payment-methods";
-import { formatBs, type BcvRate } from "@/lib/bcv-rate";
+import { formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
 import { updateOrderStatus } from "@/app/admin/actions";
 import { createClient } from "@/lib/supabase/client";
 import type { Order } from "@/lib/supabase/database.types";
@@ -257,7 +257,7 @@ function OrderCard({
               </p>
               {showBcvTotal && bcvRate && (
                 <p className="font-semibold text-neutral-900 dark:text-white">
-                  {t.totalBs}: {formatBs(order.total, bcvRate.rate)}
+                  {t.totalBs}: {formatBsAmount(order.total, bcvRate.rate)}
                   <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-500">
                     (tasa BCV Bs {bcvRate.rate.toFixed(2)})
                   </span>
