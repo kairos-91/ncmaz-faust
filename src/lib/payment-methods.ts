@@ -106,21 +106,21 @@ export const PAYMENT_METHOD_META: Record<
     convertToVes: false,
     fields: [
       { key: "payId", label: "Binance Pay ID", placeholder: "000000000" },
-      { key: "red", label: "Red", placeholder: "USDT (BEP20)" },
+      { key: "red", label: "Correo", placeholder: "correo@ejemplo.com" },
     ],
   },
   zinli: {
     label: "Zinli",
     convertToVes: false,
     fields: [
-      { key: "usuario", label: "Usuario/Teléfono", placeholder: "+58 412-0000000" },
+      { key: "usuario", label: "Correo", placeholder: "correo@ejemplo.com" },
     ],
   },
   wally: {
     label: "Wally",
     convertToVes: false,
     fields: [
-      { key: "usuario", label: "Usuario/Teléfono", placeholder: "+58 412-0000000" },
+      { key: "usuario", label: "Teléfono", placeholder: "+58 412-0000000" },
     ],
   },
 };
