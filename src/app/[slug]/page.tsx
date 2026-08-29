@@ -451,7 +451,15 @@ export default async function PublicMenuPage({
           />
         )}
 
-        <p className="mt-12 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-400 dark:text-neutral-600">
+        {restaurant.rif && (
+          <p className="mt-12 text-center text-xs text-neutral-400 dark:text-neutral-600">
+            {restaurant.name} {restaurant.rif}
+          </p>
+        )}
+
+        <p
+          className={`${restaurant.rif ? "mt-1" : "mt-12"} flex items-center justify-center gap-1.5 text-center text-xs text-neutral-400 dark:text-neutral-600`}
+        >
           Hecho con{" "}
           <Link href="/" className="inline-flex">
             <Logo height={22} />

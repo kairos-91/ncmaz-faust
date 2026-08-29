@@ -143,6 +143,19 @@ export function RestaurantForm({
       </div>
 
       <div>
+        <Label htmlFor="rif">{t.rifLabel}</Label>
+        <p className="mt-1 mb-2 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.rifHint}
+        </p>
+        <Input
+          id="rif"
+          name="rif"
+          defaultValue={restaurant?.rif ?? ""}
+          placeholder="J-12345678-9"
+        />
+      </div>
+
+      <div>
         <Label htmlFor="maps_url">{t.mapsUrlLabel}</Label>
         <Input
           id="maps_url"

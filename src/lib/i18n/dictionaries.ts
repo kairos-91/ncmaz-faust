@@ -371,6 +371,9 @@ const es = {
     stateLabel: "Estado",
     stateSelectPlaceholder: "Selecciona un estado",
     countryLabel: "País",
+    rifLabel: "RIF",
+    rifHint:
+      "Información fiscal de tu tienda (Registro de Información Fiscal). Ejemplo: J-12345678-9",
     mapsUrlLabel: "Enlace de Google Maps",
     mapsUrlPlaceholder: "https://maps.app.goo.gl/...",
     mapsUrlHint:
@@ -1145,6 +1148,9 @@ const en: typeof es = {
     stateLabel: "State",
     stateSelectPlaceholder: "Select a state",
     countryLabel: "Country",
+    rifLabel: "Tax ID (RIF)",
+    rifHint:
+      "Your store's tax information (Fiscal Information Registry). Example: J-12345678-9",
     mapsUrlLabel: "Google Maps link",
     mapsUrlPlaceholder: "https://maps.app.goo.gl/...",
     mapsUrlHint:

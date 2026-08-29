@@ -242,6 +242,11 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `false`): si el restaurante lo activa desde /admin/restaurant, el
      menú público sigue aceptando pedidos aunque esté fuera del
      horario configurado.
+   - `supabase/migrations/0035_restaurant_rif.sql` — agrega `rif` a
+     `restaurants` (opcional): el restaurante lo carga desde
+     /admin/restaurant y, si está configurado, se muestra en el menú
+     público en el footer, arriba del crédito "Hecho con Levery" (ej.
+     "Vaquita Hot J-12345678-9").
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

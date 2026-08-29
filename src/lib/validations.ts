@@ -44,6 +44,7 @@ export const restaurantSchema = z.object({
   address: z.string().max(200).optional().or(z.literal("")),
   state: z.string().max(60).optional().or(z.literal("")),
   country: z.string().max(60).optional().or(z.literal("")),
+  rif: z.string().max(20).optional().or(z.literal("")),
   maps_url: z.string().max(500).optional().or(z.literal("")),
   instagram_url: z.string().max(500).optional().or(z.literal("")),
   tiktok_url: z.string().max(500).optional().or(z.literal("")),

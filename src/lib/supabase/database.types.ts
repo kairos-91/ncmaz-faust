@@ -21,6 +21,7 @@ export interface Database {
           address: string | null;
           state: string | null;
           country: string;
+          rif: string | null;
           maps_url: string | null;
           instagram_url: string | null;
           tiktok_url: string | null;
@@ -57,6 +58,7 @@ export interface Database {
           address?: string | null;
           state?: string | null;
           country?: string;
+          rif?: string | null;
           maps_url?: string | null;
           instagram_url?: string | null;
           tiktok_url?: string | null;
@@ -93,6 +95,7 @@ export interface Database {
           address?: string | null;
           state?: string | null;
           country?: string;
+          rif?: string | null;
           maps_url?: string | null;
           instagram_url?: string | null;
           tiktok_url?: string | null;
