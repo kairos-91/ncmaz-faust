@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PaymentMethods } from "./payment-methods";
@@ -37,6 +37,16 @@ export function SubscriptionView({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const currentPlan = plans.find((p) => p.key === currentPlanKey) ?? null;
   const selectedPlan = plans.find((p) => p.id === selectedId) ?? null;
+  const paymentSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectedId) {
+      paymentSectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [selectedId]);
 
   return (
     <div className="space-y-6">
@@ -151,16 +161,18 @@ export function SubscriptionView({
       </div>
 
       {selectedPlan && (
-        <PaymentMethods
-          restaurantId={restaurantId}
-          restaurantName={restaurantName}
-          plan={selectedPlan}
-          platformPaymentMethods={platformPaymentMethods}
-          supportWhatsappNumber={supportWhatsappNumber}
-          bcvRate={bcvRate}
-          locale={locale}
-          t={paymentT}
-        />
+        <div ref={paymentSectionRef}>
+          <PaymentMethods
+            restaurantId={restaurantId}
+            restaurantName={restaurantName}
+            plan={selectedPlan}
+            platformPaymentMethods={platformPaymentMethods}
+            supportWhatsappNumber={supportWhatsappNumber}
+            bcvRate={bcvRate}
+            locale={locale}
+            t={paymentT}
+          />
+        </div>
       )}
     </div>
   );
