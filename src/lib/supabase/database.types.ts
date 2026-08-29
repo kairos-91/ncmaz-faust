@@ -210,6 +210,7 @@ export interface Database {
           payment_reference: string | null;
           amount_paid: string | null;
           receipt_url: string | null;
+          change_for: string | null;
           delivery_zone: string | null;
           delivery_fee: number;
           coupon_code: string | null;
@@ -235,6 +236,7 @@ export interface Database {
           payment_reference?: string | null;
           amount_paid?: string | null;
           receipt_url?: string | null;
+          change_for?: string | null;
           delivery_zone?: string | null;
           delivery_fee?: number;
           coupon_code?: string | null;
@@ -260,6 +262,7 @@ export interface Database {
           payment_reference?: string | null;
           amount_paid?: string | null;
           receipt_url?: string | null;
+          change_for?: string | null;
           delivery_zone?: string | null;
           delivery_fee?: number;
           coupon_code?: string | null;

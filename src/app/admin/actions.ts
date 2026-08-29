@@ -464,6 +464,7 @@ export async function createOrderFromAdmin(
     reference?: string;
     amountPaid?: string;
     receiptUrl?: string;
+    changeFor?: string;
   },
 ) {
   const { supabase } = await requireStaffAccess(restaurantId);
@@ -525,6 +526,7 @@ export async function createOrderFromAdmin(
     payment_reference: input.reference || null,
     amount_paid: input.amountPaid || null,
     receipt_url: input.receiptUrl || null,
+    change_for: input.changeFor || null,
   });
   if (error) return { error: error.message };
 

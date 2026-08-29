@@ -75,6 +75,7 @@ export async function createOrder(
     reference?: string;
     amountPaid?: string;
     receiptUrl?: string;
+    changeFor?: string;
   },
 ) {
   if (!input.customerName.trim() || !input.customerPhone.trim()) {
@@ -104,6 +105,7 @@ export async function createOrder(
       payment_reference: input.reference || null,
       amount_paid: input.amountPaid || null,
       receipt_url: input.receiptUrl || null,
+      change_for: input.changeFor || null,
     })
     .select("id")
     .single();

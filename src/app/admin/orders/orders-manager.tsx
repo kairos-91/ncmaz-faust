@@ -164,11 +164,9 @@ function OrderCard({
   const [isPending, startTransition] = useTransition();
   const items = parseOrderItems(order.items);
   const Icon = ORDER_TYPE_ICONS[order.order_type as keyof typeof ORDER_TYPE_ICONS];
-  const isCash = order.payment_method === "efectivo";
-  const methodMeta =
-    order.payment_method && !isCash
-      ? PAYMENT_METHOD_META[order.payment_method as PaymentMethodId]
-      : null;
+  const methodMeta = order.payment_method
+    ? PAYMENT_METHOD_META[order.payment_method as PaymentMethodId]
+    : null;
 
   const setStatus = (status: OrderStatus) =>
     startTransition(() => updateOrderStatus(restaurantId, order.id, status));
@@ -243,15 +241,16 @@ function OrderCard({
           <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
             {t.payment}
           </p>
-          {isCash ? (
-            <p className="mt-1 text-sm font-medium text-neutral-900 dark:text-white">
-              {t.cashLabel}
-            </p>
-          ) : methodMeta ? (
+          {methodMeta ? (
             <div className="mt-1 space-y-0.5 text-sm text-neutral-700 dark:text-neutral-300">
               <p className="font-medium text-neutral-900 dark:text-white">
                 {methodMeta.label}
               </p>
+              {order.change_for && (
+                <p>
+                  {t.changeFor}: {order.change_for}
+                </p>
+              )}
               {order.bank_paid_from && (
                 <p>
                   {t.bankFrom}: {order.bank_paid_from}

@@ -104,6 +104,8 @@ export function CheckoutFields({
   } | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [checkingCoupon, setCheckingCoupon] = useState(false);
+  const [needsChange, setNeedsChange] = useState<boolean | null>(null);
+  const [changeFor, setChangeFor] = useState("");
 
   const methods = enabledPaymentMethods(paymentMethods);
   const deliveryFee =
@@ -140,6 +142,10 @@ export function CheckoutFields({
     }
     setShowMethodError(false);
     setMethodId(id);
+    if (id !== "efectivo") {
+      setNeedsChange(null);
+      setChangeFor("");
+    }
   };
 
   useEffect(() => {
@@ -228,7 +234,8 @@ export function CheckoutFields({
     setCouponError(null);
   };
 
-  const activeMeta = methodId ? PAYMENT_METHOD_META[methodId] : null;
+  const isCash = methodId === "efectivo";
+  const activeMeta = methodId && !isCash ? PAYMENT_METHOD_META[methodId] : null;
   const activeValues = methodId
     ? (paymentMethods[methodId] as unknown as Record<string, string>)
     : null;
@@ -253,7 +260,8 @@ export function CheckoutFields({
     (orderType !== "delivery" ||
       deliveryZones.length === 0 ||
       deliveryZone.length > 0) &&
-    (methods.length === 0 || Boolean(methodId));
+    (methods.length === 0 || Boolean(methodId)) &&
+    (!isCash || (needsChange !== null && (!needsChange || changeFor.trim().length > 0)));
 
   const whatsappHref = useMemo(() => {
     if (!canSubmit || !orderType) return "#";
@@ -308,7 +316,14 @@ export function CheckoutFields({
     if (orderType === "dine_in" && table.trim()) {
       parts.push(`🍽️ Mesa: ${table.trim()}`);
     }
-    if (activeMeta) {
+    if (isCash) {
+      parts.push(DIVIDER, `💳 *Pago*`, "Efectivo");
+      parts.push(
+        needsChange && changeFor.trim()
+          ? `💵 Necesita cambio, paga con: ${changeFor.trim()}`
+          : "💵 Paga con monto exacto",
+      );
+    } else if (activeMeta) {
       parts.push(DIVIDER, `💳 *Pago*`, activeMeta.label);
       if (confirmValues.bankPaidFrom) {
         parts.push(`🏦 Banco: ${confirmValues.bankPaidFrom}`);
@@ -349,6 +364,9 @@ export function CheckoutFields({
     amountBs,
     address,
     table,
+    isCash,
+    needsChange,
+    changeFor,
     activeMeta,
     confirmValues.bankPaidFrom,
     confirmValues.reference,
@@ -595,6 +613,56 @@ export function CheckoutFields({
         </div>
       )}
 
+      {isCash && (
+        <div ref={paymentDetailsRef} className="space-y-3">
+          <p className="text-sm font-medium text-neutral-900 dark:text-white">
+            ¿Necesitas cambio/vuelto?
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setNeedsChange(true)}
+              className={cn(
+                "rounded-full border px-3 py-1.5 text-xs font-medium",
+                needsChange === true
+                  ? "border-transparent text-white"
+                  : "border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400",
+              )}
+              style={needsChange === true ? { backgroundColor: themeColor } : undefined}
+            >
+              Sí
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setNeedsChange(false);
+                setChangeFor("");
+              }}
+              className={cn(
+                "rounded-full border px-3 py-1.5 text-xs font-medium",
+                needsChange === false
+                  ? "border-transparent text-white"
+                  : "border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400",
+              )}
+              style={needsChange === false ? { backgroundColor: themeColor } : undefined}
+            >
+              No
+            </button>
+          </div>
+          {needsChange && (
+            <div>
+              <Label htmlFor="changeFor">¿Con cuánto vas a pagar?</Label>
+              <Input
+                id="changeFor"
+                value={changeFor}
+                onChange={(e) => setChangeFor(e.target.value)}
+                placeholder="Billete de $20"
+              />
+            </div>
+          )}
+        </div>
+      )}
+
       {activeMeta && activeValues && (
         <div ref={paymentDetailsRef} className="space-y-3">
           {amountBs && (
@@ -675,10 +743,11 @@ export function CheckoutFields({
               total: grandTotal,
               currency,
               paymentMethod: methodId ?? undefined,
-              bankPaidFrom: confirmValues.bankPaidFrom || undefined,
-              reference: confirmValues.reference || undefined,
-              amountPaid: confirmValues.amountPaid || undefined,
-              receiptUrl: receiptUrl ?? undefined,
+              bankPaidFrom: isCash ? undefined : confirmValues.bankPaidFrom || undefined,
+              reference: isCash ? undefined : confirmValues.reference || undefined,
+              amountPaid: isCash ? undefined : confirmValues.amountPaid || undefined,
+              receiptUrl: isCash ? undefined : (receiptUrl ?? undefined),
+              changeFor: isCash && needsChange ? changeFor.trim() || undefined : undefined,
             });
             setSending(false);
             if ("error" in result) {

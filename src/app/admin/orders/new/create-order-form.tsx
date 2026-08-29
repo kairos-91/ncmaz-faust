@@ -26,7 +26,6 @@ import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 type T = Dictionary["createOrderForm"];
 type OrderType = "delivery" | "pickup" | "dine_in";
 type Line = { qty: number; extraNames: string[] };
-type MethodId = PaymentMethodId | "efectivo";
 
 export function CreateOrderForm({
   restaurantId,
@@ -67,13 +66,15 @@ export function CreateOrderForm({
   const [deliveryFeeManual, setDeliveryFeeManual] = useState("");
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<Record<string, Line>>({});
-  const [methodId, setMethodId] = useState<MethodId | null>(null);
+  const [methodId, setMethodId] = useState<PaymentMethodId | null>(null);
   const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
     bankPaidFrom: "",
     reference: "",
     amountPaid: "",
   });
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [needsChange, setNeedsChange] = useState<boolean | null>(null);
+  const [changeFor, setChangeFor] = useState("");
 
   const methods = enabledPaymentMethods(paymentMethods);
 
@@ -134,7 +135,8 @@ export function CreateOrderForm({
       : 0;
   const total = itemsTotal + deliveryFeeValue + packagingFeeValue;
 
-  const activeMeta = methodId && methodId !== "efectivo" ? PAYMENT_METHOD_META[methodId] : null;
+  const isCash = methodId === "efectivo";
+  const activeMeta = methodId && !isCash ? PAYMENT_METHOD_META[methodId] : null;
   const amountBsRaw =
     activeMeta?.convertToVes && bcvRate ? formatBsAmount(total, bcvRate.rate) : null;
   const confirmValues: ConfirmPaymentValues = {
@@ -173,6 +175,7 @@ export function CreateOrderForm({
         reference: activeMeta ? confirmValues.reference || undefined : undefined,
         amountPaid: activeMeta ? confirmValues.amountPaid || undefined : undefined,
         receiptUrl: activeMeta ? (receiptUrl ?? undefined) : undefined,
+        changeFor: isCash && needsChange ? changeFor.trim() || undefined : undefined,
       });
       if (result && "error" in result) {
         setError(result.error ?? null);
@@ -389,23 +392,18 @@ export function CreateOrderForm({
             {t.paymentMethodLabel}
           </p>
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setMethodId(methodId === "efectivo" ? null : "efectivo")}
-              className={cn(
-                "rounded-full border px-3 py-1.5 text-xs font-medium",
-                methodId === "efectivo"
-                  ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
-                  : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
-              )}
-            >
-              {t.cashLabel}
-            </button>
             {methods.map((id) => (
               <button
                 key={id}
                 type="button"
-                onClick={() => setMethodId(methodId === id ? null : id)}
+                onClick={() => {
+                  const next = methodId === id ? null : id;
+                  setMethodId(next);
+                  if (next !== "efectivo") {
+                    setNeedsChange(null);
+                    setChangeFor("");
+                  }
+                }}
                 className={cn(
                   "rounded-full border px-3 py-1.5 text-xs font-medium",
                   methodId === id
@@ -417,6 +415,56 @@ export function CreateOrderForm({
               </button>
             ))}
           </div>
+
+          {isCash && (
+            <div className="mt-4 space-y-3">
+              <p className="text-sm font-medium text-neutral-900 dark:text-white">
+                {t.cashChangeQuestion}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setNeedsChange(true)}
+                  className={cn(
+                    "rounded-full border px-3 py-1.5 text-xs font-medium",
+                    needsChange === true
+                      ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                      : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
+                  )}
+                >
+                  {t.yes}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNeedsChange(false);
+                    setChangeFor("");
+                  }}
+                  className={cn(
+                    "rounded-full border px-3 py-1.5 text-xs font-medium",
+                    needsChange === false
+                      ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                      : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
+                  )}
+                >
+                  {t.no}
+                </button>
+              </div>
+              {needsChange && (
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                    {t.changeForLabel}
+                  </label>
+                  <input
+                    value={changeFor}
+                    onChange={(e) => setChangeFor(e.target.value)}
+                    placeholder={t.changeForPlaceholder}
+                    className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
           {activeMeta && (
             <div className="mt-4">

@@ -233,6 +233,10 @@ o recíbelo como prop `t` (client) donde lo necesites.
      ej. "Carabobo, Venezuela") y `is_verified` para la insignia de
      verificado tipo Instagram — solo el superadmin puede activarla,
      desde /superadmin/restaurants, igual que `is_partner`.
+   - `supabase/migrations/0033_orders_change_for.sql` — agrega
+     `change_for` a `orders`: cuando el cliente paga en efectivo y
+     necesita cambio/vuelto, guarda con cuánto va a pagar (ej. "Billete
+     de $20") para que el restaurante sepa cuánto vuelto llevar.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

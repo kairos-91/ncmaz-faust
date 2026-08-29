@@ -1,6 +1,7 @@
 import { VENEZUELAN_BANKS } from "./venezuelan-banks";
 
 export type PaymentMethodId =
+  | "efectivo"
   | "pago_movil"
   | "transferencia"
   | "zelle"
@@ -9,6 +10,7 @@ export type PaymentMethodId =
   | "wally";
 
 export type PaymentMethodValues = {
+  efectivo: { enabled: boolean };
   pago_movil: { enabled: boolean; banco: string; telefono: string; cedula: string };
   transferencia: {
     enabled: boolean;
@@ -24,6 +26,9 @@ export type PaymentMethodValues = {
 };
 
 export const DEFAULT_PAYMENT_METHODS: PaymentMethodValues = {
+  // A diferencia de los demás métodos, efectivo no requiere datos
+  // bancarios configurados, así que viene activado por defecto.
+  efectivo: { enabled: true },
   pago_movil: { enabled: false, banco: "", telefono: "", cedula: "" },
   transferencia: { enabled: false, banco: "", cuenta: "", titular: "", rif: "" },
   zelle: { enabled: false, correo: "", titular: "" },
@@ -33,6 +38,7 @@ export const DEFAULT_PAYMENT_METHODS: PaymentMethodValues = {
 };
 
 export const PAYMENT_METHOD_IDS: PaymentMethodId[] = [
+  "efectivo",
   "pago_movil",
   "transferencia",
   "zelle",
@@ -56,6 +62,11 @@ export const PAYMENT_METHOD_META: Record<
     fields: FieldMeta[];
   }
 > = {
+  efectivo: {
+    label: "Efectivo",
+    convertToVes: false,
+    fields: [],
+  },
   pago_movil: {
     label: "Pago Móvil",
     convertToVes: true,
