@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
@@ -6,6 +7,18 @@ import { isOpenNow, parseOpeningHours } from "@/lib/opening-hours";
 import { getBcvRate } from "@/lib/bcv-rate";
 import { AdminNav } from "./admin-nav";
 import { AdminTopBar } from "./admin-topbar";
+
+// Necesario para que el panel admin se pueda "Agregar a inicio" — sin
+// esto, iOS/Safari nunca entrega push fuera de una PWA instalada (ver
+// admin/manifest.webmanifest).
+export const metadata: Metadata = {
+  manifest: "/admin/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Levery Admin",
+  },
+};
 
 export default async function AdminLayout({
   children,

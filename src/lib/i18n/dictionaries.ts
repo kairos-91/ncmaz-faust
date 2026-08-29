@@ -580,6 +580,9 @@ const es = {
     enabled: "🔔 Alertas activadas",
     denied: "Bloqueaste las notificaciones. Actívalas desde los ajustes del navegador.",
     error: "No pudimos activar las notificaciones. Intenta de nuevo.",
+    installApp: "📲 Instalar app",
+    iosHint:
+      "📲 En iPhone, primero toca compartir y luego \"Agregar a inicio\" — si no, las notificaciones no llegan.",
   },
   ordersManager: {
     filters: { pending: "Pendientes", accepted: "Aceptados", rejected: "Rechazados", all: "Todos" },
@@ -1336,6 +1339,9 @@ const en: typeof es = {
     enabled: "🔔 Alerts enabled",
     denied: "You blocked notifications. Enable them from your browser settings.",
     error: "We couldn't enable notifications. Try again.",
+    installApp: "📲 Install app",
+    iosHint:
+      "📲 On iPhone, tap share and then \"Add to Home Screen\" first — otherwise notifications won't arrive.",
   },
   ordersManager: {
     filters: { pending: "Pending", accepted: "Accepted", rejected: "Rejected", all: "All" },

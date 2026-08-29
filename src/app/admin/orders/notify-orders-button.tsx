@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import { urlBase64ToUint8Array } from "@/lib/push-client";
 import { subscribeAdminToPush, unsubscribeAdminFromPush } from "../actions";
 
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
+
 export function NotifyOrdersButton({
   restaurantId,
   t,
@@ -15,8 +20,27 @@ export function NotifyOrdersButton({
     enabled: string;
     denied: string;
     error: string;
+    installApp: string;
+    iosHint: string;
   };
 }) {
+  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(
+    null,
+  );
+  const [installed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as { standalone?: boolean }).standalone === true
+    );
+  });
+  const [isIOS] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as { standalone?: boolean }).standalone === true;
+    return /iphone|ipad|ipod/i.test(window.navigator.userAgent) && !standalone;
+  });
   const [notifState, setNotifState] = useState<
     "unsupported" | "default" | "granted" | "denied" | "subscribed"
   >(() => {
@@ -35,6 +59,12 @@ export function NotifyOrdersButton({
     if (!("serviceWorker" in navigator)) return;
     navigator.serviceWorker.register("/admin/sw.js", { scope: "/admin" }).catch(() => {});
 
+    const onBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setInstallEvent(e as BeforeInstallPromptEvent);
+    };
+    window.addEventListener("beforeinstallprompt", onBeforeInstall);
+
     if ("Notification" in window && Notification.permission === "granted") {
       navigator.serviceWorker.ready.then((reg) =>
         reg.pushManager.getSubscription().then((sub) => {
@@ -42,7 +72,16 @@ export function NotifyOrdersButton({
         }),
       );
     }
+
+    return () => window.removeEventListener("beforeinstallprompt", onBeforeInstall);
   }, []);
+
+  const install = async () => {
+    if (!installEvent) return;
+    await installEvent.prompt();
+    await installEvent.userChoice;
+    setInstallEvent(null);
+  };
 
   const enable = async () => {
     setError(null);
@@ -100,36 +139,50 @@ export function NotifyOrdersButton({
     }
   };
 
-  if (notifState === "unsupported") return null;
+  const showInstallButton = Boolean(installEvent) && !installed;
+  const showIOSHint = isIOS && !installed && !installEvent;
+
+  if (notifState === "unsupported" && !showInstallButton && !showIOSHint) return null;
 
   if (notifState === "denied") {
     return <p className="text-xs text-neutral-500 dark:text-neutral-500">{t.denied}</p>;
   }
 
-  if (notifState === "subscribed") {
-    return (
-      <button
-        type="button"
-        disabled={busy}
-        onClick={disable}
-        className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 disabled:opacity-60 dark:bg-green-900/20 dark:text-green-400"
-      >
-        {t.enabled}
-      </button>
-    );
-  }
-
   return (
-    <div className="flex flex-col items-start gap-1">
-      <button
-        type="button"
-        disabled={busy}
-        onClick={enable}
-        className="rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 disabled:opacity-60 dark:border-neutral-700 dark:text-neutral-300"
-      >
-        {busy ? t.enabling : t.enable}
-      </button>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+    <div className="flex flex-wrap items-center gap-2">
+      {showInstallButton && (
+        <button
+          type="button"
+          onClick={install}
+          className="rounded-full bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white dark:bg-white dark:text-neutral-900"
+        >
+          {t.installApp}
+        </button>
+      )}
+      {showIOSHint && (
+        <p className="text-xs text-neutral-500 dark:text-neutral-500">{t.iosHint}</p>
+      )}
+      {notifState !== "unsupported" &&
+        (notifState === "subscribed" ? (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={disable}
+            className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 disabled:opacity-60 dark:bg-green-900/20 dark:text-green-400"
+          >
+            {t.enabled}
+          </button>
+        ) : (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={enable}
+            className="rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 disabled:opacity-60 dark:border-neutral-700 dark:text-neutral-300"
+          >
+            {busy ? t.enabling : t.enable}
+          </button>
+        ))}
+      {error && <p className="w-full text-xs text-red-600">{error}</p>}
     </div>
   );
 }

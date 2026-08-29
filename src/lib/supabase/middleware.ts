@@ -30,15 +30,18 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // El service worker debe poder actualizarse aunque la sesión haya
-  // expirado o el usuario cierre sesión en otra pestaña — si esta ruta
-  // quedara detrás del login, el navegador aborta la actualización del
-  // SW por venir "redirigida" (no es un problema de datos: el script es
-  // estático, sin nada específico del restaurante).
+  // El service worker y el manifest deben poder cargarse aunque la sesión
+  // haya expirado o el usuario cierre sesión en otra pestaña — si estas
+  // rutas quedaran detrás del login, el navegador aborta la actualización
+  // del SW, y iOS/Safari no puede leer el manifest para "Agregar a
+  // inicio" (sin eso, las notificaciones push nunca llegan en iPhone,
+  // aunque el permiso se haya concedido). Ninguna de las dos rutas tiene
+  // nada específico del restaurante: son estáticas.
+  const ADMIN_PUBLIC_PATHS = ["/admin/sw.js", "/admin/manifest.webmanifest"];
   if (
     !user &&
     request.nextUrl.pathname.startsWith("/admin") &&
-    request.nextUrl.pathname !== "/admin/sw.js"
+    !ADMIN_PUBLIC_PATHS.includes(request.nextUrl.pathname)
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
