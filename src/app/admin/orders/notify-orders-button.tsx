@@ -71,13 +71,28 @@ export function NotifyOrdersButton({
     if ("Notification" in window && Notification.permission === "granted") {
       navigator.serviceWorker.ready.then((reg) =>
         reg.pushManager.getSubscription().then((sub) => {
-          if (sub) setNotifState("subscribed");
+          if (!sub) return;
+          // No basta con que el navegador tenga la suscripción guardada
+          // localmente: si el guardado en el servidor falló alguna vez (o
+          // se borró por venir de una clave VAPID vieja), el botón
+          // quedaba mostrando "activado" para siempre sin que el server
+          // supiera nada de este dispositivo. Reenviarla es idempotente
+          // (upsert), así que re-sincronizar en cada carga es seguro y
+          // resuelve ese desfase solo.
+          const json = sub.toJSON();
+          if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth) return;
+          subscribeAdminToPush(restaurantId, {
+            endpoint: json.endpoint,
+            keys: { p256dh: json.keys.p256dh, auth: json.keys.auth },
+          }).then((result) => {
+            if (!result.error) setNotifState("subscribed");
+          });
         }),
       );
     }
 
     return () => window.removeEventListener("beforeinstallprompt", onBeforeInstall);
-  }, []);
+  }, [restaurantId]);
 
   const install = async () => {
     if (!installEvent) return;
@@ -118,7 +133,13 @@ export function NotifyOrdersButton({
         endpoint: json.endpoint,
         keys: { p256dh: json.keys.p256dh, auth: json.keys.auth },
       });
-      if (result.error) throw new Error(result.error);
+      if (result.error) {
+        // Si no se pudo guardar en el servidor, no dejar la suscripción
+        // local suelta: eso es justo lo que hacía que el botón mintiera
+        // mostrando "activado" sin que el servidor supiera nada.
+        await subscription.unsubscribe().catch(() => {});
+        throw new Error(result.error);
+      }
       setNotifState("subscribed");
     } catch {
       setError(t.error);
