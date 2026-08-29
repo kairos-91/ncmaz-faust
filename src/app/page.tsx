@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import {
   QrCode,
   Palette,
@@ -30,19 +29,8 @@ export default async function Home() {
     <>
       <SiteHeader />
       <main className="flex-1">
-        <section className="relative min-h-[560px] overflow-hidden bg-neutral-50 dark:bg-neutral-950 md:min-h-[680px]">
-          <div className="absolute inset-0">
-            <Image
-              src="/hero-banner.jpg"
-              alt=""
-              fill
-              priority
-              className="object-cover object-bottom"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40 dark:from-neutral-950 dark:via-neutral-950/90 dark:to-neutral-950/50" />
-          </div>
-
-          <div className="relative mx-auto flex h-full max-w-6xl flex-col items-start justify-center px-4 pb-16 pt-24 sm:px-6 md:pb-20 md:pt-32">
+        <section className="bg-neutral-50 dark:bg-neutral-950">
+          <div className="mx-auto flex max-w-6xl flex-col items-start px-4 pb-16 pt-24 sm:px-6 md:pb-24 md:pt-32">
             <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
               {t.hero.badge}
             </span>

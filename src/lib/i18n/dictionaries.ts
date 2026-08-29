@@ -152,9 +152,6 @@ const es = {
     subheading: "Únete a los restaurantes que ya dejaron atrás el menú de papel.",
     button: "Crea tu cuenta gratis",
   },
-  footer: {
-    developedBy: "Desarrollado por",
-  },
   auth: {
     login: {
       title: "Inicia sesión",
@@ -849,9 +846,6 @@ const en: typeof es = {
     heading: "Modernize your restaurant's menu today",
     subheading: "Join the restaurants that already left paper menus behind.",
     button: "Create your free account",
-  },
-  footer: {
-    developedBy: "Developed by",
   },
   auth: {
     login: {
