@@ -38,7 +38,7 @@ export default async function OrdersPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <NotifyOrdersButton restaurantId={restaurant.id} t={t.notifyOrders} />
+          <NotifyOrdersButton restaurantId={restaurant.id} locale={locale} />
           <Link
             href="/admin/orders/new"
             className="flex items-center gap-1.5 rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"

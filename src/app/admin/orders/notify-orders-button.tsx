@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { urlBase64ToUint8Array } from "@/lib/push-client";
-import { subscribeAdminToPush, unsubscribeAdminFromPush } from "../actions";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
+import {
+  sendTestAdminPush,
+  subscribeAdminToPush,
+  unsubscribeAdminFromPush,
+} from "../actions";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -11,19 +16,15 @@ type BeforeInstallPromptEvent = Event & {
 
 export function NotifyOrdersButton({
   restaurantId,
-  t,
+  locale,
 }: {
   restaurantId: string;
-  t: {
-    enable: string;
-    enabling: string;
-    enabled: string;
-    denied: string;
-    error: string;
-    installApp: string;
-    iosHint: string;
-  };
+  locale: Locale;
 }) {
+  // Se resuelve del lado del cliente porque este diccionario incluye una
+  // función (testSent) — pasarla como prop desde un Server Component
+  // rompe con "Functions cannot be passed directly to Client Components".
+  const t = getDictionary(locale).notifyOrders;
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(
     null,
   );
@@ -54,6 +55,8 @@ export function NotifyOrdersButton({
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [testBusy, setTestBusy] = useState(false);
+  const [testMessage, setTestMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -139,6 +142,21 @@ export function NotifyOrdersButton({
     }
   };
 
+  const sendTest = async () => {
+    setTestBusy(true);
+    setTestMessage(null);
+    try {
+      const result = await sendTestAdminPush(restaurantId);
+      setTestMessage(
+        "error" in result ? result.error : t.testSent(result.sent, result.total),
+      );
+    } catch {
+      setTestMessage(t.testError);
+    } finally {
+      setTestBusy(false);
+    }
+  };
+
   const showInstallButton = Boolean(installEvent) && !installed;
   const showIOSHint = isIOS && !installed && !installEvent;
 
@@ -164,14 +182,24 @@ export function NotifyOrdersButton({
       )}
       {notifState !== "unsupported" &&
         (notifState === "subscribed" ? (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={disable}
-            className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 disabled:opacity-60 dark:bg-green-900/20 dark:text-green-400"
-          >
-            {t.enabled}
-          </button>
+          <>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={disable}
+              className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 disabled:opacity-60 dark:bg-green-900/20 dark:text-green-400"
+            >
+              {t.enabled}
+            </button>
+            <button
+              type="button"
+              disabled={testBusy}
+              onClick={sendTest}
+              className="rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 disabled:opacity-60 dark:border-neutral-700 dark:text-neutral-300"
+            >
+              {testBusy ? t.testSending : t.test}
+            </button>
+          </>
         ) : (
           <button
             type="button"
@@ -183,6 +211,11 @@ export function NotifyOrdersButton({
           </button>
         ))}
       {error && <p className="w-full text-xs text-red-600">{error}</p>}
+      {testMessage && (
+        <p className="w-full text-xs text-neutral-500 dark:text-neutral-400">
+          {testMessage}
+        </p>
+      )}
     </div>
   );
 }

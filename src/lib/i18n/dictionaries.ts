@@ -583,6 +583,13 @@ const es = {
     installApp: "📲 Instalar app",
     iosHint:
       "📲 En iPhone, primero toca compartir y luego \"Agregar a inicio\" — si no, las notificaciones no llegan.",
+    test: "🔔 Enviar prueba",
+    testSending: "Enviando...",
+    testSent: (sent: number, total: number) =>
+      sent > 0
+        ? `Prueba enviada a ${sent} de ${total} dispositivo(s). Revisa si te llegó.`
+        : "No se pudo enviar a ningún dispositivo — vuelve a activar las notificaciones.",
+    testError: "No pudimos enviar la prueba. Intenta de nuevo.",
   },
   ordersManager: {
     filters: { pending: "Pendientes", accepted: "Aceptados", rejected: "Rechazados", all: "Todos" },
@@ -1342,6 +1349,13 @@ const en: typeof es = {
     installApp: "📲 Install app",
     iosHint:
       "📲 On iPhone, tap share and then \"Add to Home Screen\" first — otherwise notifications won't arrive.",
+    test: "🔔 Send test",
+    testSending: "Sending...",
+    testSent: (sent: number, total: number) =>
+      sent > 0
+        ? `Test sent to ${sent} of ${total} device(s). Check if it arrived.`
+        : "Couldn't send to any device — re-enable notifications.",
+    testError: "We couldn't send the test. Try again.",
   },
   ordersManager: {
     filters: { pending: "Pending", accepted: "Accepted", rejected: "Rejected", all: "All" },

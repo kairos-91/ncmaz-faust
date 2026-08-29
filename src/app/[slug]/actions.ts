@@ -44,7 +44,11 @@ async function notifyAdminsOfNewOrder(
         );
       } catch (err: unknown) {
         const statusCode = (err as { statusCode?: number })?.statusCode;
-        if (statusCode === 404 || statusCode === 410) {
+        // 404/410: la suscripción ya no existe. 401/403: quedó firmada con
+        // una clave VAPID que ya no es válida. Ambos casos son
+        // permanentes — hay que borrarla para que el usuario pueda
+        // volver a activar las notificaciones desde cero.
+        if ([401, 403, 404, 410].includes(statusCode ?? 0)) {
           await supabase.rpc("delete_admin_push_subscription", {
             p_endpoint: sub.endpoint,
           });

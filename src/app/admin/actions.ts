@@ -1,5 +1,6 @@
 "use server";
 
+import webpush from "web-push";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -560,6 +561,71 @@ export async function unsubscribeAdminFromPush(restaurantId: string, endpoint: s
     .delete()
     .eq("restaurant_id", restaurantId)
     .eq("endpoint", endpoint);
+}
+
+// Deja al dueño/staff confirmar desde el propio celular que las
+// notificaciones sí le llegan a ese dispositivo, sin esperar un pedido
+// real — manda a TODAS las suscripciones del restaurante (PC incluida)
+// y limpia las que ya no sirven, igual que notifyAdminsOfNewOrder.
+type SendTestAdminPushResult =
+  | { error: string }
+  | { sent: number; total: number; removed: number };
+
+export async function sendTestAdminPush(
+  restaurantId: string,
+): Promise<SendTestAdminPushResult> {
+  const { supabase } = await requireStaffAccess(restaurantId);
+
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+  const vapidSubject = process.env.VAPID_SUBJECT;
+  if (!vapidPublicKey || !vapidPrivateKey || !vapidSubject) {
+    return { error: "Las notificaciones push no están configuradas en el servidor." };
+  }
+
+  const { data: subscriptions } = await supabase
+    .from("admin_push_subscriptions")
+    .select("id, endpoint, p256dh, auth")
+    .eq("restaurant_id", restaurantId);
+  if (!subscriptions || subscriptions.length === 0) {
+    return { error: "No hay ninguna suscripción activa para este restaurante." };
+  }
+
+  webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
+  const payload = JSON.stringify({
+    title: "🔔 Notificación de prueba",
+    body: "Si ves esto, las alertas de pedidos funcionan en este dispositivo.",
+    url: "/admin/orders",
+  });
+
+  let sent = 0;
+  const expiredIds: string[] = [];
+  await Promise.all(
+    subscriptions.map(async (sub) => {
+      try {
+        await webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+          payload,
+        );
+        sent += 1;
+      } catch (err: unknown) {
+        const statusCode = (err as { statusCode?: number })?.statusCode;
+        // 404/410: la suscripción ya no existe. 401/403: la clave VAPID
+        // con la que se creó ya no es válida. En ambos casos nunca va a
+        // funcionar y hay que borrarla para que el usuario pueda
+        // volver a activarla desde cero.
+        if ([401, 403, 404, 410].includes(statusCode ?? 0)) {
+          expiredIds.push(sub.id);
+        }
+      }
+    }),
+  );
+
+  if (expiredIds.length > 0) {
+    await supabase.from("admin_push_subscriptions").delete().in("id", expiredIds);
+  }
+
+  return { sent, total: subscriptions.length, removed: expiredIds.length };
 }
 
 export async function signOut() {
