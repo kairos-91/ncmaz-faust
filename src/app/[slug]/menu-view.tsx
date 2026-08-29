@@ -194,7 +194,7 @@ export function MenuView({
         </div>
       )}
 
-      <div className="sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto bg-neutral-50/95 px-4 py-3 backdrop-blur dark:bg-neutral-950/95">
+      <div className="no-scrollbar sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto bg-neutral-50/95 px-4 py-3 backdrop-blur dark:bg-neutral-950/95">
         {nonEmptyCategories.map((category) => (
           <a
             key={category.id}
