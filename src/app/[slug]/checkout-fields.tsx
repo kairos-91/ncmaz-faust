@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Bike, Check, Store, UtensilsCrossed } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { formatBs, formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
@@ -89,6 +89,8 @@ export function CheckoutFields({
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedWhatsappHref, setPlacedWhatsappHref] = useState<string | null>(null);
   const [orderError, setOrderError] = useState<string | null>(null);
+  const [showMethodError, setShowMethodError] = useState(false);
+  const paymentDetailsRef = useRef<HTMLDivElement>(null);
   const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
     bankPaidFrom: "",
     reference: "",
@@ -125,6 +127,29 @@ export function CheckoutFields({
   const discountAmount =
     appliedCoupon && couponValidity?.valid ? computeDiscount(appliedCoupon, total) : 0;
   const grandTotal = total + deliveryFee + packagingFee - discountAmount;
+
+  const missingForPayment: string[] = [];
+  if (!customerName.trim()) missingForPayment.push("tu nombre");
+  if (!customerPhone.trim()) missingForPayment.push("tu teléfono");
+  if (!orderType) missingForPayment.push("cómo quieres tu pedido");
+
+  const selectMethod = (id: PaymentMethodId) => {
+    if (missingForPayment.length > 0) {
+      setShowMethodError(true);
+      return;
+    }
+    setShowMethodError(false);
+    setMethodId(id);
+  };
+
+  useEffect(() => {
+    if (methodId) {
+      paymentDetailsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [methodId]);
 
   const applyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
@@ -547,7 +572,7 @@ export function CheckoutFields({
               <button
                 key={id}
                 type="button"
-                onClick={() => setMethodId(id)}
+                onClick={() => selectMethod(id)}
                 className={cn(
                   "rounded-full border px-3 py-1.5 text-xs font-medium",
                   methodId === id
@@ -562,11 +587,16 @@ export function CheckoutFields({
               </button>
             ))}
           </div>
+          {showMethodError && missingForPayment.length > 0 && (
+            <p className="mt-2 text-xs text-red-600">
+              Completa {missingForPayment.join(", ")} antes de elegir el método de pago.
+            </p>
+          )}
         </div>
       )}
 
       {activeMeta && activeValues && (
-        <div className="space-y-3">
+        <div ref={paymentDetailsRef} className="space-y-3">
           {amountBs && (
             <p className="text-sm font-semibold text-neutral-900 dark:text-white">
               Monto a pagar: {amountBs}
