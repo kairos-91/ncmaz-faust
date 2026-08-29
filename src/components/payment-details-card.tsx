@@ -13,10 +13,13 @@ export type PaymentDetailRow = {
 export function PaymentDetailsCard({
   rows,
   copyAllText,
+  hideCopyAll = false,
 }: {
   rows: PaymentDetailRow[];
   /** Si se pasa, "Copiar todo" copia este texto en vez de armar uno con label: value. */
   copyAllText?: string;
+  /** Oculta el botón "Copiar todo" (ej. métodos en USD con un solo dato). */
+  hideCopyAll?: boolean;
 }) {
   const [copiedAll, setCopiedAll] = useState(false);
 
@@ -38,18 +41,20 @@ export function PaymentDetailsCard({
       {rows.map((row) => (
         <CopyRow key={row.label} {...row} />
       ))}
-      <button
-        type="button"
-        onClick={handleCopyAll}
-        className="mt-1 flex items-center gap-1.5 rounded-full border border-neutral-300 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-700"
-      >
-        {copiedAll ? (
-          <Check className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
-        ) : (
-          <Copy className="h-3.5 w-3.5" />
-        )}
-        Copiar todo
-      </button>
+      {!hideCopyAll && (
+        <button
+          type="button"
+          onClick={handleCopyAll}
+          className="mt-1 flex items-center gap-1.5 rounded-full border border-neutral-300 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-700"
+        >
+          {copiedAll ? (
+            <Check className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+          ) : (
+            <Copy className="h-3.5 w-3.5" />
+          )}
+          Copiar todo
+        </button>
+      )}
     </div>
   );
 }

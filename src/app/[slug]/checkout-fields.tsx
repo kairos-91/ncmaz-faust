@@ -699,12 +699,14 @@ export function CheckoutFields({
                   )
                 : undefined
             }
+            hideCopyAll={!activeMeta.convertToVes}
           />
           <ConfirmPaymentFields
             values={confirmValues}
             onChange={setConfirm}
             upload={uploadOrderReceipt.bind(null, restaurantId)}
             onReceiptUploaded={setReceiptUrl}
+            receiptOnly={!activeMeta.convertToVes}
           />
         </div>
       )}

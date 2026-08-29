@@ -16,14 +16,26 @@ export function ConfirmPaymentFields({
   onChange,
   upload,
   onReceiptUploaded,
+  receiptOnly = false,
 }: {
   values: ConfirmPaymentValues;
   onChange: (values: ConfirmPaymentValues) => void;
   upload: (formData: FormData) => Promise<{ url?: string; error?: string }>;
   onReceiptUploaded: (url: string | null) => void;
+  /** Para métodos en USD (Zelle, Binance, etc.): solo pide el comprobante. */
+  receiptOnly?: boolean;
 }) {
   const set = (patch: Partial<ConfirmPaymentValues>) =>
     onChange({ ...values, ...patch });
+
+  if (receiptOnly) {
+    return (
+      <div className="space-y-3 border-t border-neutral-100 pt-4 dark:border-neutral-800">
+        <Label>Comprobante de pago (imagen)</Label>
+        <ReceiptPasteZone upload={upload} onUploaded={onReceiptUploaded} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3 border-t border-neutral-100 pt-4 dark:border-neutral-800">
