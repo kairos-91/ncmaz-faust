@@ -19,6 +19,7 @@ self.addEventListener("push", (event) => {
     icon: payload.icon || "/icon.png",
     badge: payload.icon || "/icon.png",
     vibrate: [300, 100, 300, 100, 300, 100, 300],
+    silent: false,
     requireInteraction: true,
     data: { url: payload.url || "/" },
   };
