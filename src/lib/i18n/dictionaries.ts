@@ -391,6 +391,9 @@ const es = {
     serviceDineIn: "Comer en el local",
     wifiLabel: "Cuenta con wifi",
     petsLabel: "Acepta mascotas",
+    allowOrdersWhenClosedLabel: "Permitir pedidos fuera de horario",
+    allowOrdersWhenClosedHint:
+      "Si lo activas, los clientes podrán hacer pedidos aunque el restaurante esté marcado como cerrado según tu horario.",
     colorLabel: "Color de marca",
     currencyLabel: "Moneda",
     publishLabel: "Publicar menú (visible en tu URL pública)",
@@ -1162,6 +1165,9 @@ const en: typeof es = {
     serviceDineIn: "Dine-in",
     wifiLabel: "Has wifi",
     petsLabel: "Pet friendly",
+    allowOrdersWhenClosedLabel: "Allow orders outside business hours",
+    allowOrdersWhenClosedHint:
+      "If enabled, customers can place orders even when the restaurant is marked as closed based on your hours.",
     colorLabel: "Brand color",
     currencyLabel: "Currency",
     publishLabel: "Publish menu (visible at your public URL)",

@@ -292,6 +292,21 @@ export function RestaurantForm({
 
       <OpeningHoursFields openingHours={restaurant?.opening_hours} t={hoursT} />
 
+      <div>
+        <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <input
+            type="checkbox"
+            name="allow_orders_when_closed"
+            defaultChecked={restaurant?.allow_orders_when_closed ?? false}
+            className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
+          />
+          {t.allowOrdersWhenClosedLabel}
+        </label>
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.allowOrdersWhenClosedHint}
+        </p>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="theme_color">{t.colorLabel}</Label>

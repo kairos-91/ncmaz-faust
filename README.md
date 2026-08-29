@@ -237,6 +237,11 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `change_for` a `orders`: cuando el cliente paga en efectivo y
      necesita cambio/vuelto, guarda con cuánto va a pagar (ej. "Billete
      de $20") para que el restaurante sepa cuánto vuelto llevar.
+   - `supabase/migrations/0034_allow_orders_when_closed.sql` — agrega
+     `allow_orders_when_closed` a `restaurants` (por defecto
+     `false`): si el restaurante lo activa desde /admin/restaurant, el
+     menú público sigue aceptando pedidos aunque esté fuera del
+     horario configurado.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

@@ -42,6 +42,7 @@ export interface Database {
           accepts_pets: boolean;
           packaging_fee_enabled: boolean;
           packaging_fee: number;
+          allow_orders_when_closed: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -77,6 +78,7 @@ export interface Database {
           accepts_pets?: boolean;
           packaging_fee_enabled?: boolean;
           packaging_fee?: number;
+          allow_orders_when_closed?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -112,6 +114,7 @@ export interface Database {
           accepts_pets?: boolean;
           packaging_fee_enabled?: boolean;
           packaging_fee?: number;
+          allow_orders_when_closed?: boolean;
           created_at?: string;
           updated_at?: string;
         };

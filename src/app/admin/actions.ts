@@ -90,6 +90,7 @@ function parseRestaurantForm(formData: FormData) {
     delivery_zones: formData.get("delivery_zones") ?? "",
     packaging_fee_enabled: formData.get("packaging_fee_enabled") === "on",
     packaging_fee: formData.get("packaging_fee") || "0",
+    allow_orders_when_closed: formData.get("allow_orders_when_closed") === "on",
   });
 }
 

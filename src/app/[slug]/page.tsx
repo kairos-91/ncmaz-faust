@@ -181,13 +181,19 @@ export default async function PublicMenuPage({
   const openNow = hasOpeningHours ? isOpenNow(openingHours) : null;
   const todayKey = getDayKey(new Date());
 
-  const orderingAllowed = !hasOpeningHours || openNow === true;
-  const nextOpening = !orderingAllowed ? getNextOpening(openingHours) : null;
-  const closedMessage = orderingAllowed
+  const isClosedNow = hasOpeningHours && openNow === false;
+  const orderingAllowed =
+    !hasOpeningHours || openNow === true || restaurant.allow_orders_when_closed;
+  const nextOpening = isClosedNow ? getNextOpening(openingHours) : null;
+  const closedMessage = !isClosedNow
     ? null
-    : nextOpening
-      ? `Estamos cerrados. Abrimos ${nextOpening.isToday ? "hoy" : `el ${DAY_LABELS[nextOpening.day].toLowerCase()}`} a las ${formatTime12h(nextOpening.time)}.`
-      : "Estamos cerrados por el momento.";
+    : restaurant.allow_orders_when_closed
+      ? nextOpening
+        ? `Estamos cerrados, pero puedes hacer tu pedido — lo prepararemos ${nextOpening.isToday ? "hoy" : `el ${DAY_LABELS[nextOpening.day].toLowerCase()}`} a las ${formatTime12h(nextOpening.time)}.`
+        : "Estamos cerrados, pero puedes hacer tu pedido igual."
+      : nextOpening
+        ? `Estamos cerrados. Abrimos ${nextOpening.isToday ? "hoy" : `el ${DAY_LABELS[nextOpening.day].toLowerCase()}`} a las ${formatTime12h(nextOpening.time)}.`
+        : "Estamos cerrados por el momento.";
 
   return (
     <div className="min-h-screen bg-neutral-50 pb-16 dark:bg-neutral-950">
