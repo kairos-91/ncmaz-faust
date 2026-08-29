@@ -207,8 +207,8 @@ export default async function PublicMenuPage({
         }}
       >
         <div className="absolute right-4 top-4">
-          <div className="rounded-full bg-black/20 backdrop-blur">
-            <ThemeToggle />
+          <div className="rounded-full bg-black/35 backdrop-blur">
+            <ThemeToggle className="text-white hover:bg-white/20 dark:text-white dark:hover:bg-white/20" />
           </div>
         </div>
       </div>
