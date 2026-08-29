@@ -224,6 +224,10 @@ o recíbelo como prop `t` (client) donde lo necesites.
      el restaurante demo "Vaquita Hot" (slug `vaquita-hot`, debe existir
      de antemano). Es seguro correrla más de una vez: si detecta que ya
      tiene el menú cargado, no inserta nada de nuevo.
+   - `supabase/migrations/0031_vaquita_hot_menu_images.sql` — asigna una
+     ilustración a cada plato/bebida de "Vaquita Hot" (servidas desde
+     `/public/menu-demo/*.svg`, generadas localmente, sin depender de
+     ningún servicio externo). Requiere haber corrido la 0030 antes.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
