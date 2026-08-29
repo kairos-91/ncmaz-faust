@@ -233,6 +233,7 @@ const es = {
     realtimeOffline: "Sin conexión en tiempo real. Recarga la página.",
     openNow: "Abierto",
     closedNow: "Cerrado",
+    bcvRateLabel: "Tasa Oficial BCV",
   },
   dashboard: {
     createTitle: "Crea el menú de tu restaurante",
@@ -982,6 +983,7 @@ const en: typeof es = {
     realtimeOffline: "Realtime disconnected. Reload the page.",
     openNow: "Open",
     closedNow: "Closed",
+    bcvRateLabel: "Official BCV rate",
   },
   dashboard: {
     createTitle: "Create your restaurant's menu",

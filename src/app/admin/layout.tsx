@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { getT } from "@/lib/i18n/locale";
 import { isOpenNow, parseOpeningHours } from "@/lib/opening-hours";
+import { getBcvRate } from "@/lib/bcv-rate";
 import { AdminNav } from "./admin-nav";
 import { AdminTopBar } from "./admin-topbar";
 
@@ -32,9 +33,17 @@ export default async function AdminLayout({
     ? isOpenNow(parseOpeningHours(restaurant!.opening_hours))
     : null;
 
+  const bcvRate = await getBcvRate();
+
   return (
     <div className="flex min-h-screen flex-1 flex-col bg-neutral-50 dark:bg-neutral-950">
-      <AdminTopBar email={userEmail} locale={locale} t={t.adminNav} openNow={openNow} />
+      <AdminTopBar
+        email={userEmail}
+        locale={locale}
+        t={t.adminNav}
+        openNow={openNow}
+        bcvRate={bcvRate}
+      />
       <div className="flex flex-1 flex-col md:flex-row">
         <AdminNav
           email={userEmail}
