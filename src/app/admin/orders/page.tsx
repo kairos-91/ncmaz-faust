@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
+import { getBcvRate } from "@/lib/bcv-rate";
 import { OrdersManager } from "./orders-manager";
 import { NotifyOrdersButton } from "./notify-orders-button";
 
@@ -21,6 +22,11 @@ export default async function OrdersPage() {
     .select("*")
     .eq("restaurant_id", restaurant.id)
     .order("created_at", { ascending: false });
+
+  const needsBcvRate = (orders ?? []).some(
+    (o) => o.payment_method === "pago_movil" || o.payment_method === "transferencia",
+  );
+  const bcvRate = needsBcvRate ? await getBcvRate() : null;
 
   return (
     <div className="space-y-6">
@@ -48,6 +54,7 @@ export default async function OrdersPage() {
         orders={orders ?? []}
         locale={locale}
         t={t.ordersManager}
+        bcvRate={bcvRate}
       />
     </div>
   );

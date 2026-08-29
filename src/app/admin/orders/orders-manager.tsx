@@ -6,6 +6,7 @@ import { Bike, Check, Store, UtensilsCrossed, X } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { parseOrderItems, type OrderStatus } from "@/lib/orders";
 import { PAYMENT_METHOD_META, type PaymentMethodId } from "@/lib/payment-methods";
+import { formatBs, type BcvRate } from "@/lib/bcv-rate";
 import { updateOrderStatus } from "@/app/admin/actions";
 import { createClient } from "@/lib/supabase/client";
 import type { Order } from "@/lib/supabase/database.types";
@@ -25,12 +26,14 @@ export function OrdersManager({
   orders: initialOrders,
   locale,
   t,
+  bcvRate,
 }: {
   restaurantId: string;
   currency: string;
   orders: Order[];
   locale: Locale;
   t: T;
+  bcvRate: BcvRate | null;
 }) {
   const [filter, setFilter] = useState<OrderStatus | "all">("pending");
   const [orders, setOrders] = useState(initialOrders);
@@ -140,6 +143,7 @@ export function OrdersManager({
               order={order}
               locale={locale}
               t={t}
+              bcvRate={bcvRate}
             />
           ))}
         </div>
@@ -154,12 +158,14 @@ function OrderCard({
   order,
   locale,
   t,
+  bcvRate,
 }: {
   restaurantId: string;
   currency: string;
   order: Order;
   locale: Locale;
   t: T;
+  bcvRate: BcvRate | null;
 }) {
   const [isPending, startTransition] = useTransition();
   const items = parseOrderItems(order.items);
@@ -167,6 +173,9 @@ function OrderCard({
   const methodMeta = order.payment_method
     ? PAYMENT_METHOD_META[order.payment_method as PaymentMethodId]
     : null;
+  const showBcvTotal =
+    bcvRate &&
+    (order.payment_method === "pago_movil" || order.payment_method === "transferencia");
 
   const setStatus = (status: OrderStatus) =>
     startTransition(() => updateOrderStatus(restaurantId, order.id, status));
@@ -190,7 +199,7 @@ function OrderCard({
         </p>
       </div>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+      <div className="mt-4 space-y-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
             {t.customer}
@@ -246,6 +255,14 @@ function OrderCard({
               <p className="font-medium text-neutral-900 dark:text-white">
                 {methodMeta.label}
               </p>
+              {showBcvTotal && bcvRate && (
+                <p className="font-semibold text-neutral-900 dark:text-white">
+                  {t.totalBs}: {formatBs(order.total, bcvRate.rate)}
+                  <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-500">
+                    (tasa BCV Bs {bcvRate.rate.toFixed(2)})
+                  </span>
+                </p>
+              )}
               {order.change_for && (
                 <p>
                   {t.changeFor}: {order.change_for}

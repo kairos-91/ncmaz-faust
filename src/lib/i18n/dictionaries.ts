@@ -595,6 +595,7 @@ const es = {
     orderTypes: { delivery: "Delivery", pickup: "Para retirar", dine_in: "Comer en el local" },
     statuses: { pending: "Pendiente", accepted: "Aceptado", rejected: "Rechazado" },
     changeFor: "Paga con",
+    totalBs: "Total en Bs",
   },
   adminPaymentMethodsPage: {
     title: "Métodos de pago",
@@ -1342,6 +1343,7 @@ const en: typeof es = {
     orderTypes: { delivery: "Delivery", pickup: "Pickup", dine_in: "Dine in" },
     statuses: { pending: "Pending", accepted: "Accepted", rejected: "Rejected" },
     changeFor: "Pays with",
+    totalBs: "Total in Bs",
   },
   adminPaymentMethodsPage: {
     title: "Payment methods",
