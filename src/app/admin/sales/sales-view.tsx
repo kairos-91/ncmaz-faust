@@ -5,7 +5,8 @@ import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 import { formatPrice } from "@/lib/utils";
 import { formatBs } from "@/lib/bcv-rate";
-import type { DailySales, MonthlySales, SalesSummary } from "@/lib/sales";
+import { PAYMENT_METHOD_META, type PaymentMethodId } from "@/lib/payment-methods";
+import type { DailySales, MonthlySales, PaymentMethodSales, SalesSummary } from "@/lib/sales";
 import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 import { SalesCharts } from "./sales-charts";
 
@@ -27,6 +28,7 @@ export function SalesView({
   daily,
   dailyChart,
   monthlyChart,
+  byPaymentMethod,
   bcvRate,
   locale,
 }: {
@@ -36,13 +38,22 @@ export function SalesView({
   daily: DailySales[];
   dailyChart: DailySales[];
   monthlyChart: MonthlySales[];
+  byPaymentMethod: PaymentMethodSales[];
   bcvRate: number | null;
   locale: Locale;
 }) {
   const dict = getDictionary(locale);
   const t: T = { ...dict.common, ...dict.salesPage };
   const [exporting, setExporting] = useState(false);
+  const [exportingByMethod, setExportingByMethod] = useState(false);
   const bsFor = (amountUsd: number) => (bcvRate ? formatBs(amountUsd, bcvRate) : null);
+
+  const methodLabel = (method: string | null) =>
+    method ? (PAYMENT_METHOD_META[method as PaymentMethodId]?.label ?? method) : t.noPaymentMethod;
+  const methodBsTotal = (row: PaymentMethodSales) =>
+    row.method && bcvRate && PAYMENT_METHOD_META[row.method as PaymentMethodId]?.convertToVes
+      ? formatBs(row.total, bcvRate)
+      : null;
 
   const exportPdf = () => {
     setExporting(true);
@@ -89,6 +100,36 @@ export function SalesView({
     }
   };
 
+  const exportPaymentMethodPdf = () => {
+    setExportingByMethod(true);
+    try {
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text(`${restaurantName} — ${t.pdfPaymentMethodTitle}`, 14, 18);
+      doc.setFontSize(10);
+      doc.setTextColor(120);
+      doc.text(t.pdfGeneratedAt(new Date().toLocaleString("es-VE")), 14, 24);
+
+      autoTable(doc, {
+        startY: 32,
+        head: [[t.methodColumn, t.ordersColumn, t.totalUsdColumn, t.totalBsColumn]],
+        body: byPaymentMethod.map((row) => [
+          methodLabel(row.method),
+          String(row.count),
+          formatPrice(row.total, currency),
+          methodBsTotal(row) ?? "—",
+        ]),
+        theme: "striped",
+      });
+
+      doc.save(
+        `ventas-por-metodo-de-pago-${restaurantName.toLowerCase().replace(/\s+/g, "-")}.pdf`,
+      );
+    } finally {
+      setExportingByMethod(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -128,6 +169,55 @@ export function SalesView({
         orderSingular={t.orderSingular}
         orderPlural={t.orderPlural}
       />
+
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-600 dark:text-neutral-400">
+            {t.byPaymentMethod}
+          </h2>
+          {byPaymentMethod.length > 0 && (
+            <button
+              type="button"
+              disabled={exportingByMethod}
+              onClick={exportPaymentMethodPdf}
+              className="rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 disabled:opacity-60 dark:border-neutral-700 dark:text-neutral-300"
+            >
+              {exportingByMethod ? t.exporting : `📄 ${t.exportPdf}`}
+            </button>
+          )}
+        </div>
+
+        {byPaymentMethod.length === 0 ? (
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">{t.empty}</p>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
+                <th className="pb-2">{t.methodColumn}</th>
+                <th className="pb-2">{t.ordersColumn}</th>
+                <th className="pb-2 text-right">{t.totalUsdColumn}</th>
+                <th className="pb-2 text-right">{t.totalBsColumn}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              {byPaymentMethod.map((row) => (
+                <tr key={row.method ?? "__none__"}>
+                  <td className="py-2 text-neutral-800 dark:text-neutral-200">
+                    {methodLabel(row.method)}
+                  </td>
+                  <td className="py-2 text-neutral-600 dark:text-neutral-400">{row.count}</td>
+                  <td className="py-2 text-right font-medium text-neutral-900 dark:text-white">
+                    {formatPrice(row.total, currency)}
+                  </td>
+                  <td className="py-2 text-right text-neutral-600 dark:text-neutral-400">
+                    {methodBsTotal(row) ?? "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
       <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-3 flex items-center justify-between">

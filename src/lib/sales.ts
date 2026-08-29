@@ -4,6 +4,7 @@ export type SalesOrder = {
   total: number;
   status: string;
   created_at: string;
+  payment_method?: string | null;
 };
 
 export type DailySales = { day: string; count: number; total: number };
@@ -89,6 +90,22 @@ export function groupSalesByMonth(orders: SalesOrder[]): MonthlySales[] {
   return [...byMonth.entries()]
     .map(([month, total]) => ({ month, total }))
     .sort((a, b) => a.month.localeCompare(b.month));
+}
+
+export type PaymentMethodSales = { method: string | null; count: number; total: number };
+
+export function groupSalesByPaymentMethod(orders: SalesOrder[]): PaymentMethodSales[] {
+  const accepted = acceptedOnly(orders);
+  const byMethod = new Map<string, PaymentMethodSales>();
+  for (const order of accepted) {
+    const method = order.payment_method ?? null;
+    const key = method ?? "__none__";
+    const entry = byMethod.get(key) ?? { method, count: 0, total: 0 };
+    entry.count += 1;
+    entry.total += order.total;
+    byMethod.set(key, entry);
+  }
+  return [...byMethod.values()].sort((a, b) => b.total - a.total);
 }
 
 // Rellena con ceros para que los gráficos siempre tengan un eje continuo,

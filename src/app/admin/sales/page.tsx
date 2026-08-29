@@ -7,6 +7,7 @@ import {
   computeSalesSummary,
   groupSalesByDay,
   groupSalesByMonth,
+  groupSalesByPaymentMethod,
   lastNDays,
   lastNMonths,
 } from "@/lib/sales";
@@ -24,7 +25,7 @@ export default async function SalesPage() {
   const [{ data: orders }, bcvRate] = await Promise.all([
     supabase
       .from("orders")
-      .select("total, status, created_at")
+      .select("total, status, created_at, payment_method")
       .eq("restaurant_id", restaurant.id),
     restaurant.currency === "USD" ? getBcvRate() : Promise.resolve(null),
   ]);
@@ -33,6 +34,7 @@ export default async function SalesPage() {
   const daily = groupSalesByDay(orders ?? []);
   const dailyChart = lastNDays(daily, new Date(), 30);
   const monthlyChart = lastNMonths(groupSalesByMonth(orders ?? []), new Date(), 12);
+  const byPaymentMethod = groupSalesByPaymentMethod(orders ?? []);
 
   return (
     <SalesView
@@ -42,6 +44,7 @@ export default async function SalesPage() {
       daily={daily}
       dailyChart={dailyChart}
       monthlyChart={monthlyChart}
+      byPaymentMethod={byPaymentMethod}
       bcvRate={bcvRate?.rate ?? null}
       locale={locale}
     />
