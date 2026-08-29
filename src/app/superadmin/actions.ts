@@ -50,6 +50,20 @@ export async function updateRestaurantPartner(
   revalidatePath("/");
 }
 
+export async function updateRestaurantVerified(
+  restaurantId: string,
+  isVerified: boolean,
+) {
+  const { supabase } = await requireSuperadmin();
+  const { error } = await supabase
+    .from("restaurants")
+    .update({ is_verified: isVerified })
+    .eq("id", restaurantId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/superadmin/restaurants");
+  revalidatePath("/[slug]", "page");
+}
+
 // ── Pagos de suscripción ─────────────────────────────────────────
 
 export async function updateSubscriptionPaymentStatus(

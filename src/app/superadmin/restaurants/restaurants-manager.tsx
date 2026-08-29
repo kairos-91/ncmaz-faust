@@ -3,7 +3,11 @@
 import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { daysUntil, type SubscriptionPlan } from "@/lib/subscription-plans";
-import { updateRestaurantPartner, updateRestaurantPlan } from "../actions";
+import {
+  updateRestaurantPartner,
+  updateRestaurantPlan,
+  updateRestaurantVerified,
+} from "../actions";
 import type { Restaurant } from "@/lib/supabase/database.types";
 import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
@@ -68,6 +72,15 @@ function RestaurantRow({
   );
   const [isPartner, setIsPartner] = useState(restaurant.is_partner);
   const [savingPartner, startPartnerTransition] = useTransition();
+
+  const [isVerified, setIsVerified] = useState(restaurant.is_verified);
+  const [savingVerified, startVerifiedTransition] = useTransition();
+
+  const toggleVerified = () => {
+    const next = !isVerified;
+    setIsVerified(next);
+    startVerifiedTransition(() => updateRestaurantVerified(restaurant.id, next));
+  };
 
   const togglePartner = () => {
     const next = !isPartner;
@@ -165,6 +178,16 @@ function RestaurantRow({
             className="h-3.5 w-3.5 rounded border-neutral-300 dark:border-neutral-600"
           />
           {t.partnerLabel}
+        </label>
+        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400">
+          <input
+            type="checkbox"
+            checked={isVerified}
+            disabled={savingVerified}
+            onChange={toggleVerified}
+            className="h-3.5 w-3.5 rounded border-neutral-300 dark:border-neutral-600"
+          />
+          {t.verifiedLabel}
         </label>
       </div>
 

@@ -72,6 +72,8 @@ function parseRestaurantForm(formData: FormData) {
     slug: formData.get("slug"),
     description: formData.get("description") ?? "",
     address: formData.get("address") ?? "",
+    state: formData.get("state") ?? "",
+    country: formData.get("country") || "Venezuela",
     maps_url: formData.get("maps_url") ?? "",
     instagram_url: formData.get("instagram_url") ?? "",
     tiktok_url: formData.get("tiktok_url") ?? "",

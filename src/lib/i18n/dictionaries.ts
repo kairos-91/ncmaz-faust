@@ -356,6 +356,9 @@ const es = {
     whatsappLabel: "WhatsApp",
     addressLabel: "Dirección",
     addressPlaceholder: "Av. Bolívar, Maracay",
+    stateLabel: "Estado",
+    stateSelectPlaceholder: "Selecciona un estado",
+    countryLabel: "País",
     mapsUrlLabel: "Enlace de Google Maps",
     mapsUrlPlaceholder: "https://maps.app.goo.gl/...",
     mapsUrlHint:
@@ -649,6 +652,7 @@ const es = {
     alertMessage: (name: string, status: string) =>
       `Hola ${name}! Te escribimos de Levery: tu plan ${status}. Escríbenos para renovarlo y seguir recibiendo pedidos por WhatsApp sin interrupciones.`,
     partnerLabel: "Mostrar como aliado en el home",
+    verifiedLabel: "Verificado",
   },
   superadminPaymentsPage: {
     title: "Pagos de suscripción",
@@ -1057,6 +1061,9 @@ const en: typeof es = {
     whatsappLabel: "WhatsApp",
     addressLabel: "Address",
     addressPlaceholder: "Av. Bolívar, Maracay",
+    stateLabel: "State",
+    stateSelectPlaceholder: "Select a state",
+    countryLabel: "Country",
     mapsUrlLabel: "Google Maps link",
     mapsUrlPlaceholder: "https://maps.app.goo.gl/...",
     mapsUrlHint:
@@ -1349,6 +1356,7 @@ const en: typeof es = {
     alertMessage: (name: string, status: string) =>
       `Hi ${name}! This is Levery: your plan ${status}. Write to us to renew it and keep receiving orders via WhatsApp without interruptions.`,
     partnerLabel: "Show as a partner on the home page",
+    verifiedLabel: "Verified",
   },
   superadminPaymentsPage: {
     title: "Subscription payments",

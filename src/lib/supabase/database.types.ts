@@ -19,6 +19,8 @@ export interface Database {
           logo_url: string | null;
           cover_url: string | null;
           address: string | null;
+          state: string | null;
+          country: string;
           maps_url: string | null;
           instagram_url: string | null;
           tiktok_url: string | null;
@@ -29,6 +31,7 @@ export interface Database {
           currency: string;
           is_published: boolean;
           is_partner: boolean;
+          is_verified: boolean;
           plan: string;
           plan_expires_at: string | null;
           payment_methods: Json;
@@ -51,6 +54,8 @@ export interface Database {
           logo_url?: string | null;
           cover_url?: string | null;
           address?: string | null;
+          state?: string | null;
+          country?: string;
           maps_url?: string | null;
           instagram_url?: string | null;
           tiktok_url?: string | null;
@@ -61,6 +66,7 @@ export interface Database {
           currency?: string;
           is_published?: boolean;
           is_partner?: boolean;
+          is_verified?: boolean;
           plan?: string;
           plan_expires_at?: string | null;
           payment_methods?: Json;
@@ -83,6 +89,8 @@ export interface Database {
           logo_url?: string | null;
           cover_url?: string | null;
           address?: string | null;
+          state?: string | null;
+          country?: string;
           maps_url?: string | null;
           instagram_url?: string | null;
           tiktok_url?: string | null;
@@ -93,6 +101,7 @@ export interface Database {
           currency?: string;
           is_published?: boolean;
           is_partner?: boolean;
+          is_verified?: boolean;
           plan?: string;
           plan_expires_at?: string | null;
           payment_methods?: Json;

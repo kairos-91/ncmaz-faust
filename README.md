@@ -228,6 +228,11 @@ o recíbelo como prop `t` (client) donde lo necesites.
      ilustración a cada plato/bebida de "Vaquita Hot" (servidas desde
      `/public/menu-demo/*.svg`, generadas localmente, sin depender de
      ningún servicio externo). Requiere haber corrido la 0030 antes.
+   - `supabase/migrations/0032_restaurant_state_verified.sql` — agrega
+     `state`/`country` a `restaurants` (se muestran en el menú público,
+     ej. "Carabobo, Venezuela") y `is_verified` para la insignia de
+     verificado tipo Instagram — solo el superadmin puede activarla,
+     desde /superadmin/restaurants, igual que `is_partner`.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

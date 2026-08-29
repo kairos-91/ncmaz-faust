@@ -231,9 +231,33 @@ export default async function PublicMenuPage({
         </div>
 
         <div className="mt-3 text-center">
-          <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
+          <h1 className="flex items-center justify-center gap-1.5 text-2xl font-semibold text-neutral-900 dark:text-white">
             {restaurant.name}
+            {restaurant.is_verified && (
+              <svg
+                viewBox="0 0 24 24"
+                fill="#3897F0"
+                className="h-5 w-5 shrink-0"
+                aria-label="Verificado"
+              >
+                <title>Verificado</title>
+                <path d="M12 1.75l2.09 1.4 2.47-.46 1.02 2.3 2.3 1.02-.46 2.47 1.4 2.09-1.4 2.09.46 2.47-2.3 1.02-1.02 2.3-2.47-.46L12 22.25l-2.09-1.4-2.47.46-1.02-2.3-2.3-1.02.46-2.47-1.4-2.09 1.4-2.09-.46-2.47 2.3-1.02 1.02-2.3 2.47.46L12 1.75z" />
+                <path
+                  d="M8.8 12.3l2.2 2.2 4.2-4.6"
+                  stroke="#fff"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+              </svg>
+            )}
           </h1>
+          {(restaurant.state || restaurant.country) && (
+            <p className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400">
+              {[restaurant.state, restaurant.country].filter(Boolean).join(", ")}
+            </p>
+          )}
           {avgRating !== null && (
             <p className="mx-auto mt-1 flex w-fit items-center gap-1 text-sm text-neutral-600 dark:text-neutral-400">
               <span className="text-amber-400">★</span>

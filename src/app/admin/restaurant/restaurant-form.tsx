@@ -9,6 +9,7 @@ import { slugify } from "@/lib/utils";
 import { deliveryZonesToText, parseDeliveryZones } from "@/lib/delivery-zones";
 import { OpeningHoursFields } from "./opening-hours-fields";
 import { SERVICE_IDS, parseServices } from "@/lib/restaurant-services";
+import { VENEZUELAN_STATES } from "@/lib/venezuelan-states";
 import type { Restaurant } from "@/lib/supabase/database.types";
 import type { ActionState } from "@/app/admin/actions";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -112,6 +113,33 @@ export function RestaurantForm({
           defaultValue={restaurant?.address ?? ""}
           placeholder={t.addressPlaceholder}
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="state">{t.stateLabel}</Label>
+          <select
+            id="state"
+            name="state"
+            defaultValue={restaurant?.state ?? ""}
+            className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
+          >
+            <option value="">{t.stateSelectPlaceholder}</option>
+            {VENEZUELAN_STATES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <Label htmlFor="country">{t.countryLabel}</Label>
+          <Input
+            id="country"
+            name="country"
+            defaultValue={restaurant?.country ?? "Venezuela"}
+          />
+        </div>
       </div>
 
       <div>
