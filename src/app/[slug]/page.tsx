@@ -254,7 +254,8 @@ export default async function PublicMenuPage({
             )}
           </h1>
           {(restaurant.state || restaurant.country) && (
-            <p className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400">
+            <p className="mx-auto mt-0.5 flex w-fit items-center gap-1 text-sm text-neutral-500 dark:text-neutral-400">
+              <span>📍</span>
               {[restaurant.state, restaurant.country].filter(Boolean).join(", ")}
             </p>
           )}
