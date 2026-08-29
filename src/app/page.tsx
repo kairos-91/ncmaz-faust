@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { PartnersSection } from "@/components/partners-section";
 import { PricingPlans } from "@/components/pricing-plans";
 import { FaqSection } from "@/components/faq-section";
 import { TestimonialsSection } from "@/components/testimonials-section";
@@ -97,6 +98,8 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        <PartnersSection />
 
         <PricingPlans />
 

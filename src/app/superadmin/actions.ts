@@ -36,6 +36,20 @@ export async function updateRestaurantPlan(
   revalidatePath("/superadmin/restaurants");
 }
 
+export async function updateRestaurantPartner(
+  restaurantId: string,
+  isPartner: boolean,
+) {
+  const { supabase } = await requireSuperadmin();
+  const { error } = await supabase
+    .from("restaurants")
+    .update({ is_partner: isPartner })
+    .eq("id", restaurantId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/superadmin/restaurants");
+  revalidatePath("/");
+}
+
 // ── Pagos de suscripción ─────────────────────────────────────────
 
 export async function updateSubscriptionPaymentStatus(

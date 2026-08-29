@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { daysUntil, type SubscriptionPlan } from "@/lib/subscription-plans";
-import { updateRestaurantPlan } from "../actions";
+import { updateRestaurantPartner, updateRestaurantPlan } from "../actions";
 import type { Restaurant } from "@/lib/supabase/database.types";
 import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
@@ -66,6 +66,14 @@ function RestaurantRow({
   const [expiresAt, setExpiresAt] = useState(
     restaurant.plan_expires_at ? restaurant.plan_expires_at.slice(0, 10) : "",
   );
+  const [isPartner, setIsPartner] = useState(restaurant.is_partner);
+  const [savingPartner, startPartnerTransition] = useTransition();
+
+  const togglePartner = () => {
+    const next = !isPartner;
+    setIsPartner(next);
+    startPartnerTransition(() => updateRestaurantPartner(restaurant.id, next));
+  };
 
   const days = daysUntil(restaurant.plan_expires_at);
   const plan = plans.find((p) => p.key === restaurant.plan);
@@ -148,6 +156,16 @@ function RestaurantRow({
             {t.sendAlert}
           </a>
         )}
+        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400">
+          <input
+            type="checkbox"
+            checked={isPartner}
+            disabled={savingPartner}
+            onChange={togglePartner}
+            className="h-3.5 w-3.5 rounded border-neutral-300 dark:border-neutral-600"
+          />
+          {t.partnerLabel}
+        </label>
       </div>
 
       {editing && (

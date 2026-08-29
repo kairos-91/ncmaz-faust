@@ -23,6 +23,12 @@ export async function SiteHeader() {
             {t.nav.howItWorks}
           </Link>
           <Link
+            href="/#aliados"
+            className="hover:text-neutral-900 dark:hover:text-white"
+          >
+            {t.nav.partners}
+          </Link>
+          <Link
             href="/#pricing"
             className="hover:text-neutral-900 dark:hover:text-white"
           >

@@ -11,7 +11,8 @@ const es = {
   },
   nav: {
     howItWorks: "Cómo funciona",
-    pricing: "Precios",
+    partners: "Aliados",
+    pricing: "Planes",
     login: "Inicia sesión",
     startFree: "Empieza gratis",
   },
@@ -60,6 +61,10 @@ const es = {
           "Marca un plato como agotado o cambia un precio y se refleja al instante.",
       },
     ],
+  },
+  partnersSection: {
+    heading: "Restaurantes que ya confían en Levery",
+    subheading: "Estos son algunos de los negocios que ya usan Levery para recibir pedidos.",
   },
   pricingSection: {
     heading: "Selecciona tu plan y continúa",
@@ -643,6 +648,7 @@ const es = {
     expiredGeneric: "ya venció",
     alertMessage: (name: string, status: string) =>
       `Hola ${name}! Te escribimos de Levery: tu plan ${status}. Escríbenos para renovarlo y seguir recibiendo pedidos por WhatsApp sin interrupciones.`,
+    partnerLabel: "Mostrar como aliado en el home",
   },
   superadminPaymentsPage: {
     title: "Pagos de suscripción",
@@ -708,7 +714,8 @@ const en: typeof es = {
   },
   nav: {
     howItWorks: "How it works",
-    pricing: "Pricing",
+    partners: "Partners",
+    pricing: "Plans",
     login: "Log in",
     startFree: "Start free",
   },
@@ -755,6 +762,10 @@ const en: typeof es = {
           "Mark a dish as sold out or change a price and it updates instantly.",
       },
     ],
+  },
+  partnersSection: {
+    heading: "Restaurants that already trust Levery",
+    subheading: "Here are some of the businesses already using Levery to take orders.",
   },
   pricingSection: {
     heading: "Pick your plan and continue",
@@ -1337,6 +1348,7 @@ const en: typeof es = {
     expiredGeneric: "already expired",
     alertMessage: (name: string, status: string) =>
       `Hi ${name}! This is Levery: your plan ${status}. Write to us to renew it and keep receiving orders via WhatsApp without interruptions.`,
+    partnerLabel: "Show as a partner on the home page",
   },
   superadminPaymentsPage: {
     title: "Subscription payments",

@@ -216,6 +216,9 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `/superadmin/payment-methods`) y la función `get_platform_whatsapp_number`
      (security definer) para que el botón flotante de WhatsApp del home
      pueda leerlo sin sesión.
+   - `supabase/migrations/0029_partner_restaurants.sql` — agrega
+     `is_partner` a `restaurants` (solo el superadmin puede activarlo,
+     desde /superadmin/restaurants) para la sección "Aliados" del home.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

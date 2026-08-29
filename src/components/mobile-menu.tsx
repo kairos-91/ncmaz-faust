@@ -12,7 +12,13 @@ export function MobileMenu({
   t,
 }: {
   locale: Locale;
-  t: { howItWorks: string; pricing: string; login: string; startFree: string };
+  t: {
+    howItWorks: string;
+    partners: string;
+    pricing: string;
+    login: string;
+    startFree: string;
+  };
 }) {
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState({ top: 0, right: 0 });
@@ -71,6 +77,13 @@ export function MobileMenu({
                   className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-white dark:text-neutral-200 dark:hover:bg-neutral-800"
                 >
                   {t.howItWorks}
+                </Link>
+                <Link
+                  href="/#aliados"
+                  onClick={close}
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-white dark:text-neutral-200 dark:hover:bg-neutral-800"
+                >
+                  {t.partners}
                 </Link>
                 <Link
                   href="/#pricing"

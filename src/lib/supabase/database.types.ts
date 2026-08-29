@@ -28,6 +28,7 @@ export interface Database {
           theme_color: string;
           currency: string;
           is_published: boolean;
+          is_partner: boolean;
           plan: string;
           plan_expires_at: string | null;
           payment_methods: Json;
@@ -59,6 +60,7 @@ export interface Database {
           theme_color?: string;
           currency?: string;
           is_published?: boolean;
+          is_partner?: boolean;
           plan?: string;
           plan_expires_at?: string | null;
           payment_methods?: Json;
@@ -90,6 +92,7 @@ export interface Database {
           theme_color?: string;
           currency?: string;
           is_published?: boolean;
+          is_partner?: boolean;
           plan?: string;
           plan_expires_at?: string | null;
           payment_methods?: Json;
