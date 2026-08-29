@@ -29,7 +29,7 @@ export default async function Home() {
     <>
       <SiteHeader />
       <main className="flex-1">
-        <section className="bg-neutral-50 dark:bg-neutral-950">
+        <section className="bg-gradient-to-b from-lime-50 via-white to-white dark:from-lime-400/5 dark:via-neutral-950 dark:to-neutral-950">
           <div className="mx-auto flex max-w-6xl flex-col items-start px-4 pb-16 pt-24 sm:px-6 md:pb-24 md:pt-32">
             <span className="inline-flex items-center rounded-full bg-orange-100 px-4 py-1.5 text-sm font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
               {t.hero.badge}
