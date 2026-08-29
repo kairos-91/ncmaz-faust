@@ -15,11 +15,6 @@ import {
   type PaymentMethodValues,
 } from "@/lib/payment-methods";
 import type { DeliveryZone } from "@/lib/delivery-zones";
-import {
-  ConfirmPaymentFields,
-  type ConfirmPaymentValues,
-} from "@/components/confirm-payment-fields";
-import { uploadOrderReceipt } from "@/app/[slug]/actions";
 import { createOrderFromAdmin } from "@/app/admin/actions";
 import type { Category, MenuItem } from "@/lib/supabase/database.types";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
@@ -68,12 +63,6 @@ export function CreateOrderForm({
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<Record<string, Line>>({});
   const [methodId, setMethodId] = useState<PaymentMethodId | null>(null);
-  const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
-    bankPaidFrom: "",
-    reference: "",
-    amountPaid: "",
-  });
-  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const [needsChange, setNeedsChange] = useState<boolean | null>(null);
   const [changeFor, setChangeFor] = useState("");
 
@@ -140,10 +129,6 @@ export function CreateOrderForm({
   const activeMeta = methodId && !isCash ? PAYMENT_METHOD_META[methodId] : null;
   const amountBsRaw =
     activeMeta?.convertToVes && bcvRate ? formatBsAmount(total, bcvRate.rate) : null;
-  const confirmValues: ConfirmPaymentValues = {
-    ...confirm,
-    amountPaid: confirm.amountPaid || amountBsRaw || "",
-  };
 
   const submit = () => {
     setError(null);
@@ -172,10 +157,7 @@ export function CreateOrderForm({
           extraNames: l.extraNames,
         })),
         paymentMethod: methodId ?? undefined,
-        bankPaidFrom: activeMeta ? confirmValues.bankPaidFrom || undefined : undefined,
-        reference: activeMeta ? confirmValues.reference || undefined : undefined,
-        amountPaid: activeMeta ? confirmValues.amountPaid || undefined : undefined,
-        receiptUrl: activeMeta ? (receiptUrl ?? undefined) : undefined,
+        amountPaid: amountBsRaw ?? undefined,
         changeFor: isCash && needsChange ? changeFor.trim() || undefined : undefined,
       });
       if (result && "error" in result) {
@@ -505,12 +487,6 @@ export function CreateOrderForm({
                   </span>
                 </p>
               )}
-              <ConfirmPaymentFields
-                values={confirmValues}
-                onChange={setConfirm}
-                upload={uploadOrderReceipt.bind(null, restaurantId)}
-                onReceiptUploaded={setReceiptUrl}
-              />
             </div>
           )}
         </div>
