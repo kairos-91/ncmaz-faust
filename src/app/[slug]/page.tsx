@@ -150,7 +150,7 @@ export default async function PublicMenuPage({
         <p className="mt-6 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-400 dark:text-neutral-600">
           Hecho con{" "}
           <Link href="/" className="inline-flex">
-            <Logo height={18} />
+            <Logo height={22} />
           </Link>
         </p>
       </div>
@@ -424,7 +424,7 @@ export default async function PublicMenuPage({
         <p className="mt-12 flex items-center justify-center gap-1.5 text-center text-xs text-neutral-400 dark:text-neutral-600">
           Hecho con{" "}
           <Link href="/" className="inline-flex">
-            <Logo height={18} />
+            <Logo height={22} />
           </Link>
         </p>
       </div>
