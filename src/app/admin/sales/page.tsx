@@ -7,7 +7,6 @@ import {
   computeSalesSummary,
   groupSalesByDay,
   groupSalesByMonth,
-  groupSalesByPaymentMethod,
   lastNDays,
   lastNMonths,
 } from "@/lib/sales";
@@ -34,7 +33,6 @@ export default async function SalesPage() {
   const daily = groupSalesByDay(orders ?? []);
   const dailyChart = lastNDays(daily, new Date(), 30);
   const monthlyChart = lastNMonths(groupSalesByMonth(orders ?? []), new Date(), 12);
-  const byPaymentMethod = groupSalesByPaymentMethod(orders ?? []);
 
   return (
     <SalesView
@@ -44,7 +42,7 @@ export default async function SalesPage() {
       daily={daily}
       dailyChart={dailyChart}
       monthlyChart={monthlyChart}
-      byPaymentMethod={byPaymentMethod}
+      orders={orders ?? []}
       bcvRate={bcvRate?.rate ?? null}
       locale={locale}
     />

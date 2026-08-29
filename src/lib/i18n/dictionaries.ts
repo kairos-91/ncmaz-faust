@@ -308,6 +308,11 @@ const es = {
     totalBsColumn: "Total (Bs)",
     noPaymentMethod: "Sin especificar",
     pdfPaymentMethodTitle: "Reporte de ventas por método de pago",
+    periodToday: "Hoy",
+    periodWeek: "Esta semana",
+    periodMonth: "Este mes",
+    periodYear: "Este año",
+    periodAll: "Todos",
   },
   customersPage: {
     title: "Clientes",
@@ -1074,6 +1079,11 @@ const en: typeof es = {
     totalBsColumn: "Total (Bs)",
     noPaymentMethod: "Not specified",
     pdfPaymentMethodTitle: "Sales by payment method report",
+    periodToday: "Today",
+    periodWeek: "This week",
+    periodMonth: "This month",
+    periodYear: "This year",
+    periodAll: "All",
   },
   customersPage: {
     title: "Customers",

@@ -108,6 +108,39 @@ export function groupSalesByPaymentMethod(orders: SalesOrder[]): PaymentMethodSa
   return [...byMethod.values()].sort((a, b) => b.total - a.total);
 }
 
+export type SalesPeriod = "today" | "week" | "month" | "year" | "all";
+
+// Lunes = inicio de semana, en hora de Venezuela (mismo criterio que el
+// resto del archivo: "esta semana" es de calendario, no "últimos 7 días").
+function caracasWeekStartKey(now: Date): string {
+  const weekday = new Intl.DateTimeFormat("en-US", {
+    timeZone: RESTAURANT_TIMEZONE,
+    weekday: "short",
+  }).format(now);
+  const offset = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 }[weekday] ?? 0;
+  return caracasDayKey(new Date(now.getTime() - offset * 86400000));
+}
+
+export function filterOrdersByPeriod(
+  orders: SalesOrder[],
+  period: SalesPeriod,
+  now: Date = new Date(),
+): SalesOrder[] {
+  if (period === "all") return orders;
+  const { year: currentYear, month: currentMonth, day: currentDay } = caracasParts(now);
+  const todayKey = `${currentYear}-${currentMonth}-${currentDay}`;
+  const weekStartKey = caracasWeekStartKey(now);
+
+  return orders.filter((order) => {
+    const { year: y, month: m, day: d } = caracasParts(new Date(order.created_at));
+    const key = `${y}-${m}-${d}`;
+    if (period === "today") return key === todayKey;
+    if (period === "week") return key >= weekStartKey && key <= todayKey;
+    if (period === "month") return y === currentYear && m === currentMonth;
+    return y === currentYear;
+  });
+}
+
 // Rellena con ceros para que los gráficos siempre tengan un eje continuo,
 // aunque no haya ventas todos los días/meses.
 export function lastNDays(

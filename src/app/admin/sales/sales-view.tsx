@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 import { formatPrice } from "@/lib/utils";
 import { formatBs } from "@/lib/bcv-rate";
 import { PAYMENT_METHOD_META, type PaymentMethodId } from "@/lib/payment-methods";
-import type { DailySales, MonthlySales, PaymentMethodSales, SalesSummary } from "@/lib/sales";
+import {
+  filterOrdersByPeriod,
+  groupSalesByPaymentMethod,
+  type DailySales,
+  type MonthlySales,
+  type SalesOrder,
+  type SalesPeriod,
+  type SalesSummary,
+} from "@/lib/sales";
 import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 import { SalesCharts } from "./sales-charts";
 
@@ -28,7 +36,7 @@ export function SalesView({
   daily,
   dailyChart,
   monthlyChart,
-  byPaymentMethod,
+  orders,
   bcvRate,
   locale,
 }: {
@@ -38,7 +46,7 @@ export function SalesView({
   daily: DailySales[];
   dailyChart: DailySales[];
   monthlyChart: MonthlySales[];
-  byPaymentMethod: PaymentMethodSales[];
+  orders: SalesOrder[];
   bcvRate: number | null;
   locale: Locale;
 }) {
@@ -46,11 +54,24 @@ export function SalesView({
   const t: T = { ...dict.common, ...dict.salesPage };
   const [exporting, setExporting] = useState(false);
   const [exportingByMethod, setExportingByMethod] = useState(false);
+  const [period, setPeriod] = useState<SalesPeriod>("today");
   const bsFor = (amountUsd: number) => (bcvRate ? formatBs(amountUsd, bcvRate) : null);
+
+  const periodLabels: Record<SalesPeriod, string> = {
+    today: t.periodToday,
+    week: t.periodWeek,
+    month: t.periodMonth,
+    year: t.periodYear,
+    all: t.periodAll,
+  };
+  const byPaymentMethod = useMemo(
+    () => groupSalesByPaymentMethod(filterOrdersByPeriod(orders, period)),
+    [orders, period],
+  );
 
   const methodLabel = (method: string | null) =>
     method ? (PAYMENT_METHOD_META[method as PaymentMethodId]?.label ?? method) : t.noPaymentMethod;
-  const methodBsTotal = (row: PaymentMethodSales) =>
+  const methodBsTotal = (row: { method: string | null; total: number }) =>
     row.method && bcvRate && PAYMENT_METHOD_META[row.method as PaymentMethodId]?.convertToVes
       ? formatBs(row.total, bcvRate)
       : null;
@@ -105,7 +126,11 @@ export function SalesView({
     try {
       const doc = new jsPDF();
       doc.setFontSize(16);
-      doc.text(`${restaurantName} — ${t.pdfPaymentMethodTitle}`, 14, 18);
+      doc.text(
+        `${restaurantName} — ${t.pdfPaymentMethodTitle} (${periodLabels[period]})`,
+        14,
+        18,
+      );
       doc.setFontSize(10);
       doc.setTextColor(120);
       doc.text(t.pdfGeneratedAt(new Date().toLocaleString("es-VE")), 14, 24);
@@ -185,6 +210,23 @@ export function SalesView({
               {exportingByMethod ? t.exporting : `📄 ${t.exportPdf}`}
             </button>
           )}
+        </div>
+
+        <div className="mb-4 flex flex-wrap gap-2">
+          {(Object.keys(periodLabels) as SalesPeriod[]).map((id) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setPeriod(id)}
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium ${
+                period === id
+                  ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                  : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+              }`}
+            >
+              {periodLabels[id]}
+            </button>
+          ))}
         </div>
 
         {byPaymentMethod.length === 0 ? (
