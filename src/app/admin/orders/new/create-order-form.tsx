@@ -6,6 +6,19 @@ import { useRouter } from "next/navigation";
 import { Minus, Plus, Search } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
+import { formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
+import {
+  PAYMENT_METHOD_META,
+  enabledPaymentMethods,
+  type PaymentMethodId,
+  type PaymentMethodValues,
+} from "@/lib/payment-methods";
+import type { DeliveryZone } from "@/lib/delivery-zones";
+import {
+  ConfirmPaymentFields,
+  type ConfirmPaymentValues,
+} from "@/components/confirm-payment-fields";
+import { uploadOrderReceipt } from "@/app/[slug]/actions";
 import { createOrderFromAdmin } from "@/app/admin/actions";
 import type { Category, MenuItem } from "@/lib/supabase/database.types";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
@@ -13,6 +26,7 @@ import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 type T = Dictionary["createOrderForm"];
 type OrderType = "delivery" | "pickup" | "dine_in";
 type Line = { qty: number; extraNames: string[] };
+type MethodId = PaymentMethodId | "efectivo";
 
 export function CreateOrderForm({
   restaurantId,
@@ -21,6 +35,11 @@ export function CreateOrderForm({
   items,
   t,
   backLabel,
+  paymentMethods,
+  bcvRate,
+  deliveryZones,
+  packagingFeeEnabled,
+  packagingFeeAmount,
 }: {
   restaurantId: string;
   currency: string;
@@ -29,6 +48,11 @@ export function CreateOrderForm({
   locale: Locale;
   t: T;
   backLabel: string;
+  paymentMethods: PaymentMethodValues;
+  bcvRate: BcvRate | null;
+  deliveryZones: DeliveryZone[];
+  packagingFeeEnabled: boolean;
+  packagingFeeAmount: number;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -39,10 +63,19 @@ export function CreateOrderForm({
   const [customerPhone, setCustomerPhone] = useState("");
   const [address, setAddress] = useState("");
   const [tableNumber, setTableNumber] = useState("");
-  const [deliveryFee, setDeliveryFee] = useState("");
-  const [packagingFee, setPackagingFee] = useState("");
+  const [deliveryZoneName, setDeliveryZoneName] = useState("");
+  const [deliveryFeeManual, setDeliveryFeeManual] = useState("");
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<Record<string, Line>>({});
+  const [methodId, setMethodId] = useState<MethodId | null>(null);
+  const [confirm, setConfirm] = useState<ConfirmPaymentValues>({
+    bankPaidFrom: "",
+    reference: "",
+    amountPaid: "",
+  });
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+
+  const methods = enabledPaymentMethods(paymentMethods);
 
   const filteredItems = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -89,9 +122,25 @@ export function CreateOrderForm({
     .filter((l): l is NonNullable<typeof l> => l !== null);
 
   const itemsTotal = cartLines.reduce((sum, l) => sum + l.unitPrice * l.qty, 0);
-  const deliveryFeeValue = orderType === "delivery" ? Number(deliveryFee) || 0 : 0;
-  const packagingFeeValue = Number(packagingFee) || 0;
+  const deliveryFeeValue =
+    orderType === "delivery"
+      ? deliveryZones.length > 0
+        ? (deliveryZones.find((z) => z.name === deliveryZoneName)?.fee ?? 0)
+        : Number(deliveryFeeManual) || 0
+      : 0;
+  const packagingFeeValue =
+    packagingFeeEnabled && (orderType === "delivery" || orderType === "pickup")
+      ? packagingFeeAmount
+      : 0;
   const total = itemsTotal + deliveryFeeValue + packagingFeeValue;
+
+  const activeMeta = methodId && methodId !== "efectivo" ? PAYMENT_METHOD_META[methodId] : null;
+  const amountBsRaw =
+    activeMeta?.convertToVes && bcvRate ? formatBsAmount(total, bcvRate.rate) : null;
+  const confirmValues: ConfirmPaymentValues = {
+    ...confirm,
+    amountPaid: confirm.amountPaid || amountBsRaw || "",
+  };
 
   const submit = () => {
     setError(null);
@@ -111,6 +160,7 @@ export function CreateOrderForm({
         customerPhone,
         address: orderType === "delivery" ? address : undefined,
         tableNumber: orderType === "dine_in" ? tableNumber : undefined,
+        deliveryZone: orderType === "delivery" ? deliveryZoneName || undefined : undefined,
         deliveryFee: deliveryFeeValue,
         packagingFee: packagingFeeValue,
         lines: cartLines.map((l) => ({
@@ -118,6 +168,11 @@ export function CreateOrderForm({
           qty: l.qty,
           extraNames: l.extraNames,
         })),
+        paymentMethod: methodId ?? undefined,
+        bankPaidFrom: activeMeta ? confirmValues.bankPaidFrom || undefined : undefined,
+        reference: activeMeta ? confirmValues.reference || undefined : undefined,
+        amountPaid: activeMeta ? confirmValues.amountPaid || undefined : undefined,
+        receiptUrl: activeMeta ? (receiptUrl ?? undefined) : undefined,
       });
       if (result && "error" in result) {
         setError(result.error ?? null);
@@ -180,19 +235,39 @@ export function CreateOrderForm({
                     className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
                   />
                 </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
-                    {t.deliveryFeeLabel}
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={deliveryFee}
-                    onChange={(e) => setDeliveryFee(e.target.value)}
-                    className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
-                  />
-                </div>
+                {deliveryZones.length > 0 ? (
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                      {t.deliveryZoneLabel}
+                    </label>
+                    <select
+                      value={deliveryZoneName}
+                      onChange={(e) => setDeliveryZoneName(e.target.value)}
+                      className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                    >
+                      <option value="">{t.selectZone}</option>
+                      {deliveryZones.map((zone) => (
+                        <option key={zone.name} value={zone.name}>
+                          {zone.name} · {formatPrice(zone.fee, currency)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                      {t.deliveryFeeLabel}
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={deliveryFeeManual}
+                      onChange={(e) => setDeliveryFeeManual(e.target.value)}
+                      className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                    />
+                  </div>
+                )}
               </>
             )}
             {orderType === "dine_in" && (
@@ -207,19 +282,11 @@ export function CreateOrderForm({
                 />
               </div>
             )}
-            <div>
-              <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
-                {t.packagingFeeLabel}
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={packagingFee}
-                onChange={(e) => setPackagingFee(e.target.value)}
-                className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
-              />
-            </div>
+            {packagingFeeValue > 0 && (
+              <p className="self-end text-sm font-medium text-neutral-900 dark:text-white">
+                {t.packagingFeeLabel}: {formatPrice(packagingFeeValue, currency)}
+              </p>
+            )}
           </div>
         </div>
 
@@ -316,6 +383,60 @@ export function CreateOrderForm({
             </div>
           )}
         </div>
+
+        <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
+          <p className="mb-3 text-sm font-medium text-neutral-900 dark:text-white">
+            {t.paymentMethodLabel}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setMethodId(methodId === "efectivo" ? null : "efectivo")}
+              className={cn(
+                "rounded-full border px-3 py-1.5 text-xs font-medium",
+                methodId === "efectivo"
+                  ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                  : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
+              )}
+            >
+              {t.cashLabel}
+            </button>
+            {methods.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setMethodId(methodId === id ? null : id)}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-xs font-medium",
+                  methodId === id
+                    ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                    : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
+                )}
+              >
+                {PAYMENT_METHOD_META[id].label}
+              </button>
+            ))}
+          </div>
+
+          {activeMeta && (
+            <div className="mt-4">
+              {amountBsRaw && bcvRate && (
+                <p className="mb-3 text-sm font-semibold text-neutral-900 dark:text-white">
+                  {t.amountPaidLabel}: Bs {amountBsRaw}
+                  <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-400">
+                    (tasa BCV Bs {bcvRate.rate.toFixed(2)})
+                  </span>
+                </p>
+              )}
+              <ConfirmPaymentFields
+                values={confirmValues}
+                onChange={setConfirm}
+                upload={uploadOrderReceipt.bind(null, restaurantId)}
+                onReceiptUploaded={setReceiptUrl}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="lg:col-span-1">
@@ -349,6 +470,19 @@ export function CreateOrderForm({
             </ul>
           )}
 
+          {deliveryFeeValue > 0 && (
+            <div className="flex items-center justify-between text-sm text-neutral-600 dark:text-neutral-400">
+              <span>{t.deliveryFeeLabel}</span>
+              <span>{formatPrice(deliveryFeeValue, currency)}</span>
+            </div>
+          )}
+          {packagingFeeValue > 0 && (
+            <div className="flex items-center justify-between text-sm text-neutral-600 dark:text-neutral-400">
+              <span>{t.packagingFeeLabel}</span>
+              <span>{formatPrice(packagingFeeValue, currency)}</span>
+            </div>
+          )}
+
           <div className="flex items-center justify-between border-t border-neutral-100 pt-3 dark:border-neutral-800">
             <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
               {t.total}
@@ -364,9 +498,7 @@ export function CreateOrderForm({
             type="button"
             disabled={isPending}
             onClick={submit}
-            className={cn(
-              "w-full rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-neutral-700 disabled:opacity-60 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200",
-            )}
+            className="w-full rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-neutral-700 disabled:opacity-60 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
           >
             {isPending ? t.submitting : t.submit}
           </button>

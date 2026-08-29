@@ -3,6 +3,13 @@ import { redirect } from "next/navigation";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
+import { getBcvRate } from "@/lib/bcv-rate";
+import {
+  PAYMENT_METHOD_META,
+  enabledPaymentMethods,
+  parsePaymentMethods,
+} from "@/lib/payment-methods";
+import { parseDeliveryZones } from "@/lib/delivery-zones";
 import { CreateOrderForm } from "./create-order-form";
 
 export const metadata: Metadata = { title: "Crear pedido" };
@@ -27,6 +34,12 @@ export default async function NewOrderPage() {
       .order("sort_order"),
   ]);
 
+  const paymentMethods = parsePaymentMethods(restaurant.payment_methods);
+  const needsBcvRate = enabledPaymentMethods(paymentMethods).some(
+    (id) => PAYMENT_METHOD_META[id].convertToVes,
+  );
+  const bcvRate = needsBcvRate ? await getBcvRate() : null;
+
   return (
     <div className="space-y-6">
       <div>
@@ -43,6 +56,11 @@ export default async function NewOrderPage() {
         locale={locale}
         t={t.createOrderForm}
         backLabel={t.createOrderPage.back}
+        paymentMethods={paymentMethods}
+        bcvRate={bcvRate}
+        deliveryZones={parseDeliveryZones(restaurant.delivery_zones)}
+        packagingFeeEnabled={restaurant.packaging_fee_enabled}
+        packagingFeeAmount={restaurant.packaging_fee}
       />
     </div>
   );

@@ -455,9 +455,15 @@ export async function createOrderFromAdmin(
     customerPhone: string;
     address?: string;
     tableNumber?: string;
+    deliveryZone?: string;
     deliveryFee?: number;
     packagingFee?: number;
     lines: { itemId: string; qty: number; extraNames: string[] }[];
+    paymentMethod?: string;
+    bankPaidFrom?: string;
+    reference?: string;
+    amountPaid?: string;
+    receiptUrl?: string;
   },
 ) {
   const { supabase } = await requireStaffAccess(restaurantId);
@@ -508,11 +514,17 @@ export async function createOrderFromAdmin(
     customer_phone: input.customerPhone.trim(),
     address: input.address?.trim() || null,
     table_number: input.tableNumber?.trim() || null,
+    delivery_zone: input.deliveryZone?.trim() || null,
     delivery_fee: deliveryFee,
     packaging_fee: packagingFee,
     items,
     total: itemsTotal + deliveryFee + packagingFee,
     currency: restaurant?.currency ?? "USD",
+    payment_method: input.paymentMethod || null,
+    bank_paid_from: input.bankPaidFrom || null,
+    payment_reference: input.reference || null,
+    amount_paid: input.amountPaid || null,
+    receipt_url: input.receiptUrl || null,
   });
   if (error) return { error: error.message };
 
