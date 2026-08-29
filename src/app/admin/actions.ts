@@ -8,7 +8,8 @@ import {
   menuItemSchema,
   restaurantSchema,
 } from "@/lib/validations";
-import { parseExtrasText } from "@/lib/menu-item-extras";
+import { extrasTotal, parseExtras, parseExtrasText } from "@/lib/menu-item-extras";
+import type { OrderItemSnapshot } from "@/lib/orders";
 import { parseDeliveryZonesText } from "@/lib/delivery-zones";
 import { DAY_KEYS, type DayHours } from "@/lib/opening-hours";
 import { computeExtendedExpiry } from "@/lib/subscription-plans";
@@ -444,6 +445,79 @@ export async function updateOrderStatus(
     .eq("restaurant_id", restaurantId);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/orders");
+}
+
+export async function createOrderFromAdmin(
+  restaurantId: string,
+  input: {
+    orderType: "delivery" | "pickup" | "dine_in";
+    customerName: string;
+    customerPhone: string;
+    address?: string;
+    tableNumber?: string;
+    deliveryFee?: number;
+    packagingFee?: number;
+    lines: { itemId: string; qty: number; extraNames: string[] }[];
+  },
+) {
+  const { supabase } = await requireStaffAccess(restaurantId);
+
+  if (!input.customerName.trim() || !input.customerPhone.trim()) {
+    return { error: "Completa el nombre y teléfono del cliente" };
+  }
+
+  const { data: menuItems } = await supabase
+    .from("menu_items")
+    .select("id, name, price, extras")
+    .eq("restaurant_id", restaurantId);
+  const itemsById = new Map((menuItems ?? []).map((mi) => [mi.id, mi]));
+
+  const items: OrderItemSnapshot[] = [];
+  let itemsTotal = 0;
+  for (const line of input.lines) {
+    const menuItem = itemsById.get(line.itemId);
+    if (!menuItem || line.qty <= 0) continue;
+    const unitPrice =
+      menuItem.price + extrasTotal(parseExtras(menuItem.extras), line.extraNames);
+    items.push({
+      name: menuItem.name,
+      qty: line.qty,
+      unitPrice,
+      extraNames: line.extraNames,
+    });
+    itemsTotal += unitPrice * line.qty;
+  }
+  if (items.length === 0) {
+    return { error: "Agrega al menos un plato" };
+  }
+
+  const deliveryFee = input.deliveryFee ?? 0;
+  const packagingFee = input.packagingFee ?? 0;
+
+  const { data: restaurant } = await supabase
+    .from("restaurants")
+    .select("currency")
+    .eq("id", restaurantId)
+    .single();
+
+  const { error } = await supabase.from("orders").insert({
+    restaurant_id: restaurantId,
+    status: "accepted",
+    order_type: input.orderType,
+    customer_name: input.customerName.trim(),
+    customer_phone: input.customerPhone.trim(),
+    address: input.address?.trim() || null,
+    table_number: input.tableNumber?.trim() || null,
+    delivery_fee: deliveryFee,
+    packaging_fee: packagingFee,
+    items,
+    total: itemsTotal + deliveryFee + packagingFee,
+    currency: restaurant?.currency ?? "USD",
+  });
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/orders");
+  return { success: true };
 }
 
 export async function subscribeAdminToPush(

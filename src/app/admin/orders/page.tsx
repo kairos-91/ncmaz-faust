@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
@@ -29,7 +31,16 @@ export default async function OrdersPage() {
             {t.ordersPage.subtitle}
           </p>
         </div>
-        <NotifyOrdersButton restaurantId={restaurant.id} t={t.notifyOrders} />
+        <div className="flex flex-wrap items-center gap-3">
+          <NotifyOrdersButton restaurantId={restaurant.id} t={t.notifyOrders} />
+          <Link
+            href="/admin/orders/new"
+            className="flex items-center gap-1.5 rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+          >
+            <Plus className="h-4 w-4" />
+            {t.ordersPage.createOrder}
+          </Link>
+        </div>
       </div>
       <OrdersManager
         restaurantId={restaurant.id}
