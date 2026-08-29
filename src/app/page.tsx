@@ -31,13 +31,13 @@ export default async function Home() {
       <main className="flex-1">
         <section className="bg-neutral-50 dark:bg-neutral-950">
           <div className="mx-auto flex max-w-6xl flex-col items-start px-4 pb-16 pt-24 sm:px-6 md:pb-24 md:pt-32">
-            <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
+            <span className="inline-flex items-center rounded-full bg-orange-100 px-4 py-1.5 text-sm font-medium text-orange-700 dark:bg-lime-400/10 dark:text-lime-400">
               {t.hero.badge}
             </span>
-            <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white sm:text-5xl">
+            <h1 className="mt-5 max-w-3xl text-5xl font-semibold tracking-tight text-neutral-900 dark:text-white sm:text-6xl md:text-7xl">
               {t.hero.title}
             </h1>
-            <p className="mt-4 max-w-md text-lg text-neutral-600 dark:text-neutral-400">
+            <p className="mt-5 max-w-lg text-xl text-neutral-600 dark:text-neutral-400">
               {t.hero.description}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
