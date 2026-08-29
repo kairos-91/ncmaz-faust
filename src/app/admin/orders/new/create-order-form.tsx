@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Minus, Plus, Search, UtensilsCrossed } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
-import { formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
+import { formatBs, formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
 import {
   PAYMENT_METHOD_META,
   enabledPaymentMethods,
@@ -295,128 +295,6 @@ export function CreateOrderForm({
         </div>
 
         <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-          <div className="relative mb-4">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              className="h-10 w-full rounded-lg border border-neutral-200 bg-white pl-9 pr-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
-            />
-          </div>
-
-          {items.length === 0 ? (
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">{t.noItems}</p>
-          ) : byCategory.length === 0 ? (
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">{t.noResults}</p>
-          ) : (
-            <div className="space-y-6">
-              {byCategory.map(({ category, items: catItems }) => (
-                <div key={category.id}>
-                  <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
-                    {category.name}
-                  </h2>
-                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5">
-                    {catItems.map((item) => {
-                      const extras = parseExtras(item.extras);
-                      const line = cart[item.id];
-                      const qty = line?.qty ?? 0;
-                      return (
-                        <div
-                          key={item.id}
-                          className={cn(
-                            "overflow-hidden rounded-xl border bg-white dark:bg-neutral-900",
-                            qty > 0
-                              ? "border-neutral-900 ring-1 ring-neutral-900 dark:border-white dark:ring-white"
-                              : "border-neutral-200 dark:border-neutral-800",
-                          )}
-                        >
-                          <div className="relative aspect-square bg-neutral-100 dark:bg-neutral-800">
-                            {item.image_url ? (
-                              <Image
-                                src={item.image_url}
-                                alt={item.name}
-                                fill
-                                unoptimized
-                                className="object-cover"
-                              />
-                            ) : (
-                              <div className="flex h-full items-center justify-center text-neutral-300 dark:text-neutral-700">
-                                <UtensilsCrossed className="h-8 w-8" />
-                              </div>
-                            )}
-                            {qty > 0 && (
-                              <span className="absolute right-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full bg-neutral-900 px-1.5 text-xs font-bold text-white dark:bg-white dark:text-neutral-900">
-                                {qty}
-                              </span>
-                            )}
-                          </div>
-                          <div className="p-1.5 sm:p-2.5">
-                            <p className="truncate text-[11px] font-medium text-neutral-900 dark:text-white sm:text-xs">
-                              {item.name}
-                            </p>
-                            <p className="text-[11px] text-neutral-500 dark:text-neutral-500 sm:text-xs">
-                              {formatPrice(item.price, currency)}
-                            </p>
-                            <div className="mt-1.5 flex items-center justify-between gap-1 sm:mt-2">
-                              <button
-                                type="button"
-                                disabled={qty === 0}
-                                onClick={() => setQty(item.id, qty - 1)}
-                                className="flex h-6 w-6 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 disabled:opacity-30 dark:border-neutral-700 dark:text-neutral-400 sm:h-7 sm:w-7"
-                              >
-                                <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                              </button>
-                              <span className="text-xs font-medium text-neutral-900 dark:text-white sm:text-sm">
-                                {qty}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setQty(item.id, qty + 1)}
-                                className="flex h-6 w-6 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 sm:h-7 sm:w-7"
-                              >
-                                <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                              </button>
-                            </div>
-                            {qty > 0 && extras.length > 0 && (
-                              <div className="mt-2 border-t border-neutral-100 pt-2 dark:border-neutral-800">
-                                <p className="mb-1 text-[10px] font-medium uppercase tracking-wide text-neutral-400">
-                                  {t.extrasLabel}
-                                </p>
-                                <div className="space-y-1">
-                                  {extras.map((extra) => (
-                                    <label
-                                      key={extra.name}
-                                      className="flex items-center gap-1.5 text-[11px] text-neutral-600 dark:text-neutral-400"
-                                    >
-                                      <input
-                                        type="checkbox"
-                                        checked={line?.extraNames.includes(extra.name) ?? false}
-                                        onChange={() => toggleExtra(item.id, extra.name)}
-                                        className="h-3 w-3 rounded border-neutral-300 dark:border-neutral-600"
-                                      />
-                                      <span className="truncate">
-                                        {extra.name}
-                                        {extra.price > 0 &&
-                                          ` (+${formatPrice(extra.price, currency)})`}
-                                      </span>
-                                    </label>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
           <p className="mb-3 text-sm font-medium text-neutral-900 dark:text-white">
             {t.paymentMethodLabel}
           </p>
@@ -514,6 +392,128 @@ export function CreateOrderForm({
             </div>
           )}
         </div>
+
+        <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
+          <div className="relative mb-4">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t.searchPlaceholder}
+              className="h-10 w-full rounded-lg border border-neutral-200 bg-white pl-9 pr-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+            />
+          </div>
+
+          {items.length === 0 ? (
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">{t.noItems}</p>
+          ) : byCategory.length === 0 ? (
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">{t.noResults}</p>
+          ) : (
+            <div className="space-y-6">
+              {byCategory.map(({ category, items: catItems }) => (
+                <div key={category.id}>
+                  <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
+                    {category.name}
+                  </h2>
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5">
+                    {catItems.map((item) => {
+                      const extras = parseExtras(item.extras);
+                      const line = cart[item.id];
+                      const qty = line?.qty ?? 0;
+                      return (
+                        <div
+                          key={item.id}
+                          className={cn(
+                            "overflow-hidden rounded-xl border bg-white dark:bg-neutral-900",
+                            qty > 0
+                              ? "border-neutral-900 ring-1 ring-neutral-900 dark:border-white dark:ring-white"
+                              : "border-neutral-200 dark:border-neutral-800",
+                          )}
+                        >
+                          <div className="relative aspect-square bg-neutral-100 dark:bg-neutral-800">
+                            {item.image_url ? (
+                              <Image
+                                src={item.image_url}
+                                alt={item.name}
+                                fill
+                                unoptimized
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-full items-center justify-center text-neutral-300 dark:text-neutral-700">
+                                <UtensilsCrossed className="h-8 w-8" />
+                              </div>
+                            )}
+                            {qty > 0 && (
+                              <span className="absolute right-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full bg-neutral-900 px-1.5 text-xs font-bold text-white dark:bg-white dark:text-neutral-900">
+                                {qty}
+                              </span>
+                            )}
+                          </div>
+                          <div className="p-1.5 sm:p-2.5">
+                            <p className="truncate text-[11px] font-medium text-neutral-900 dark:text-white sm:text-xs">
+                              {item.name}
+                            </p>
+                            <p className="text-[11px] text-neutral-500 dark:text-neutral-500 sm:text-xs">
+                              {formatPrice(item.price, currency)}
+                            </p>
+                            <div className="mt-1.5 flex items-center justify-between gap-1 sm:mt-2">
+                              <button
+                                type="button"
+                                disabled={qty === 0}
+                                onClick={() => setQty(item.id, qty - 1)}
+                                className="flex h-6 w-6 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 disabled:opacity-30 dark:border-neutral-700 dark:text-neutral-400 sm:h-7 sm:w-7"
+                              >
+                                <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                              </button>
+                              <span className="text-xs font-medium text-neutral-900 dark:text-white sm:text-sm">
+                                {qty}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setQty(item.id, qty + 1)}
+                                className="flex h-6 w-6 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 sm:h-7 sm:w-7"
+                              >
+                                <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                              </button>
+                            </div>
+                            {qty > 0 && extras.length > 0 && (
+                              <div className="mt-2.5 border-t border-neutral-100 pt-2.5 dark:border-neutral-800">
+                                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-neutral-400">
+                                  {t.extrasLabel}
+                                </p>
+                                <div className="space-y-1.5">
+                                  {extras.map((extra) => (
+                                    <label
+                                      key={extra.name}
+                                      className="flex items-start gap-1.5 text-xs text-neutral-600 dark:text-neutral-400"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={line?.extraNames.includes(extra.name) ?? false}
+                                        onChange={() => toggleExtra(item.id, extra.name)}
+                                        className="mt-0.5 h-3.5 w-3.5 shrink-0 rounded border-neutral-300 dark:border-neutral-600"
+                                      />
+                                      <span className="leading-snug">
+                                        {extra.name}
+                                        {extra.price > 0 &&
+                                          ` (+${formatPrice(extra.price, currency)})`}
+                                      </span>
+                                    </label>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="lg:col-span-1">
@@ -568,6 +568,15 @@ export function CreateOrderForm({
               {formatPrice(total, currency)}
             </span>
           </div>
+
+          {activeMeta?.convertToVes && bcvRate && (
+            <p className="text-right text-sm font-semibold text-neutral-900 dark:text-white">
+              {t.totalBs}: {formatBs(total, bcvRate.rate)}
+              <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-400">
+                (tasa BCV Bs {bcvRate.rate.toFixed(2)})
+              </span>
+            </p>
+          )}
 
           {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
