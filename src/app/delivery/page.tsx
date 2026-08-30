@@ -7,7 +7,7 @@ import { DeliveryPanel } from "./delivery-panel";
 export default async function DeliveryPage() {
   const { restaurant, deliveryStaff } = await getDeliveryStaffSession();
   if (!restaurant || !deliveryStaff) redirect("/delivery");
-  const { locale, t } = await getT();
+  const { locale } = await getT();
 
   const supabase = await createClient();
   const { data: orders } = await supabase
@@ -26,7 +26,6 @@ export default async function DeliveryPage() {
       deliveryStaffId={deliveryStaff.id}
       orders={orders ?? []}
       locale={locale}
-      t={t.deliveryPortal}
     />
   );
 }

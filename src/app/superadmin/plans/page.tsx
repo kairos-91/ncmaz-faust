@@ -21,11 +21,7 @@ export default async function SuperadminPlansPage() {
           {t.superadminPlansPage.subtitle}
         </p>
       </div>
-      <PlansManager
-        plans={(plans ?? []).map(toSubscriptionPlan)}
-        locale={locale}
-        formT={t.superadminPlanForm}
-      />
+      <PlansManager plans={(plans ?? []).map(toSubscriptionPlan)} locale={locale} />
     </div>
   );
 }

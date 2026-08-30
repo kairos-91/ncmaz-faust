@@ -12,7 +12,7 @@ import {
   rejectDeliveryAssignment,
 } from "./actions";
 import type { Order } from "@/lib/supabase/database.types";
-import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 type T = Dictionary["deliveryPortal"];
 
@@ -22,15 +22,14 @@ export function DeliveryPanel({
   deliveryStaffId,
   orders: initialOrders,
   locale,
-  t,
 }: {
   restaurantId: string;
   currency: string;
   deliveryStaffId: string;
   orders: Order[];
   locale: Locale;
-  t: T;
 }) {
+  const t = getDictionary(locale).deliveryPortal;
   const [orders, setOrders] = useState(initialOrders);
   const [prevInitialOrders, setPrevInitialOrders] = useState(initialOrders);
   if (initialOrders !== prevInitialOrders) {

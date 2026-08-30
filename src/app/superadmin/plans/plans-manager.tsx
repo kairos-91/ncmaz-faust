@@ -12,14 +12,13 @@ type T = Dictionary["common"] & Dictionary["superadminPlans"];
 export function PlansManager({
   plans,
   locale,
-  formT,
 }: {
   plans: SubscriptionPlan[];
   locale: Locale;
-  formT: Dictionary["superadminPlanForm"];
 }) {
   const dict = getDictionary(locale);
   const t: T = { ...dict.common, ...dict.superadminPlans };
+  const formT = dict.superadminPlanForm;
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
