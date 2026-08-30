@@ -370,7 +370,8 @@ const es = {
     addressPlaceholder: "Av. Bolívar, Maracay",
     stateLabel: "Ciudad",
     stateSelectPlaceholder: "ejem: Maracay",
-    countryLabel: "País",
+    countryLabel: "Estado",
+    countrySelectPlaceholder: "Selecciona un estado",
     rifLabel: "RIF",
     rifHint:
       "Información fiscal de tu tienda (Registro de Información Fiscal). Ejemplo: J-12345678-9",
@@ -1147,7 +1148,8 @@ const en: typeof es = {
     addressPlaceholder: "Av. Bolívar, Maracay",
     stateLabel: "City",
     stateSelectPlaceholder: "e.g. Maracay",
-    countryLabel: "Country",
+    countryLabel: "State",
+    countrySelectPlaceholder: "Select a state",
     rifLabel: "Tax ID (RIF)",
     rifHint:
       "Your store's tax information (Fiscal Information Registry). Example: J-12345678-9",
