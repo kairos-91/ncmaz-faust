@@ -447,13 +447,23 @@ function OrderCard({
               }
               className={cn(
                 "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium disabled:opacity-60",
-                order.sent_to_kitchen_at
+                order.kitchen_status === "ready"
                   ? "bg-green-50 text-green-700 dark:bg-green-400/10 dark:text-green-400"
-                  : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
+                  : order.kitchen_status === "preparing"
+                    ? "bg-blue-50 text-blue-700 dark:bg-blue-400/10 dark:text-blue-400"
+                    : order.sent_to_kitchen_at
+                      ? "bg-orange-50 text-orange-700 dark:bg-orange-400/10 dark:text-orange-400"
+                      : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
               )}
             >
               <ChefHat className="h-3.5 w-3.5" />
-              {order.sent_to_kitchen_at ? t.inKitchen : t.sendToKitchen}
+              {order.kitchen_status === "ready"
+                ? t.kitchenReady
+                : order.kitchen_status === "preparing"
+                  ? t.kitchenPreparing
+                  : order.sent_to_kitchen_at
+                    ? t.inKitchen
+                    : t.sendToKitchen}
             </button>
           )}
         </div>

@@ -278,6 +278,13 @@ o recíbelo como prop `t` (client) donde lo necesites.
      dirección, puede aceptar o rechazar cada asignación, marcarla como
      entregada, y ver sus ganancias del día (suma del costo de envío de
      lo entregado).
+   - `supabase/migrations/0042_orders_kitchen_status.sql` — agrega
+     `kitchen_status` a `orders` (`queued` | `preparing` | `ready`, null
+     si no está en cocina). Alimenta el KDS (Kitchen Display System) en
+     /admin/kitchen-staff: al enviar un pedido a cocina desde
+     /admin/orders queda en "En cola", y desde el tablero se va
+     avanzando a "Preparando" y "Listo" hasta completarlo (lo saca del
+     tablero). El badge en /admin/orders refleja el estado en vivo.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

@@ -287,6 +287,7 @@ export interface Database {
           packaging_fee: number;
           delivery_staff_id: string | null;
           sent_to_kitchen_at: string | null;
+          kitchen_status: string | null;
           delivery_accepted_at: string | null;
           delivered_at: string | null;
           created_at: string;
@@ -317,6 +318,7 @@ export interface Database {
           packaging_fee?: number;
           delivery_staff_id?: string | null;
           sent_to_kitchen_at?: string | null;
+          kitchen_status?: string | null;
           delivery_accepted_at?: string | null;
           delivered_at?: string | null;
           created_at?: string;
@@ -347,6 +349,7 @@ export interface Database {
           packaging_fee?: number;
           delivery_staff_id?: string | null;
           sent_to_kitchen_at?: string | null;
+          kitchen_status?: string | null;
           delivery_accepted_at?: string | null;
           delivered_at?: string | null;
           created_at?: string;

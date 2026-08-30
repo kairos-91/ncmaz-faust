@@ -479,11 +479,32 @@ export async function setSentToKitchen(
   const { supabase } = await requireStaffAccess(restaurantId);
   const { error } = await supabase
     .from("orders")
-    .update({ sent_to_kitchen_at: sent ? new Date().toISOString() : null })
+    .update({
+      sent_to_kitchen_at: sent ? new Date().toISOString() : null,
+      kitchen_status: sent ? "queued" : null,
+    })
     .eq("id", orderId)
     .eq("restaurant_id", restaurantId);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/orders");
+  revalidatePath("/admin/kitchen-staff");
+}
+
+export async function setKitchenStatus(
+  restaurantId: string,
+  orderId: string,
+  status: "queued" | "preparing" | "ready",
+) {
+  const { supabase } = await requireStaffAccess(restaurantId);
+  const { error } = await supabase
+    .from("orders")
+    .update({ kitchen_status: status })
+    .eq("id", orderId)
+    .eq("restaurant_id", restaurantId)
+    .not("sent_to_kitchen_at", "is", null);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin/kitchen-staff");
 }
 
 export async function createOrderFromAdmin(
