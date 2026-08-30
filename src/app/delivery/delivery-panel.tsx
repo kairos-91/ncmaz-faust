@@ -11,6 +11,7 @@ import {
   markOrderDelivered,
   rejectDeliveryAssignment,
 } from "./actions";
+import { NotifyDeliveryButton } from "./notify-delivery-button";
 import type { Order } from "@/lib/supabase/database.types";
 import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
@@ -91,6 +92,8 @@ export function DeliveryPanel({
 
   return (
     <div className="space-y-6">
+      <NotifyDeliveryButton locale={locale} />
+
       <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
         <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
           {t.earningsToday}

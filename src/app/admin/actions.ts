@@ -3,6 +3,7 @@
 import webpush from "web-push";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   categorySchema,
@@ -15,6 +16,7 @@ import { parseDeliveryZonesText } from "@/lib/delivery-zones";
 import { DAY_KEYS, type DayHours } from "@/lib/opening-hours";
 import { computeExtendedExpiry } from "@/lib/subscription-plans";
 import { SERVICE_IDS, type ServiceId } from "@/lib/restaurant-services";
+import { formatPrice } from "@/lib/utils";
 
 export type ActionState = { error?: string } | null;
 
@@ -452,13 +454,68 @@ export async function updateOrderStatus(
   revalidatePath("/admin/orders");
 }
 
+// Avisa por push al repartidor que le asignaron un pedido nuevo. Usa el
+// mismo cliente autenticado del dueño/staff que hizo la asignación: la
+// política RLS de delivery_push_subscriptions ya le permite leer las
+// suscripciones de su propio personal de delivery.
+async function notifyDeliveryStaffOfAssignment(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  deliveryStaffId: string,
+  order: {
+    customer_name: string;
+    total: number;
+    currency: string;
+    address: string | null;
+  },
+) {
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+  const vapidSubject = process.env.VAPID_SUBJECT;
+  if (!vapidPublicKey || !vapidPrivateKey || !vapidSubject) return;
+
+  const { data: subscriptions } = await supabase
+    .from("delivery_push_subscriptions")
+    .select("id, endpoint, p256dh, auth")
+    .eq("delivery_staff_id", deliveryStaffId);
+  if (!subscriptions || subscriptions.length === 0) return;
+
+  webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
+  const payload = JSON.stringify({
+    title: "🔔 ¡Nuevo pedido para entregar!",
+    body: `${order.customer_name} · ${formatPrice(order.total, order.currency)}${
+      order.address ? ` · ${order.address}` : ""
+    }`,
+    url: "/delivery",
+  });
+
+  const expiredIds: string[] = [];
+  await Promise.all(
+    subscriptions.map(async (sub) => {
+      try {
+        await webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+          payload,
+        );
+      } catch (err: unknown) {
+        const statusCode = (err as { statusCode?: number })?.statusCode;
+        if ([401, 403, 404, 410].includes(statusCode ?? 0)) {
+          expiredIds.push(sub.id);
+        }
+      }
+    }),
+  );
+  if (expiredIds.length > 0) {
+    await supabase.from("delivery_push_subscriptions").delete().in("id", expiredIds);
+  }
+}
+
 export async function assignDeliveryStaff(
   restaurantId: string,
   orderId: string,
   deliveryStaffId: string | null,
 ) {
   const { supabase } = await requireStaffAccess(restaurantId);
-  const { error } = await supabase
+  const { data: order, error } = await supabase
     .from("orders")
     .update({
       delivery_staff_id: deliveryStaffId,
@@ -466,9 +523,17 @@ export async function assignDeliveryStaff(
       delivered_at: null,
     })
     .eq("id", orderId)
-    .eq("restaurant_id", restaurantId);
+    .eq("restaurant_id", restaurantId)
+    .select("customer_name, total, currency, address")
+    .single();
   if (error) throw new Error(error.message);
   revalidatePath("/admin/orders");
+
+  if (deliveryStaffId && order) {
+    after(() =>
+      notifyDeliveryStaffOfAssignment(supabase, deliveryStaffId, order).catch(() => {}),
+    );
+  }
 }
 
 export async function setSentToKitchen(

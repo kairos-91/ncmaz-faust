@@ -695,6 +695,23 @@ const es = {
         : "No se pudo enviar a ningún dispositivo — vuelve a activar las notificaciones.",
     testError: "No pudimos enviar la prueba. Intenta de nuevo.",
   },
+  notifyDelivery: {
+    enable: "🔔 Recibir alerta de pedidos asignados",
+    enabling: "Activando...",
+    enabled: "🔔 Alertas activadas",
+    denied: "Bloqueaste las notificaciones. Actívalas desde los ajustes del navegador.",
+    error: "No pudimos activar las notificaciones. Intenta de nuevo.",
+    installApp: "📲 Instalar app",
+    iosHint:
+      "📲 En iPhone, primero toca compartir y luego \"Agregar a inicio\" — si no, las notificaciones no llegan.",
+    test: "🔔 Enviar prueba",
+    testSending: "Enviando...",
+    testSent: (sent: number, total: number) =>
+      sent > 0
+        ? `Prueba enviada a ${sent} de ${total} dispositivo(s). Revisa si te llegó.`
+        : "No se pudo enviar a ningún dispositivo — vuelve a activar las notificaciones.",
+    testError: "No pudimos enviar la prueba. Intenta de nuevo.",
+  },
   ordersManager: {
     filters: { pending: "Pendientes", accepted: "Aceptados", rejected: "Rechazados", all: "Todos" },
     empty: "No hay pedidos en esta categoría.",
@@ -1557,6 +1574,23 @@ const en: typeof es = {
   },
   notifyOrders: {
     enable: "🔔 Get alerted on new orders",
+    enabling: "Enabling...",
+    enabled: "🔔 Alerts enabled",
+    denied: "You blocked notifications. Enable them from your browser settings.",
+    error: "We couldn't enable notifications. Try again.",
+    installApp: "📲 Install app",
+    iosHint:
+      "📲 On iPhone, tap share and then \"Add to Home Screen\" first — otherwise notifications won't arrive.",
+    test: "🔔 Send test",
+    testSending: "Sending...",
+    testSent: (sent: number, total: number) =>
+      sent > 0
+        ? `Test sent to ${sent} of ${total} device(s). Check if it arrived.`
+        : "Couldn't send to any device — re-enable notifications.",
+    testError: "We couldn't send the test. Try again.",
+  },
+  notifyDelivery: {
+    enable: "🔔 Get alerted on assigned orders",
     enabling: "Enabling...",
     enabled: "🔔 Alerts enabled",
     denied: "You blocked notifications. Enable them from your browser settings.",

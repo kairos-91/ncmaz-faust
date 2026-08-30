@@ -37,7 +37,12 @@ export async function updateSession(request: NextRequest) {
   // inicio" (sin eso, las notificaciones push nunca llegan en iPhone,
   // aunque el permiso se haya concedido). Ninguna de las dos rutas tiene
   // nada específico del restaurante: son estáticas.
-  const ADMIN_PUBLIC_PATHS = ["/admin/sw.js", "/admin/manifest.webmanifest"];
+  const ADMIN_PUBLIC_PATHS = [
+    "/admin/sw.js",
+    "/admin/manifest.webmanifest",
+    "/delivery/sw.js",
+    "/delivery/manifest.webmanifest",
+  ];
   if (
     !user &&
     (request.nextUrl.pathname.startsWith("/admin") ||

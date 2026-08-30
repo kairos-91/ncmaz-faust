@@ -5,7 +5,17 @@ import { getT } from "@/lib/i18n/locale";
 import { signOut } from "@/app/admin/actions";
 import { DeliveryTopBar } from "./delivery-topbar";
 
-export const metadata: Metadata = { title: "Panel de delivery" };
+// Necesario para que el panel de delivery se pueda "Agregar a inicio" —
+// sin esto, iOS/Safari nunca entrega push fuera de una PWA instalada.
+export const metadata: Metadata = {
+  title: "Panel de delivery",
+  manifest: "/delivery/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Levery Delivery",
+  },
+};
 
 export default async function DeliveryLayout({
   children,

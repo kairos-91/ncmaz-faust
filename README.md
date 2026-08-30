@@ -285,6 +285,12 @@ o recíbelo como prop `t` (client) donde lo necesites.
      /admin/orders queda en "En cola", y desde el tablero se va
      avanzando a "Preparando" y "Listo" hasta completarlo (lo saca del
      tablero). El badge en /admin/orders refleja el estado en vivo.
+   - `supabase/migrations/0043_delivery_push_subscriptions.sql` — crea
+     `delivery_push_subscriptions` (una fila por dispositivo de cada
+     repartidor). Desde /delivery el repartidor activa "Recibir alerta
+     de pedidos asignados"; cuando el restaurante le asigna un pedido
+     desde /admin/orders, le llega una notificación push (título,
+     cliente, total y dirección) aunque no tenga la app abierta.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
