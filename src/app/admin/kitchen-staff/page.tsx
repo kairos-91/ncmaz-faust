@@ -37,7 +37,7 @@ export default async function KitchenStaffPage() {
         </p>
       </div>
 
-      <KitchenBoard restaurantId={restaurant.id} orders={kitchenOrders ?? []} t={t.kitchenBoard} />
+      <KitchenBoard restaurantId={restaurant.id} orders={kitchenOrders ?? []} locale={locale} />
 
       <div>
         <h2 className="mb-3 text-sm font-semibold text-neutral-900 dark:text-white">

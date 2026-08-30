@@ -7,7 +7,7 @@ import { parseOrderItems } from "@/lib/orders";
 import { createClient } from "@/lib/supabase/client";
 import { setKitchenStatus, setSentToKitchen } from "@/app/admin/actions";
 import type { Order } from "@/lib/supabase/database.types";
-import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 type T = Dictionary["kitchenBoard"];
 type KitchenStatus = "queued" | "preparing" | "ready";
@@ -21,12 +21,13 @@ const ORDER_TYPE_ICONS = {
 export function KitchenBoard({
   restaurantId,
   orders: initialOrders,
-  t,
+  locale,
 }: {
   restaurantId: string;
   orders: Order[];
-  t: T;
+  locale: Locale;
 }) {
+  const t = getDictionary(locale).kitchenBoard;
   const [orders, setOrders] = useState(initialOrders);
   const [prevInitialOrders, setPrevInitialOrders] = useState(initialOrders);
   if (initialOrders !== prevInitialOrders) {
