@@ -577,6 +577,8 @@ const es = {
     markReady: "Marcar listo",
     complete: "Completar",
     back: "Regresar",
+    fullscreenLink: "Pantalla completa",
+    backToAdmin: "Volver al admin",
   },
   deliveryPortal: {
     title: "Panel de delivery",
@@ -1452,6 +1454,8 @@ const en: typeof es = {
     markReady: "Mark ready",
     complete: "Complete",
     back: "Back",
+    fullscreenLink: "Fullscreen",
+    backToAdmin: "Back to admin",
   },
   deliveryPortal: {
     title: "Delivery panel",

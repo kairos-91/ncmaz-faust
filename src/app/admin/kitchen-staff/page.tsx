@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Maximize2 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
@@ -30,11 +32,22 @@ export default async function KitchenStaffPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-xl font-semibold">{t.kitchenStaffPage.title}</h1>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          {t.kitchenStaffPage.subtitle}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-semibold">{t.kitchenStaffPage.title}</h1>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            {t.kitchenStaffPage.subtitle}
+          </p>
+        </div>
+        <Link
+          href="/kitchen-board"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
+        >
+          <Maximize2 className="h-4 w-4" />
+          {t.kitchenBoard.fullscreenLink}
+        </Link>
       </div>
 
       <KitchenBoard restaurantId={restaurant.id} orders={kitchenOrders ?? []} locale={locale} />
