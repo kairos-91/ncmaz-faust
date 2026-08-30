@@ -60,6 +60,8 @@ export const restaurantSchema = z.object({
   packaging_fee_enabled: z.boolean(),
   packaging_fee: z.coerce.number().min(0, "El costo no puede ser negativo"),
   allow_orders_when_closed: z.boolean(),
+  manages_delivery_staff: z.boolean(),
+  manages_kitchen_staff: z.boolean(),
 }).refine((data) => !isReservedSlug(data.slug), {
   message: "Esa URL no está disponible, elige otra",
   path: ["slug"],
@@ -112,6 +114,12 @@ export const reviewSchema = z.object({
   comment: z.string().max(500).optional().or(z.literal("")),
 });
 export type ReviewInput = z.infer<typeof reviewSchema>;
+
+export const staffMemberSchema = z.object({
+  name: z.string().min(2, "El nombre es muy corto").max(80),
+  phone: z.string().max(30).optional().or(z.literal("")),
+});
+export type StaffMemberInput = z.infer<typeof staffMemberSchema>;
 
 export const pushNotificationSchema = z.object({
   title: z.string().min(1, "Escribe un título").max(65),

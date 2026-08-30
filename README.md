@@ -247,6 +247,21 @@ o recíbelo como prop `t` (client) donde lo necesites.
      /admin/restaurant y, si está configurado, se muestra en el menú
      público en el footer, arriba del crédito "Hecho con Levery" (ej.
      "Vaquita Hot J-12345678-9").
+   - `supabase/migrations/0036_restaurant_staff_flags.sql` — agrega
+     `manages_delivery_staff` y `manages_kitchen_staff` a `restaurants`
+     (ambos `false` por defecto). Al activarlos desde /admin/restaurant
+     se habilitan los menús "Delivery" y "Cocina" del admin.
+   - `supabase/migrations/0037_delivery_staff.sql` — crea la tabla
+     `delivery_staff` (roster de personal de delivery por restaurante,
+     sin cuenta/login: nombre, teléfono, activo/inactivo), gestionada
+     desde /admin/delivery-staff.
+   - `supabase/migrations/0038_kitchen_staff.sql` — igual que la
+     anterior pero para `kitchen_staff`, gestionada desde
+     /admin/kitchen-staff.
+   - `supabase/migrations/0039_orders_delivery_kitchen.sql` — agrega
+     `delivery_staff_id` (FK a `delivery_staff`) y `sent_to_kitchen_at`
+     a `orders`, para poder asignar un repartidor y marcar "enviado a
+     cocina" desde /admin/orders.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

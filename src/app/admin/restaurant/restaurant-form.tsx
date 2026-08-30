@@ -321,6 +321,36 @@ export function RestaurantForm({
         </p>
       </div>
 
+      <div>
+        <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <input
+            type="checkbox"
+            name="manages_delivery_staff"
+            defaultChecked={restaurant?.manages_delivery_staff ?? false}
+            className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
+          />
+          {t.managesDeliveryStaffLabel}
+        </label>
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.managesDeliveryStaffHint}
+        </p>
+      </div>
+
+      <div>
+        <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <input
+            type="checkbox"
+            name="manages_kitchen_staff"
+            defaultChecked={restaurant?.manages_kitchen_staff ?? false}
+            className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
+          />
+          {t.managesKitchenStaffLabel}
+        </label>
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.managesKitchenStaffHint}
+        </p>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="theme_color">{t.colorLabel}</Label>

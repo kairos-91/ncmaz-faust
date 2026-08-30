@@ -92,6 +92,8 @@ function parseRestaurantForm(formData: FormData) {
     packaging_fee_enabled: formData.get("packaging_fee_enabled") === "on",
     packaging_fee: formData.get("packaging_fee") || "0",
     allow_orders_when_closed: formData.get("allow_orders_when_closed") === "on",
+    manages_delivery_staff: formData.get("manages_delivery_staff") === "on",
+    manages_kitchen_staff: formData.get("manages_kitchen_staff") === "on",
   });
 }
 
@@ -444,6 +446,36 @@ export async function updateOrderStatus(
   const { error } = await supabase
     .from("orders")
     .update({ status })
+    .eq("id", orderId)
+    .eq("restaurant_id", restaurantId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/orders");
+}
+
+export async function assignDeliveryStaff(
+  restaurantId: string,
+  orderId: string,
+  deliveryStaffId: string | null,
+) {
+  const { supabase } = await requireStaffAccess(restaurantId);
+  const { error } = await supabase
+    .from("orders")
+    .update({ delivery_staff_id: deliveryStaffId })
+    .eq("id", orderId)
+    .eq("restaurant_id", restaurantId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/orders");
+}
+
+export async function setSentToKitchen(
+  restaurantId: string,
+  orderId: string,
+  sent: boolean,
+) {
+  const { supabase } = await requireStaffAccess(restaurantId);
+  const { error } = await supabase
+    .from("orders")
+    .update({ sent_to_kitchen_at: sent ? new Date().toISOString() : null })
     .eq("id", orderId)
     .eq("restaurant_id", restaurantId);
   if (error) throw new Error(error.message);

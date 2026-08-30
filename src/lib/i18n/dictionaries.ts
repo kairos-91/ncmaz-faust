@@ -222,6 +222,8 @@ const es = {
     categories: "Categorías",
     menu: "Menú",
     orders: "Pedidos",
+    deliveryStaff: "Delivery",
+    kitchenStaff: "Cocina",
     reviews: "Reseñas",
     coupons: "Cupones",
     notifications: "Notificaciones",
@@ -398,6 +400,12 @@ const es = {
     allowOrdersWhenClosedLabel: "Permitir pedidos fuera de horario",
     allowOrdersWhenClosedHint:
       "Si lo activas, los clientes podrán hacer pedidos aunque el restaurante esté marcado como cerrado según tu horario.",
+    managesDeliveryStaffLabel: "Manejas personal de delivery",
+    managesDeliveryStaffHint:
+      "Si lo activas, podrás agregar a tu personal de delivery y asignarlo a los pedidos desde el menú de Pedidos.",
+    managesKitchenStaffLabel: "Manejas personal de cocina",
+    managesKitchenStaffHint:
+      "Si lo activas, podrás agregar a tu personal de cocina y enviar los pedidos a cocina desde el menú de Pedidos.",
     colorLabel: "Color de marca",
     currencyLabel: "Moneda",
     publishLabel: "Publicar menú (visible en tu URL pública)",
@@ -507,6 +515,43 @@ const es = {
     remove: "Quitar",
     removeConfirm: (email: string) => `¿Quitar a "${email}" de tu equipo?`,
     hint: "La persona debe tener una cuenta creada en Levery con ese correo (puede registrarse en /signup).",
+  },
+  deliveryStaffPage: {
+    title: "Personal de delivery",
+    subtitle:
+      "Agrega a las personas que hacen tus entregas para poder asignarlas a los pedidos.",
+  },
+  deliveryStaffManager: {
+    empty: "Aún no agregaste personal de delivery.",
+    nameLabel: "Nombre",
+    namePlaceholder: "Carlos Pérez",
+    phoneLabel: "Teléfono (opcional)",
+    phonePlaceholder: "+58 412 0000000",
+    add: "Agregar",
+    adding: "Agregando...",
+    active: "Activo",
+    inactive: "Inactivo",
+    delete: "Eliminar",
+    deleteConfirm: (name: string) =>
+      `¿Eliminar a "${name}" de tu personal de delivery?`,
+  },
+  kitchenStaffPage: {
+    title: "Personal de cocina",
+    subtitle: "Agrega a las personas que trabajan en tu cocina.",
+  },
+  kitchenStaffManager: {
+    empty: "Aún no agregaste personal de cocina.",
+    nameLabel: "Nombre",
+    namePlaceholder: "María Gómez",
+    phoneLabel: "Teléfono (opcional)",
+    phonePlaceholder: "+58 412 0000000",
+    add: "Agregar",
+    adding: "Agregando...",
+    active: "Activo",
+    inactive: "Inactivo",
+    delete: "Eliminar",
+    deleteConfirm: (name: string) =>
+      `¿Eliminar a "${name}" de tu personal de cocina?`,
   },
   menuPage: {
     title: "Menú",
@@ -626,6 +671,10 @@ const es = {
     statuses: { pending: "Pendiente", accepted: "Aceptado", rejected: "Rechazado" },
     changeFor: "Paga con",
     totalBs: "Total en Bs",
+    assignDelivery: "Asignar delivery",
+    unassigned: "Sin asignar",
+    sendToKitchen: "Enviar a cocina",
+    inKitchen: "En cocina",
   },
   adminPaymentMethodsPage: {
     title: "Métodos de pago",
@@ -1000,6 +1049,8 @@ const en: typeof es = {
     categories: "Categories",
     menu: "Menu",
     orders: "Orders",
+    deliveryStaff: "Delivery",
+    kitchenStaff: "Kitchen",
     reviews: "Reviews",
     coupons: "Coupons",
     notifications: "Notifications",
@@ -1176,6 +1227,12 @@ const en: typeof es = {
     allowOrdersWhenClosedLabel: "Allow orders outside business hours",
     allowOrdersWhenClosedHint:
       "If enabled, customers can place orders even when the restaurant is marked as closed based on your hours.",
+    managesDeliveryStaffLabel: "Manage delivery staff",
+    managesDeliveryStaffHint:
+      "If enabled, you can add your delivery staff and assign them to orders from the Orders menu.",
+    managesKitchenStaffLabel: "Manage kitchen staff",
+    managesKitchenStaffHint:
+      "If enabled, you can add your kitchen staff and send orders to the kitchen from the Orders menu.",
     colorLabel: "Brand color",
     currencyLabel: "Currency",
     publishLabel: "Publish menu (visible at your public URL)",
@@ -1285,6 +1342,41 @@ const en: typeof es = {
     remove: "Remove",
     removeConfirm: (email: string) => `Remove "${email}" from your team?`,
     hint: "The person needs a Levery account with that email (they can sign up at /signup).",
+  },
+  deliveryStaffPage: {
+    title: "Delivery staff",
+    subtitle:
+      "Add the people who make your deliveries so you can assign them to orders.",
+  },
+  deliveryStaffManager: {
+    empty: "You haven't added any delivery staff yet.",
+    nameLabel: "Name",
+    namePlaceholder: "Carlos Pérez",
+    phoneLabel: "Phone (optional)",
+    phonePlaceholder: "+1 555 0000000",
+    add: "Add",
+    adding: "Adding...",
+    active: "Active",
+    inactive: "Inactive",
+    delete: "Delete",
+    deleteConfirm: (name: string) => `Remove "${name}" from your delivery staff?`,
+  },
+  kitchenStaffPage: {
+    title: "Kitchen staff",
+    subtitle: "Add the people who work in your kitchen.",
+  },
+  kitchenStaffManager: {
+    empty: "You haven't added any kitchen staff yet.",
+    nameLabel: "Name",
+    namePlaceholder: "María Gómez",
+    phoneLabel: "Phone (optional)",
+    phonePlaceholder: "+1 555 0000000",
+    add: "Add",
+    adding: "Adding...",
+    active: "Active",
+    inactive: "Inactive",
+    delete: "Delete",
+    deleteConfirm: (name: string) => `Remove "${name}" from your kitchen staff?`,
   },
   menuPage: {
     title: "Menu",
@@ -1404,6 +1496,10 @@ const en: typeof es = {
     statuses: { pending: "Pending", accepted: "Accepted", rejected: "Rejected" },
     changeFor: "Pays with",
     totalBs: "Total in Bs",
+    assignDelivery: "Assign delivery",
+    unassigned: "Unassigned",
+    sendToKitchen: "Send to kitchen",
+    inKitchen: "In kitchen",
   },
   adminPaymentMethodsPage: {
     title: "Payment methods",

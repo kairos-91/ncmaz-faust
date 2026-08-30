@@ -2,12 +2,12 @@
 
 import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
-import { Bike, Check, Store, UtensilsCrossed, X } from "lucide-react";
+import { Bike, Check, ChefHat, Store, UtensilsCrossed, X } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { parseOrderItems, type OrderStatus } from "@/lib/orders";
 import { PAYMENT_METHOD_META, type PaymentMethodId } from "@/lib/payment-methods";
 import { formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
-import { updateOrderStatus } from "@/app/admin/actions";
+import { assignDeliveryStaff, setSentToKitchen, updateOrderStatus } from "@/app/admin/actions";
 import { createClient } from "@/lib/supabase/client";
 import type { Order } from "@/lib/supabase/database.types";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
@@ -27,6 +27,9 @@ export function OrdersManager({
   locale,
   t,
   bcvRate,
+  manageDelivery = false,
+  manageKitchen = false,
+  deliveryStaff = [],
 }: {
   restaurantId: string;
   currency: string;
@@ -34,6 +37,9 @@ export function OrdersManager({
   locale: Locale;
   t: T;
   bcvRate: BcvRate | null;
+  manageDelivery?: boolean;
+  manageKitchen?: boolean;
+  deliveryStaff?: { id: string; name: string }[];
 }) {
   const [filter, setFilter] = useState<OrderStatus | "all">("pending");
   const [orders, setOrders] = useState(initialOrders);
@@ -144,6 +150,9 @@ export function OrdersManager({
               locale={locale}
               t={t}
               bcvRate={bcvRate}
+              manageDelivery={manageDelivery}
+              manageKitchen={manageKitchen}
+              deliveryStaff={deliveryStaff}
             />
           ))}
         </div>
@@ -159,6 +168,9 @@ function OrderCard({
   locale,
   t,
   bcvRate,
+  manageDelivery,
+  manageKitchen,
+  deliveryStaff,
 }: {
   restaurantId: string;
   currency: string;
@@ -166,8 +178,12 @@ function OrderCard({
   locale: Locale;
   t: T;
   bcvRate: BcvRate | null;
+  manageDelivery: boolean;
+  manageKitchen: boolean;
+  deliveryStaff: { id: string; name: string }[];
 }) {
   const [isPending, startTransition] = useTransition();
+  const [isKitchenPending, startKitchenTransition] = useTransition();
   const items = parseOrderItems(order.items);
   const Icon = ORDER_TYPE_ICONS[order.order_type as keyof typeof ORDER_TYPE_ICONS];
   const methodMeta = order.payment_method
@@ -368,6 +384,60 @@ function OrderCard({
             <X className="h-4 w-4" />
             {t.reject}
           </button>
+        </div>
+      )}
+
+      {order.status === "accepted" && (manageDelivery || manageKitchen) && (
+        <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-neutral-100 pt-3 dark:border-neutral-800">
+          {manageDelivery && order.order_type === "delivery" && (
+            <div className="flex items-center gap-2">
+              <Bike className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
+              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-500">
+                {t.assignDelivery}:
+              </span>
+              <select
+                value={order.delivery_staff_id ?? ""}
+                disabled={isPending}
+                onChange={(e) =>
+                  startTransition(() =>
+                    assignDeliveryStaff(
+                      restaurantId,
+                      order.id,
+                      e.target.value || null,
+                    ),
+                  )
+                }
+                className="h-9 rounded-lg border border-neutral-200 bg-white px-2 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+              >
+                <option value="">{t.unassigned}</option>
+                {deliveryStaff.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {manageKitchen && (
+            <button
+              type="button"
+              disabled={isKitchenPending}
+              onClick={() =>
+                startKitchenTransition(() =>
+                  setSentToKitchen(restaurantId, order.id, !order.sent_to_kitchen_at),
+                )
+              }
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium disabled:opacity-60",
+                order.sent_to_kitchen_at
+                  ? "bg-green-50 text-green-700 dark:bg-green-400/10 dark:text-green-400"
+                  : "border border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800",
+              )}
+            >
+              <ChefHat className="h-3.5 w-3.5" />
+              {order.sent_to_kitchen_at ? t.inKitchen : t.sendToKitchen}
+            </button>
+          )}
         </div>
       )}
     </div>

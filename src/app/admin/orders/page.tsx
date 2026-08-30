@@ -28,6 +28,17 @@ export default async function OrdersPage() {
   );
   const bcvRate = needsBcvRate ? await getBcvRate() : null;
 
+  let deliveryStaff: { id: string; name: string }[] = [];
+  if (restaurant.manages_delivery_staff) {
+    const { data } = await supabase
+      .from("delivery_staff")
+      .select("id, name")
+      .eq("restaurant_id", restaurant.id)
+      .eq("is_active", true)
+      .order("name");
+    deliveryStaff = data ?? [];
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -55,6 +66,9 @@ export default async function OrdersPage() {
         locale={locale}
         t={t.ordersManager}
         bcvRate={bcvRate}
+        manageDelivery={restaurant.manages_delivery_staff}
+        manageKitchen={restaurant.manages_kitchen_staff}
+        deliveryStaff={deliveryStaff}
       />
     </div>
   );

@@ -44,6 +44,8 @@ export interface Database {
           packaging_fee_enabled: boolean;
           packaging_fee: number;
           allow_orders_when_closed: boolean;
+          manages_delivery_staff: boolean;
+          manages_kitchen_staff: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -81,6 +83,8 @@ export interface Database {
           packaging_fee_enabled?: boolean;
           packaging_fee?: number;
           allow_orders_when_closed?: boolean;
+          manages_delivery_staff?: boolean;
+          manages_kitchen_staff?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -118,6 +122,8 @@ export interface Database {
           packaging_fee_enabled?: boolean;
           packaging_fee?: number;
           allow_orders_when_closed?: boolean;
+          manages_delivery_staff?: boolean;
+          manages_kitchen_staff?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -198,6 +204,60 @@ export interface Database {
         };
         Relationships: [];
       };
+      delivery_staff: {
+        Row: {
+          id: string;
+          restaurant_id: string;
+          name: string;
+          phone: string | null;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          restaurant_id: string;
+          name: string;
+          phone?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          restaurant_id?: string;
+          name?: string;
+          phone?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      kitchen_staff: {
+        Row: {
+          id: string;
+          restaurant_id: string;
+          name: string;
+          phone: string | null;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          restaurant_id: string;
+          name: string;
+          phone?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          restaurant_id?: string;
+          name?: string;
+          phone?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       orders: {
         Row: {
           id: string;
@@ -222,6 +282,8 @@ export interface Database {
           coupon_code: string | null;
           discount_amount: number;
           packaging_fee: number;
+          delivery_staff_id: string | null;
+          sent_to_kitchen_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -248,6 +310,8 @@ export interface Database {
           coupon_code?: string | null;
           discount_amount?: number;
           packaging_fee?: number;
+          delivery_staff_id?: string | null;
+          sent_to_kitchen_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -274,6 +338,8 @@ export interface Database {
           coupon_code?: string | null;
           discount_amount?: number;
           packaging_fee?: number;
+          delivery_staff_id?: string | null;
+          sent_to_kitchen_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -622,6 +688,8 @@ export type Restaurant = Database["public"]["Tables"]["restaurants"]["Row"];
 export type Category = Database["public"]["Tables"]["categories"]["Row"];
 export type MenuItem = Database["public"]["Tables"]["menu_items"]["Row"];
 export type Order = Database["public"]["Tables"]["orders"]["Row"];
+export type DeliveryStaff = Database["public"]["Tables"]["delivery_staff"]["Row"];
+export type KitchenStaff = Database["public"]["Tables"]["kitchen_staff"]["Row"];
 export type SubscriptionPlanRow =
   Database["public"]["Tables"]["subscription_plans"]["Row"];
 export type SubscriptionPayment =

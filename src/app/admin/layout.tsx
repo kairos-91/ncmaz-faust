@@ -64,6 +64,8 @@ export default async function AdminLayout({
           pendingOrders={pendingOrders}
           isStaff={role === "staff"}
           restaurantId={restaurant?.id ?? null}
+          hasDeliveryStaff={restaurant?.manages_delivery_staff ?? false}
+          hasKitchenStaff={restaurant?.manages_kitchen_staff ?? false}
         />
         <main className="flex-1 px-4 py-8 md:px-10">
           <div className="mx-auto max-w-6xl">{children}</div>

@@ -19,6 +19,8 @@ import {
   CreditCard,
   Sparkles,
   ShieldCheck,
+  Bike,
+  ChefHat,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isSuperadmin } from "@/lib/superadmin";
@@ -32,12 +34,16 @@ export function AdminNav({
   pendingOrders: initialPendingOrders = 0,
   isStaff = false,
   restaurantId = null,
+  hasDeliveryStaff = false,
+  hasKitchenStaff = false,
 }: {
   email: string | null;
   t: Dictionary["adminNav"];
   pendingOrders?: number;
   isStaff?: boolean;
   restaurantId?: string | null;
+  hasDeliveryStaff?: boolean;
+  hasKitchenStaff?: boolean;
 }) {
   const pathname = usePathname();
   const [pendingOrders, setPendingOrders] = useState(initialPendingOrders);
@@ -162,6 +168,20 @@ export function AdminNav({
       badge: pendingOrders,
       ownerOnly: false,
     },
+    {
+      href: "/admin/delivery-staff",
+      label: t.deliveryStaff,
+      icon: Bike,
+      ownerOnly: true,
+      requiresFlag: hasDeliveryStaff,
+    },
+    {
+      href: "/admin/kitchen-staff",
+      label: t.kitchenStaff,
+      icon: ChefHat,
+      ownerOnly: true,
+      requiresFlag: hasKitchenStaff,
+    },
     { href: "/admin/reviews", label: t.reviews, icon: Star, ownerOnly: true },
     { href: "/admin/coupons", label: t.coupons, icon: Ticket, ownerOnly: true },
     { href: "/admin/notifications", label: t.notifications, icon: Bell, ownerOnly: true },
@@ -174,7 +194,11 @@ export function AdminNav({
     },
     { href: "/admin/subscription", label: t.subscription, icon: Sparkles, ownerOnly: true },
   ];
-  const links = allLinks.filter((link) => !isStaff || !link.ownerOnly);
+  const links = allLinks.filter(
+    (link) =>
+      (!isStaff || !link.ownerOnly) &&
+      ("requiresFlag" in link ? link.requiresFlag : true),
+  );
 
   return (
     <aside className="flex w-full shrink-0 flex-col border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 md:h-screen md:w-56 md:border-r md:sticky md:top-0">
