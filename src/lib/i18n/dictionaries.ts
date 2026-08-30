@@ -368,8 +368,8 @@ const es = {
     whatsappLabel: "WhatsApp",
     addressLabel: "Dirección",
     addressPlaceholder: "Av. Bolívar, Maracay",
-    stateLabel: "Estado",
-    stateSelectPlaceholder: "Selecciona un estado",
+    stateLabel: "Ciudad",
+    stateSelectPlaceholder: "ejem: Maracay",
     countryLabel: "País",
     rifLabel: "RIF",
     rifHint:
@@ -1145,8 +1145,8 @@ const en: typeof es = {
     whatsappLabel: "WhatsApp",
     addressLabel: "Address",
     addressPlaceholder: "Av. Bolívar, Maracay",
-    stateLabel: "State",
-    stateSelectPlaceholder: "Select a state",
+    stateLabel: "City",
+    stateSelectPlaceholder: "e.g. Maracay",
     countryLabel: "Country",
     rifLabel: "Tax ID (RIF)",
     rifHint:
