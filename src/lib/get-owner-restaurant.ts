@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Restaurant } from "@/lib/supabase/database.types";
+import type { DeliveryStaff, Restaurant } from "@/lib/supabase/database.types";
 
 export async function getOwnerRestaurant(): Promise<{
   userEmail: string | null;
@@ -78,4 +78,39 @@ export async function getStaffRestaurant(): Promise<{
     restaurant: staffRestaurant,
     role: staffRestaurant ? "staff" : null,
   };
+}
+
+/**
+ * Resuelve la sesión de un repartidor: el usuario logueado debe estar
+ * vinculado (por user_id) a una fila de delivery_staff — ver
+ * link_delivery_staff_user en 0041_delivery_staff_accounts.sql. Usa esto
+ * solo en /delivery, no en el admin.
+ */
+export async function getDeliveryStaffSession(): Promise<{
+  userEmail: string | null;
+  restaurant: Restaurant | null;
+  deliveryStaff: DeliveryStaff | null;
+}> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { userEmail: null, restaurant: null, deliveryStaff: null };
+
+  const { data: deliveryStaff } = await supabase
+    .from("delivery_staff")
+    .select("*")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!deliveryStaff) {
+    return { userEmail: user.email ?? null, restaurant: null, deliveryStaff: null };
+  }
+
+  const { data: restaurant } = await supabase
+    .from("restaurants")
+    .select("*")
+    .eq("id", deliveryStaff.restaurant_id)
+    .maybeSingle();
+
+  return { userEmail: user.email ?? null, restaurant, deliveryStaff };
 }

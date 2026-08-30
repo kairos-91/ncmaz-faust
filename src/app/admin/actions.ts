@@ -460,7 +460,11 @@ export async function assignDeliveryStaff(
   const { supabase } = await requireStaffAccess(restaurantId);
   const { error } = await supabase
     .from("orders")
-    .update({ delivery_staff_id: deliveryStaffId })
+    .update({
+      delivery_staff_id: deliveryStaffId,
+      delivery_accepted_at: null,
+      delivered_at: null,
+    })
     .eq("id", orderId)
     .eq("restaurant_id", restaurantId);
   if (error) throw new Error(error.message);

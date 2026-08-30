@@ -1,13 +1,16 @@
 "use client";
 
-import { useActionState, useTransition } from "react";
+import { useState, useTransition } from "react";
+import { useActionState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   createDeliveryStaff,
   deleteDeliveryStaff,
+  linkDeliveryStaffUser,
   toggleDeliveryStaffActive,
+  unlinkDeliveryStaffUser,
 } from "./actions";
 import type { DeliveryStaff } from "@/lib/supabase/database.types";
 import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
@@ -71,46 +74,124 @@ function StaffRow({
   t: T;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [showLinkForm, setShowLinkForm] = useState(false);
+  const [email, setEmail] = useState("");
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const [isLinking, startLinkTransition] = useTransition();
+
+  const submitLink = () => {
+    if (!email.trim()) return;
+    setLinkError(null);
+    startLinkTransition(async () => {
+      const result = await linkDeliveryStaffUser(restaurantId, member.id, email.trim());
+      if (result?.error) {
+        setLinkError(result.error);
+      } else {
+        setShowLinkForm(false);
+        setEmail("");
+      }
+    });
+  };
 
   return (
-    <li className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-      <div>
-        <p className="text-sm font-medium text-neutral-900 dark:text-white">
-          {member.name}
-        </p>
-        {member.phone && (
-          <p className="text-xs text-neutral-500 dark:text-neutral-500">{member.phone}</p>
-        )}
+    <li className="flex flex-col gap-3 px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium text-neutral-900 dark:text-white">
+            {member.name}
+          </p>
+          {member.phone && (
+            <p className="text-xs text-neutral-500 dark:text-neutral-500">
+              {member.phone}
+            </p>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={() =>
+              startTransition(() =>
+                toggleDeliveryStaffActive(restaurantId, member.id, !member.is_active),
+              )
+            }
+            className={
+              member.is_active
+                ? "rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-400/10 dark:text-green-400"
+                : "rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
+            }
+          >
+            {member.is_active ? t.active : t.inactive}
+          </button>
+          <button
+            type="button"
+            disabled={isPending}
+            className="text-xs font-medium text-red-500 hover:text-red-700"
+            onClick={() => {
+              if (!confirm(t.deleteConfirm(member.name))) return;
+              startTransition(() => deleteDeliveryStaff(restaurantId, member.id));
+            }}
+          >
+            {t.delete}
+          </button>
+        </div>
       </div>
-      <div className="flex items-center gap-3">
+
+      {member.user_id ? (
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-400/10 dark:text-blue-400">
+            {t.linked}
+          </span>
+          <button
+            type="button"
+            disabled={isPending}
+            className="text-xs font-medium text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+            onClick={() => {
+              if (!confirm(t.unlinkConfirm(member.name))) return;
+              startTransition(() => unlinkDeliveryStaffUser(restaurantId, member.id));
+            }}
+          >
+            {t.unlink}
+          </button>
+        </div>
+      ) : showLinkForm ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={t.linkEmailPlaceholder}
+            className="h-8 max-w-[220px] text-xs"
+          />
+          <Button
+            type="button"
+            disabled={isLinking}
+            onClick={submitLink}
+            className="h-8 px-3 text-xs"
+          >
+            {isLinking ? t.linking : t.linkSubmit}
+          </Button>
+          <button
+            type="button"
+            className="text-xs text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+            onClick={() => {
+              setShowLinkForm(false);
+              setLinkError(null);
+            }}
+          >
+            {t.cancel}
+          </button>
+        </div>
+      ) : (
         <button
           type="button"
-          disabled={isPending}
-          onClick={() =>
-            startTransition(() =>
-              toggleDeliveryStaffActive(restaurantId, member.id, !member.is_active),
-            )
-          }
-          className={
-            member.is_active
-              ? "rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-400/10 dark:text-green-400"
-              : "rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
-          }
+          className="w-fit text-xs font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+          onClick={() => setShowLinkForm(true)}
         >
-          {member.is_active ? t.active : t.inactive}
+          {t.linkAccount}
         </button>
-        <button
-          type="button"
-          disabled={isPending}
-          className="text-xs font-medium text-red-500 hover:text-red-700"
-          onClick={() => {
-            if (!confirm(t.deleteConfirm(member.name))) return;
-            startTransition(() => deleteDeliveryStaff(restaurantId, member.id));
-          }}
-        >
-          {t.delete}
-        </button>
-      </div>
+      )}
+      {linkError && <p className="text-xs text-red-600">{linkError}</p>}
     </li>
   );
 }

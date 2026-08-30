@@ -40,7 +40,8 @@ export async function updateSession(request: NextRequest) {
   const ADMIN_PUBLIC_PATHS = ["/admin/sw.js", "/admin/manifest.webmanifest"];
   if (
     !user &&
-    request.nextUrl.pathname.startsWith("/admin") &&
+    (request.nextUrl.pathname.startsWith("/admin") ||
+      request.nextUrl.pathname.startsWith("/delivery")) &&
     !ADMIN_PUBLIC_PATHS.includes(request.nextUrl.pathname)
   ) {
     const url = request.nextUrl.clone();

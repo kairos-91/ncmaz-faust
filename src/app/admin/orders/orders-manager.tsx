@@ -416,6 +416,24 @@ function OrderCard({
                   </option>
                 ))}
               </select>
+              {order.delivery_staff_id && (
+                <span
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-xs font-medium",
+                    order.delivered_at
+                      ? "bg-green-50 text-green-700 dark:bg-green-400/10 dark:text-green-400"
+                      : order.delivery_accepted_at
+                        ? "bg-blue-50 text-blue-700 dark:bg-blue-400/10 dark:text-blue-400"
+                        : "bg-orange-50 text-orange-700 dark:bg-orange-400/10 dark:text-orange-400",
+                  )}
+                >
+                  {order.delivered_at
+                    ? t.delivered
+                    : order.delivery_accepted_at
+                      ? t.onTheWay
+                      : t.awaitingDeliveryResponse}
+                </span>
+              )}
             </div>
           )}
           {manageKitchen && (

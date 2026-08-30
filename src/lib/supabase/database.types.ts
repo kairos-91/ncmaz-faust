@@ -211,6 +211,7 @@ export interface Database {
           name: string;
           phone: string | null;
           is_active: boolean;
+          user_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -219,6 +220,7 @@ export interface Database {
           name: string;
           phone?: string | null;
           is_active?: boolean;
+          user_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -227,6 +229,7 @@ export interface Database {
           name?: string;
           phone?: string | null;
           is_active?: boolean;
+          user_id?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -284,6 +287,8 @@ export interface Database {
           packaging_fee: number;
           delivery_staff_id: string | null;
           sent_to_kitchen_at: string | null;
+          delivery_accepted_at: string | null;
+          delivered_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -312,6 +317,8 @@ export interface Database {
           packaging_fee?: number;
           delivery_staff_id?: string | null;
           sent_to_kitchen_at?: string | null;
+          delivery_accepted_at?: string | null;
+          delivered_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -340,6 +347,8 @@ export interface Database {
           packaging_fee?: number;
           delivery_staff_id?: string | null;
           sent_to_kitchen_at?: string | null;
+          delivery_accepted_at?: string | null;
+          delivered_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -656,6 +665,14 @@ export interface Database {
     Functions: {
       add_restaurant_staff: {
         Args: { p_restaurant_id: string; p_email: string };
+        Returns: undefined;
+      };
+      link_delivery_staff_user: {
+        Args: { p_delivery_staff_id: string; p_email: string };
+        Returns: undefined;
+      };
+      reject_delivery_assignment: {
+        Args: { p_order_id: string };
         Returns: undefined;
       };
       restaurant_rating: {

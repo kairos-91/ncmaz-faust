@@ -75,3 +75,38 @@ export async function deleteDeliveryStaff(restaurantId: string, staffId: string)
   if (error) throw new Error(error.message);
   revalidatePath("/admin/delivery-staff");
 }
+
+export async function linkDeliveryStaffUser(
+  restaurantId: string,
+  staffId: string,
+  email: string,
+): Promise<ActionState> {
+  const supabase = await requireOwnedRestaurant(restaurantId);
+  const { error } = await supabase.rpc("link_delivery_staff_user", {
+    p_delivery_staff_id: staffId,
+    p_email: email,
+  });
+
+  if (error) {
+    if (error.message.includes("user_not_found")) {
+      return {
+        error: "Ese correo no tiene una cuenta en Levery. Pídele que se registre primero en /signup.",
+      };
+    }
+    return { error: error.message };
+  }
+
+  revalidatePath("/admin/delivery-staff");
+  return { error: undefined };
+}
+
+export async function unlinkDeliveryStaffUser(restaurantId: string, staffId: string) {
+  const supabase = await requireOwnedRestaurant(restaurantId);
+  const { error } = await supabase
+    .from("delivery_staff")
+    .update({ user_id: null })
+    .eq("id", staffId)
+    .eq("restaurant_id", restaurantId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/delivery-staff");
+}

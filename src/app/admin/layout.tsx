@@ -27,6 +27,25 @@ export default async function AdminLayout({
 }) {
   const { userEmail, restaurant, role } = await getStaffRestaurant();
   if (!userEmail) redirect("/login");
+
+  // Un repartidor vinculado (delivery_staff.user_id) no es dueño ni
+  // staff del admin — mándalo a su propio panel en vez de mostrarle la
+  // pantalla de "crea tu restaurante".
+  if (!restaurant) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { data: deliveryStaff } = user
+      ? await supabase
+          .from("delivery_staff")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle()
+      : { data: null };
+    if (deliveryStaff) redirect("/delivery");
+  }
+
   const { locale, t } = await getT();
 
   let pendingOrders = 0;

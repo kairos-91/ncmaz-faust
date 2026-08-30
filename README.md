@@ -252,9 +252,9 @@ o recíbelo como prop `t` (client) donde lo necesites.
      (ambos `false` por defecto). Al activarlos desde /admin/restaurant
      se habilitan los menús "Delivery" y "Cocina" del admin.
    - `supabase/migrations/0037_delivery_staff.sql` — crea la tabla
-     `delivery_staff` (roster de personal de delivery por restaurante,
-     sin cuenta/login: nombre, teléfono, activo/inactivo), gestionada
-     desde /admin/delivery-staff.
+     `delivery_staff` (roster de personal de delivery por restaurante:
+     nombre, teléfono, activo/inactivo), gestionada desde
+     /admin/delivery-staff.
    - `supabase/migrations/0038_kitchen_staff.sql` — igual que la
      anterior pero para `kitchen_staff`, gestionada desde
      /admin/kitchen-staff.
@@ -262,6 +262,22 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `delivery_staff_id` (FK a `delivery_staff`) y `sent_to_kitchen_at`
      a `orders`, para poder asignar un repartidor y marcar "enviado a
      cocina" desde /admin/orders.
+   - `supabase/migrations/0040_orders_delivery_lifecycle.sql` — agrega
+     `delivery_accepted_at` y `delivered_at` a `orders`, para el ciclo
+     de vida de la entrega en el panel del repartidor (/delivery).
+   - `supabase/migrations/0041_delivery_staff_accounts.sql` — agrega
+     `user_id` a `delivery_staff` para vincular una fila del roster a
+     una cuenta de Levery (mismo patrón que `restaurant_staff`: el
+     dueño vincula por correo desde /admin/delivery-staff, la persona
+     debe tener cuenta creada). Agrega las políticas RLS para que un
+     repartidor vinculado vea/actualice solo sus pedidos asignados, y
+     las funciones `link_delivery_staff_user` y
+     `reject_delivery_assignment`. Con la cuenta vinculada, el
+     repartidor entra a /delivery: ve los pedidos asignados con los
+     datos de contacto del cliente (con link directo a WhatsApp) y la
+     dirección, puede aceptar o rechazar cada asignación, marcarla como
+     entregada, y ver sus ganancias del día (suma del costo de envío de
+     lo entregado).
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

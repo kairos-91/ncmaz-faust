@@ -534,6 +534,15 @@ const es = {
     delete: "Eliminar",
     deleteConfirm: (name: string) =>
       `¿Eliminar a "${name}" de tu personal de delivery?`,
+    linked: "Cuenta vinculada",
+    linkAccount: "Vincular cuenta",
+    linkEmailPlaceholder: "correo@ejemplo.com",
+    linkSubmit: "Vincular",
+    linking: "Vinculando...",
+    cancel: "Cancelar",
+    unlink: "Desvincular",
+    unlinkConfirm: (name: string) =>
+      `¿Desvincular la cuenta de "${name}"? Ya no podrá entrar a su panel de delivery.`,
   },
   kitchenStaffPage: {
     title: "Personal de cocina",
@@ -552,6 +561,26 @@ const es = {
     delete: "Eliminar",
     deleteConfirm: (name: string) =>
       `¿Eliminar a "${name}" de tu personal de cocina?`,
+  },
+  deliveryPortal: {
+    title: "Panel de delivery",
+    logout: "Cerrar sesión",
+    noAccess:
+      "Tu cuenta no está vinculada como personal de delivery de ningún restaurante. Pídele al dueño que te vincule desde su panel.",
+    earningsToday: "Ganancias de hoy",
+    deliveriesToday: (count: number) =>
+      count === 1 ? "1 entrega hoy" : `${count} entregas hoy`,
+    pendingSection: "Por confirmar",
+    pendingEmpty: "No tienes pedidos esperando tu respuesta.",
+    onTheWaySection: "En camino",
+    onTheWayEmpty: "No tienes entregas en camino.",
+    deliveredTodaySection: "Entregados hoy",
+    deliveredTodayEmpty: "Aún no entregaste ningún pedido hoy.",
+    accept: "Aceptar",
+    reject: "Rechazar",
+    markDelivered: "Marcar como entregado",
+    total: "Total",
+    deliveryFee: "Tu ganancia (envío)",
   },
   menuPage: {
     title: "Menú",
@@ -675,6 +704,9 @@ const es = {
     unassigned: "Sin asignar",
     sendToKitchen: "Enviar a cocina",
     inKitchen: "En cocina",
+    awaitingDeliveryResponse: "Por confirmar",
+    onTheWay: "En camino",
+    delivered: "Entregado",
   },
   adminPaymentMethodsPage: {
     title: "Métodos de pago",
@@ -1360,6 +1392,15 @@ const en: typeof es = {
     inactive: "Inactive",
     delete: "Delete",
     deleteConfirm: (name: string) => `Remove "${name}" from your delivery staff?`,
+    linked: "Account linked",
+    linkAccount: "Link account",
+    linkEmailPlaceholder: "email@example.com",
+    linkSubmit: "Link",
+    linking: "Linking...",
+    cancel: "Cancel",
+    unlink: "Unlink",
+    unlinkConfirm: (name: string) =>
+      `Unlink "${name}"'s account? They will no longer be able to access their delivery panel.`,
   },
   kitchenStaffPage: {
     title: "Kitchen staff",
@@ -1377,6 +1418,26 @@ const en: typeof es = {
     inactive: "Inactive",
     delete: "Delete",
     deleteConfirm: (name: string) => `Remove "${name}" from your kitchen staff?`,
+  },
+  deliveryPortal: {
+    title: "Delivery panel",
+    logout: "Log out",
+    noAccess:
+      "Your account isn't linked as delivery staff for any restaurant. Ask the owner to link you from their panel.",
+    earningsToday: "Today's earnings",
+    deliveriesToday: (count: number) =>
+      count === 1 ? "1 delivery today" : `${count} deliveries today`,
+    pendingSection: "Awaiting response",
+    pendingEmpty: "You have no orders waiting for your response.",
+    onTheWaySection: "On the way",
+    onTheWayEmpty: "You have no deliveries on the way.",
+    deliveredTodaySection: "Delivered today",
+    deliveredTodayEmpty: "You haven't delivered any orders today.",
+    accept: "Accept",
+    reject: "Reject",
+    markDelivered: "Mark as delivered",
+    total: "Total",
+    deliveryFee: "Your earning (delivery fee)",
   },
   menuPage: {
     title: "Menu",
@@ -1500,6 +1561,9 @@ const en: typeof es = {
     unassigned: "Unassigned",
     sendToKitchen: "Send to kitchen",
     inKitchen: "In kitchen",
+    awaitingDeliveryResponse: "Awaiting confirmation",
+    onTheWay: "On the way",
+    delivered: "Delivered",
   },
   adminPaymentMethodsPage: {
     title: "Payment methods",
