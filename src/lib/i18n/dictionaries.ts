@@ -240,6 +240,7 @@ const es = {
   },
   profileMenu: {
     menuLabel: "Menú de perfil",
+    myAccount: "Mi cuenta",
     changePhoto: "Cambiar foto de perfil",
     uploadingPhoto: "Subiendo...",
     changePassword: "Cambiar contraseña",
@@ -256,6 +257,13 @@ const es = {
     deleteConfirmWord: "ELIMINAR",
     deleteConfirmLabel: (word: string) => `Escribe ${word} para confirmar`,
     deleting: "Eliminando...",
+    accountPageTitle: "Mi cuenta",
+    accountPageSubtitle: "Gestiona tu foto de perfil, tu contraseña y tu cuenta.",
+    photoSectionTitle: "Foto de perfil",
+    googleManagedPhoto: "Esta foto se gestiona desde tu cuenta de Google.",
+    passwordSectionTitle: "Contraseña",
+    dangerZoneTitle: "Zona de peligro",
+    dangerZoneBody: "Eliminar tu cuenta es permanente y no se puede deshacer.",
   },
   dashboard: {
     createTitle: "Crea el menú de tu restaurante",
@@ -1268,6 +1276,7 @@ const en: typeof es = {
   },
   profileMenu: {
     menuLabel: "Profile menu",
+    myAccount: "My account",
     changePhoto: "Change profile photo",
     uploadingPhoto: "Uploading...",
     changePassword: "Change password",
@@ -1284,6 +1293,13 @@ const en: typeof es = {
     deleteConfirmWord: "DELETE",
     deleteConfirmLabel: (word: string) => `Type ${word} to confirm`,
     deleting: "Deleting...",
+    accountPageTitle: "My account",
+    accountPageSubtitle: "Manage your profile photo, password and account.",
+    photoSectionTitle: "Profile photo",
+    googleManagedPhoto: "This photo is managed from your Google account.",
+    passwordSectionTitle: "Password",
+    dangerZoneTitle: "Danger zone",
+    dangerZoneBody: "Deleting your account is permanent and cannot be undone.",
   },
   dashboard: {
     createTitle: "Create your restaurant's menu",

@@ -3,14 +3,13 @@ import { BadgeCheck } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ProfileMenu } from "./profile/profile-menu";
+import { ProfileMenu } from "./account/profile-menu";
 import type { BcvRate } from "@/lib/bcv-rate";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 
 export function AdminTopBar({
   email,
   avatarUrl = null,
-  isGoogleAccount = false,
   locale,
   t,
   openNow = null,
@@ -18,7 +17,6 @@ export function AdminTopBar({
 }: {
   email: string | null;
   avatarUrl?: string | null;
-  isGoogleAccount?: boolean;
   locale: Locale;
   t: Dictionary["adminNav"];
   openNow?: boolean | null;
@@ -54,12 +52,7 @@ export function AdminTopBar({
             <LanguageToggle locale={locale} />
             <ThemeToggle />
           </div>
-          <ProfileMenu
-            email={email}
-            avatarUrl={avatarUrl}
-            isGoogleAccount={isGoogleAccount}
-            locale={locale}
-          />
+          <ProfileMenu email={email} avatarUrl={avatarUrl} locale={locale} />
         </div>
       </header>
       {bcvRate && (
