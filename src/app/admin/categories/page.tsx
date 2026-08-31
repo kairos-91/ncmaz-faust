@@ -32,7 +32,7 @@ export default async function CategoriesPage() {
       <SectionIntro
         restaurantId={restaurant.id}
         tipKey="categories"
-        icon={Tags}
+        icon={<Tags className="h-5 w-5" />}
         title={t.onboarding.categoriesIntroTitle}
         body={t.onboarding.categoriesIntroBody}
         dismissLabel={t.onboarding.dismiss}

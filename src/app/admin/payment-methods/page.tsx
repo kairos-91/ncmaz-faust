@@ -27,7 +27,7 @@ export default async function PaymentMethodsPage() {
       <SectionIntro
         restaurantId={restaurant.id}
         tipKey="payment-methods"
-        icon={CreditCard}
+        icon={<CreditCard className="h-5 w-5" />}
         title={t.onboarding.paymentMethodsIntroTitle}
         body={t.onboarding.paymentMethodsIntroBody}
         dismissLabel={t.onboarding.dismiss}

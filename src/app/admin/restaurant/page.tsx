@@ -30,7 +30,7 @@ export default async function RestaurantSettingsPage() {
       <SectionIntro
         restaurantId={restaurant.id}
         tipKey="restaurant"
-        icon={Store}
+        icon={<Store className="h-5 w-5" />}
         title={t.onboarding.restaurantIntroTitle}
         body={t.onboarding.restaurantIntroBody}
         dismissLabel={t.onboarding.dismiss}

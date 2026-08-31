@@ -56,7 +56,7 @@ export default async function MenuPage() {
       <SectionIntro
         restaurantId={restaurant.id}
         tipKey="menu"
-        icon={UtensilsCrossed}
+        icon={<UtensilsCrossed className="h-5 w-5" />}
         title={t.onboarding.menuIntroTitle}
         body={t.onboarding.menuIntroBody}
         dismissLabel={t.onboarding.dismiss}

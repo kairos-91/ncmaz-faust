@@ -1,9 +1,9 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Check, X } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { dismissOnboarding, isOnboardingDismissed } from "@/lib/onboarding";
 
@@ -12,7 +12,7 @@ type Step = {
   label: string;
   href: string;
   done: boolean;
-  icon: LucideIcon;
+  icon: ReactNode;
 };
 
 // Mismo patrón que theme-toggle.tsx / SectionIntro: useSyncExternalStore en
@@ -88,7 +88,7 @@ export function OnboardingChecklist({
                     : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-500",
                 )}
               >
-                {step.done ? <Check className="h-4 w-4" /> : <step.icon className="h-4 w-4" />}
+                {step.done ? <Check className="h-4 w-4" /> : step.icon}
               </span>
               <span
                 className={cn(

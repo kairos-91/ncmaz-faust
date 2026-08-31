@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import type { ReactNode } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { hasSeenWelcome, markWelcomeSeen } from "@/lib/onboarding";
 
@@ -22,7 +22,7 @@ function getServerSnapshot() {
 }
 
 export type WelcomeSlide = {
-  icon: LucideIcon;
+  icon: ReactNode;
   title: string;
   body: string;
 };
@@ -58,7 +58,6 @@ export function WelcomeModal({
 
   const isLast = index === slides.length - 1;
   const slide = slides[index];
-  const Icon = slide.icon;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -74,8 +73,8 @@ export function WelcomeModal({
         </div>
 
         <div className="flex flex-col items-center text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-lime-100 dark:bg-lime-400/10">
-            <Icon className="h-8 w-8 text-lime-700 dark:text-lime-400" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-lime-100 text-lime-700 dark:bg-lime-400/10 dark:text-lime-400 [&_svg]:h-8 [&_svg]:w-8">
+            {slide.icon}
           </div>
           <p className="mt-4 text-lg font-bold text-neutral-900 dark:text-white">
             {slide.title}

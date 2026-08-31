@@ -43,22 +43,22 @@ export default async function AdminDashboardPage() {
       startLabel={t.onboarding.welcomeStart}
       slides={[
         {
-          icon: Rocket,
+          icon: <Rocket />,
           title: t.onboarding.welcomeSlide1Title,
           body: t.onboarding.welcomeSlide1Body,
         },
         {
-          icon: Store,
+          icon: <Store />,
           title: t.onboarding.welcomeSlide2Title,
           body: t.onboarding.welcomeSlide2Body,
         },
         {
-          icon: UtensilsCrossed,
+          icon: <UtensilsCrossed />,
           title: t.onboarding.welcomeSlide3Title,
           body: t.onboarding.welcomeSlide3Body,
         },
         {
-          icon: CreditCard,
+          icon: <CreditCard />,
           title: t.onboarding.welcomeSlide4Title,
           body: t.onboarding.welcomeSlide4Body,
         },
@@ -144,28 +144,28 @@ export default async function AdminDashboardPage() {
             label: t.onboarding.stepProfile,
             href: "/admin/restaurant",
             done: Boolean(restaurant.logo_url),
-            icon: Store,
+            icon: <Store className="h-4 w-4" />,
           },
           {
             key: "categories",
             label: t.onboarding.stepCategories,
             href: "/admin/categories",
             done: (categoryCount ?? 0) > 0,
-            icon: Tags,
+            icon: <Tags className="h-4 w-4" />,
           },
           {
             key: "dishes",
             label: t.onboarding.stepDishes,
             href: "/admin/menu",
             done: (itemCount ?? 0) > 0,
-            icon: UtensilsCrossed,
+            icon: <UtensilsCrossed className="h-4 w-4" />,
           },
           {
             key: "payment-methods",
             label: t.onboarding.stepPaymentMethods,
             href: "/admin/payment-methods",
             done: hasPaymentMethods,
-            icon: CreditCard,
+            icon: <CreditCard className="h-4 w-4" />,
           },
         ]}
       />

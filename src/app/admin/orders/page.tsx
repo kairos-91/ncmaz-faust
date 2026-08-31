@@ -63,7 +63,7 @@ export default async function OrdersPage() {
       <SectionIntro
         restaurantId={restaurant.id}
         tipKey="orders"
-        icon={ClipboardList}
+        icon={<ClipboardList className="h-5 w-5" />}
         title={t.onboarding.ordersIntroTitle}
         body={t.onboarding.ordersIntroBody}
         dismissLabel={t.onboarding.dismiss}

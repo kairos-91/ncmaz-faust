@@ -1,8 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useSyncExternalStore } from "react";
 import { X } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { hasSeenTip, markTipSeen } from "@/lib/onboarding";
 
 // Mismo patrón que theme-toggle.tsx: localStorage no tiene un evento de
@@ -28,14 +28,14 @@ function getServerSnapshot() {
 export function SectionIntro({
   restaurantId,
   tipKey,
-  icon: Icon,
+  icon,
   title,
   body,
   dismissLabel,
 }: {
   restaurantId: string;
   tipKey: string;
-  icon: LucideIcon;
+  icon: ReactNode;
   title: string;
   body: string;
   dismissLabel: string;
@@ -55,8 +55,8 @@ export function SectionIntro({
 
   return (
     <div className="flex items-start gap-3 rounded-2xl border border-lime-200 bg-lime-50 p-4 dark:border-lime-400/20 dark:bg-lime-400/10">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime-100 dark:bg-lime-400/20">
-        <Icon className="h-5 w-5 text-lime-700 dark:text-lime-400" />
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime-100 text-lime-700 dark:bg-lime-400/20 dark:text-lime-400 [&_svg]:h-5 [&_svg]:w-5">
+        {icon}
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-neutral-900 dark:text-white">{title}</p>
