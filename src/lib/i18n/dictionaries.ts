@@ -285,6 +285,22 @@ const es = {
     ordersIntroTitle: "Aquí llegan tus pedidos",
     ordersIntroBody:
       "Cada pedido que hagan tus clientes aparece aquí. Acepta o rechaza cada uno, y activa las alertas para enterarte al instante aunque no tengas la pantalla abierta.",
+    welcomeSlide1Title: "¡Bienvenido a Levery! 👋",
+    welcomeSlide1Body:
+      "Vamos a dejar tu menú digital listo en minutos. Este es un repaso rápido de lo que necesitas hacer.",
+    welcomeSlide2Title: "1. Configura tu restaurante",
+    welcomeSlide2Body:
+      "Carga el nombre, logo, portada y datos de contacto. Es lo primero que van a ver tus clientes.",
+    welcomeSlide3Title: "2. Crea tu menú",
+    welcomeSlide3Body:
+      "Organiza tus platos en categorías (Entradas, Platos fuertes, Bebidas...) y agrégalos con foto y precio.",
+    welcomeSlide4Title: "3. Configura cómo te van a pagar",
+    welcomeSlide4Body:
+      "Activa Pago Móvil, Zelle, efectivo o los que uses... ¡y ya puedes publicar tu menú y empezar a recibir pedidos!",
+    welcomeNext: "Siguiente",
+    welcomeBack: "Atrás",
+    welcomeSkip: "Saltar",
+    welcomeStart: "Empezar",
   },
   qrCustomizer: {
     dotColorLabel: "Color",
@@ -1278,6 +1294,22 @@ const en: typeof es = {
     ordersIntroTitle: "Your orders show up here",
     ordersIntroBody:
       "Every order your customers place appears here. Accept or reject each one, and turn on alerts to find out instantly even with the screen closed.",
+    welcomeSlide1Title: "Welcome to Levery! 👋",
+    welcomeSlide1Body:
+      "Let's get your digital menu ready in minutes. Here's a quick rundown of what you need to do.",
+    welcomeSlide2Title: "1. Set up your restaurant",
+    welcomeSlide2Body:
+      "Add your name, logo, cover and contact details. It's the first thing your customers will see.",
+    welcomeSlide3Title: "2. Build your menu",
+    welcomeSlide3Body:
+      "Organize your dishes into categories (Starters, Mains, Drinks...) and add them with a photo and price.",
+    welcomeSlide4Title: "3. Set up how you'll get paid",
+    welcomeSlide4Body:
+      "Enable Pago Móvil, Zelle, cash, or whatever you use... and you're ready to publish your menu and start taking orders!",
+    welcomeNext: "Next",
+    welcomeBack: "Back",
+    welcomeSkip: "Skip",
+    welcomeStart: "Get started",
   },
   qrCustomizer: {
     dotColorLabel: "Color",

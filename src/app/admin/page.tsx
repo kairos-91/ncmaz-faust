@@ -23,19 +23,53 @@ import { PlanExpiryBanner } from "./plan-expiry-banner";
 import { OnboardingChecklist } from "./onboarding-checklist";
 import { daysUntil } from "@/lib/subscription-plans";
 import { enabledPaymentMethods, parsePaymentMethods } from "@/lib/payment-methods";
-import { Store, Tags, UtensilsCrossed, CreditCard } from "lucide-react";
+import { Store, Tags, UtensilsCrossed, CreditCard, Rocket } from "lucide-react";
+import { WelcomeModal } from "@/components/welcome-modal";
 
 export const metadata: Metadata = { title: "Resumen" };
 
 export default async function AdminDashboardPage() {
-  const { restaurant, role } = await getStaffRestaurant();
+  const { userEmail, restaurant, role } = await getStaffRestaurant();
   const { t } = await getT();
 
   if (role === "staff") redirect("/admin/orders");
 
+  const welcomeModal = (
+    <WelcomeModal
+      userKey={userEmail ?? "unknown"}
+      nextLabel={t.onboarding.welcomeNext}
+      backLabel={t.onboarding.welcomeBack}
+      skipLabel={t.onboarding.welcomeSkip}
+      startLabel={t.onboarding.welcomeStart}
+      slides={[
+        {
+          icon: Rocket,
+          title: t.onboarding.welcomeSlide1Title,
+          body: t.onboarding.welcomeSlide1Body,
+        },
+        {
+          icon: Store,
+          title: t.onboarding.welcomeSlide2Title,
+          body: t.onboarding.welcomeSlide2Body,
+        },
+        {
+          icon: UtensilsCrossed,
+          title: t.onboarding.welcomeSlide3Title,
+          body: t.onboarding.welcomeSlide3Body,
+        },
+        {
+          icon: CreditCard,
+          title: t.onboarding.welcomeSlide4Title,
+          body: t.onboarding.welcomeSlide4Body,
+        },
+      ]}
+    />
+  );
+
   if (!restaurant) {
     return (
       <div>
+        {welcomeModal}
         <h1 className="mb-1 text-xl font-semibold">{t.dashboard.createTitle}</h1>
         <p className="mb-6 text-sm text-neutral-600 dark:text-neutral-400">
           {t.dashboard.createSubtitle}
@@ -91,6 +125,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
+      {welcomeModal}
       <div>
         <h1 className="text-xl font-semibold">{t.dashboard.greeting(restaurant.name)}</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">

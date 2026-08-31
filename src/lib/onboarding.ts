@@ -37,3 +37,15 @@ export function isOnboardingDismissed(restaurantId: string): boolean {
 export function dismissOnboarding(restaurantId: string) {
   safeSet(`levery-onboarding-dismissed-${restaurantId}`, "1");
 }
+
+// El pop-up de bienvenida se muestra al entrar a /admin por primera vez,
+// antes incluso de que exista un restaurante — por eso se guarda por
+// usuario (su correo) y no por restaurant_id como el resto de este
+// archivo.
+export function hasSeenWelcome(userKey: string): boolean {
+  return safeGet(`levery-welcome-seen-${userKey}`) === "1";
+}
+
+export function markWelcomeSeen(userKey: string) {
+  safeSet(`levery-welcome-seen-${userKey}`, "1");
+}
