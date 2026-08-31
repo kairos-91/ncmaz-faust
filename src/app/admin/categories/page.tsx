@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Tags } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
+import { SectionIntro } from "@/components/section-intro";
 import { CategoryManager } from "./category-manager";
 
 export const metadata: Metadata = { title: "Categorías" };
@@ -27,6 +29,14 @@ export default async function CategoriesPage() {
           {t.categoriesPage.subtitle}
         </p>
       </div>
+      <SectionIntro
+        restaurantId={restaurant.id}
+        tipKey="categories"
+        icon={Tags}
+        title={t.onboarding.categoriesIntroTitle}
+        body={t.onboarding.categoriesIntroBody}
+        dismissLabel={t.onboarding.dismiss}
+      />
       <CategoryManager
         restaurantId={restaurant.id}
         categories={categories ?? []}

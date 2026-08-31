@@ -21,6 +21,7 @@ import {
   ShieldCheck,
   Bike,
   ChefHat,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isSuperadmin } from "@/lib/superadmin";
@@ -193,6 +194,7 @@ export function AdminNav({
       ownerOnly: true,
     },
     { href: "/admin/subscription", label: t.subscription, icon: Sparkles, ownerOnly: true },
+    { href: "/admin/help", label: t.help, icon: HelpCircle, ownerOnly: false },
   ];
   const links = allLinks.filter(
     (link) =>

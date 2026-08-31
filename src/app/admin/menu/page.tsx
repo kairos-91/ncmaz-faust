@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { UtensilsCrossed } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
+import { SectionIntro } from "@/components/section-intro";
 import { MenuManager } from "./menu-manager";
 
 export const metadata: Metadata = { title: "Menú" };
@@ -51,6 +53,14 @@ export default async function MenuPage() {
           {t.menuPage.subtitle}
         </p>
       </div>
+      <SectionIntro
+        restaurantId={restaurant.id}
+        tipKey="menu"
+        icon={UtensilsCrossed}
+        title={t.onboarding.menuIntroTitle}
+        body={t.onboarding.menuIntroBody}
+        dismissLabel={t.onboarding.dismiss}
+      />
       <MenuManager
         restaurantId={restaurant.id}
         currency={restaurant.currency}

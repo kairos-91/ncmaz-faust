@@ -20,7 +20,10 @@ import { Button } from "@/components/ui/button";
 import { SalesCharts } from "./sales/sales-charts";
 import { OrdersButton } from "./orders-button";
 import { PlanExpiryBanner } from "./plan-expiry-banner";
+import { OnboardingChecklist } from "./onboarding-checklist";
 import { daysUntil } from "@/lib/subscription-plans";
+import { enabledPaymentMethods, parsePaymentMethods } from "@/lib/payment-methods";
+import { Store, Tags, UtensilsCrossed, CreditCard } from "lucide-react";
 
 export const metadata: Metadata = { title: "Resumen" };
 
@@ -83,6 +86,9 @@ export default async function AdminDashboardPage() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const publicUrl = `${siteUrl}/${restaurant.slug}`;
 
+  const hasPaymentMethods =
+    enabledPaymentMethods(parsePaymentMethods(restaurant.payment_methods)).length > 0;
+
   return (
     <div className="space-y-8">
       <div>
@@ -91,6 +97,43 @@ export default async function AdminDashboardPage() {
           {restaurant.is_published ? t.dashboard.published : t.dashboard.unpublished}
         </p>
       </div>
+
+      <OnboardingChecklist
+        restaurantId={restaurant.id}
+        title={t.onboarding.checklistTitle}
+        subtitle={t.onboarding.checklistSubtitle}
+        dismissLabel={t.onboarding.dismiss}
+        steps={[
+          {
+            key: "profile",
+            label: t.onboarding.stepProfile,
+            href: "/admin/restaurant",
+            done: Boolean(restaurant.logo_url),
+            icon: Store,
+          },
+          {
+            key: "categories",
+            label: t.onboarding.stepCategories,
+            href: "/admin/categories",
+            done: (categoryCount ?? 0) > 0,
+            icon: Tags,
+          },
+          {
+            key: "dishes",
+            label: t.onboarding.stepDishes,
+            href: "/admin/menu",
+            done: (itemCount ?? 0) > 0,
+            icon: UtensilsCrossed,
+          },
+          {
+            key: "payment-methods",
+            label: t.onboarding.stepPaymentMethods,
+            href: "/admin/payment-methods",
+            done: hasPaymentMethods,
+            icon: CreditCard,
+          },
+        ]}
+      />
 
       {planDaysLeft !== null && planDaysLeft <= 7 && (
         <PlanExpiryBanner

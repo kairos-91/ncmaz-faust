@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { ClipboardList, Plus } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/locale";
 import { getBcvRate } from "@/lib/bcv-rate";
+import { SectionIntro } from "@/components/section-intro";
 import { OrdersManager } from "./orders-manager";
 import { NotifyOrdersButton } from "./notify-orders-button";
 
@@ -59,6 +60,14 @@ export default async function OrdersPage() {
           </Link>
         </div>
       </div>
+      <SectionIntro
+        restaurantId={restaurant.id}
+        tipKey="orders"
+        icon={ClipboardList}
+        title={t.onboarding.ordersIntroTitle}
+        body={t.onboarding.ordersIntroBody}
+        dismissLabel={t.onboarding.dismiss}
+      />
       <OrdersManager
         restaurantId={restaurant.id}
         currency={restaurant.currency}

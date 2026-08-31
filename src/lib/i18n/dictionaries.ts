@@ -230,6 +230,7 @@ const es = {
     team: "Equipo",
     paymentMethods: "Métodos de pago",
     subscription: "Suscripción",
+    help: "Ayuda",
     superadminPanel: "Panel superadmin",
     logout: "Cerrar sesión",
     realtimeOffline: "Sin conexión en tiempo real. Recarga la página.",
@@ -258,6 +259,32 @@ const es = {
     viewPlans: "Ver planes",
     qrTitle: "Tu menú digital",
     qrHint: "Imprime este código QR y colócalo en tus mesas.",
+  },
+  onboarding: {
+    checklistTitle: "Primeros pasos",
+    checklistSubtitle:
+      "Sigue estos pasos para dejar tu menú listo y empezar a recibir pedidos.",
+    dismiss: "Cerrar",
+    stepProfile: "Completa el perfil de tu restaurante (logo, portada, dirección)",
+    stepCategories: "Crea tus categorías",
+    stepDishes: "Agrega tus platos",
+    stepPaymentMethods: "Configura tus métodos de pago",
+    dismissTip: "Entendido",
+    restaurantIntroTitle: "Empecemos por tu restaurante",
+    restaurantIntroBody:
+      "Aquí cargas el nombre, logo, portada, dirección y horario. Esta información es la que ven tus clientes en tu menú público — dedícale un minuto antes de seguir.",
+    categoriesIntroTitle: "Organiza tu menú en categorías",
+    categoriesIntroBody:
+      "Las categorías son las secciones de tu menú, por ejemplo Entradas, Platos fuertes o Bebidas. Crea al menos una antes de agregar tus platos.",
+    menuIntroTitle: "Agrega tus platos",
+    menuIntroBody:
+      "Cada plato necesita un nombre, precio y categoría. Puedes sumarle foto, descripción, toppings/extras, y marcarlo como agotado cuando se acabe.",
+    paymentMethodsIntroTitle: "Configura cómo te van a pagar",
+    paymentMethodsIntroBody:
+      "Activa los métodos que aceptas (Pago Móvil, Zelle, efectivo, etc.) y completa tus datos. Tus clientes los verán al armar su pedido.",
+    ordersIntroTitle: "Aquí llegan tus pedidos",
+    ordersIntroBody:
+      "Cada pedido que hagan tus clientes aparece aquí. Acepta o rechaza cada uno, y activa las alertas para enterarte al instante aunque no tengas la pantalla abierta.",
   },
   qrCustomizer: {
     dotColorLabel: "Color",
@@ -818,6 +845,73 @@ const es = {
     messageReceipt: (url: string) => `Comprobante: ${url}`,
     messageReceiptPending: "Adjunto el comprobante.",
   },
+  helpPage: {
+    title: "Ayuda",
+    subtitle:
+      "Guías rápidas de cada parte de Levery. Vuelve aquí cuando lo necesites.",
+    topics: {
+      summary: {
+        title: "Resumen",
+        body: "Tu panel principal: ventas del día/mes/año, categorías y platos activos, y el código QR de tu menú listo para imprimir.",
+      },
+      restaurant: {
+        title: "Mi restaurante",
+        body: "Nombre, logo, portada, dirección, horario y redes sociales — la información que ven tus clientes en tu menú público.",
+      },
+      categories: {
+        title: "Categorías",
+        body: "Las secciones de tu menú (Entradas, Platos fuertes, Bebidas...). Arrástralas para cambiar el orden en que aparecen.",
+      },
+      menu: {
+        title: "Menú",
+        body: "Tus platos: nombre, precio, foto, descripción, extras/toppings y disponibilidad. Márcalos como agotados cuando se acaben.",
+      },
+      orders: {
+        title: "Pedidos",
+        body: "Los pedidos de tus clientes llegan aquí en vivo. Acepta o rechaza cada uno, y crea pedidos manuales si te llaman por teléfono.",
+      },
+      deliveryStaff: {
+        title: "Delivery",
+        body: "Actívalo en Mi restaurante para gestionar tu personal de delivery, asignarles pedidos y que reciban notificaciones cuando les toque una entrega.",
+      },
+      kitchenStaff: {
+        title: "Cocina",
+        body: "Actívalo en Mi restaurante para llevar un tablero (KDS) de los pedidos: en cola, preparando y listo.",
+      },
+      reviews: {
+        title: "Reseñas",
+        body: "Las calificaciones y comentarios que dejan tus clientes después de pedir. Se muestran en tu menú público.",
+      },
+      coupons: {
+        title: "Cupones",
+        body: "Crea códigos de descuento (por porcentaje o monto fijo) que tus clientes pueden usar al pagar, con las condiciones que definas.",
+      },
+      notifications: {
+        title: "Notificaciones",
+        body: "Envía un anuncio o promoción push a todos los clientes que hayan activado las alertas de tu restaurante.",
+      },
+      team: {
+        title: "Equipo",
+        body: "Agrega personas de tu equipo (por correo) para que gestionen categorías, menú y pedidos sin acceso a pagos ni suscripción.",
+      },
+      paymentMethods: {
+        title: "Métodos de pago",
+        body: "Activa los métodos que aceptas (Pago Móvil, Zelle, efectivo, etc.) y completa tus datos para que tus clientes puedan pagarte.",
+      },
+      subscription: {
+        title: "Suscripción",
+        body: "El plan de tu restaurante y su fecha de vencimiento. Actívalo o renuévalo con el método de pago que prefieras.",
+      },
+      sales: {
+        title: "Ventas",
+        body: "El detalle de tus ventas por día, mes y método de pago, con exportación a PDF.",
+      },
+      customers: {
+        title: "Clientes",
+        body: "Tus clientes frecuentes, ordenados por cantidad de pedidos y total gastado.",
+      },
+    },
+  },
   superadminNav: {
     restaurants: "Restaurantes",
     payments: "Pagos",
@@ -1129,6 +1223,7 @@ const en: typeof es = {
     team: "Team",
     paymentMethods: "Payment methods",
     subscription: "Subscription",
+    help: "Help",
     superadminPanel: "Superadmin panel",
     logout: "Log out",
     realtimeOffline: "Realtime disconnected. Reload the page.",
@@ -1157,6 +1252,32 @@ const en: typeof es = {
     viewPlans: "View plans",
     qrTitle: "Your digital menu",
     qrHint: "Print this QR code and place it on your tables.",
+  },
+  onboarding: {
+    checklistTitle: "First steps",
+    checklistSubtitle:
+      "Follow these steps to get your menu ready and start taking orders.",
+    dismiss: "Close",
+    stepProfile: "Complete your restaurant's profile (logo, cover, address)",
+    stepCategories: "Create your categories",
+    stepDishes: "Add your dishes",
+    stepPaymentMethods: "Set up your payment methods",
+    dismissTip: "Got it",
+    restaurantIntroTitle: "Let's start with your restaurant",
+    restaurantIntroBody:
+      "Here you set the name, logo, cover, address and hours. This is what your customers see on your public menu — give it a minute before moving on.",
+    categoriesIntroTitle: "Organize your menu into categories",
+    categoriesIntroBody:
+      "Categories are the sections of your menu, like Starters, Mains or Drinks. Create at least one before adding your dishes.",
+    menuIntroTitle: "Add your dishes",
+    menuIntroBody:
+      "Every dish needs a name, price and category. You can add a photo, description, toppings/extras, and mark it as sold out when it runs out.",
+    paymentMethodsIntroTitle: "Set up how you'll get paid",
+    paymentMethodsIntroBody:
+      "Enable the methods you accept (Pago Móvil, Zelle, cash, etc.) and fill in your details. Customers will see these when placing an order.",
+    ordersIntroTitle: "Your orders show up here",
+    ordersIntroBody:
+      "Every order your customers place appears here. Accept or reject each one, and turn on alerts to find out instantly even with the screen closed.",
   },
   qrCustomizer: {
     dotColorLabel: "Color",
@@ -1713,6 +1834,72 @@ const en: typeof es = {
     messageAmountPaid: (amount: string) => `Amount paid: Bs ${amount}.`,
     messageReceipt: (url: string) => `Receipt: ${url}`,
     messageReceiptPending: "Receipt attached.",
+  },
+  helpPage: {
+    title: "Help",
+    subtitle: "Quick guides for every part of Levery. Come back here whenever you need to.",
+    topics: {
+      summary: {
+        title: "Overview",
+        body: "Your main dashboard: today's/monthly/yearly sales, active categories and dishes, and your menu's QR code ready to print.",
+      },
+      restaurant: {
+        title: "My restaurant",
+        body: "Name, logo, cover, address, hours and social links — the information your customers see on your public menu.",
+      },
+      categories: {
+        title: "Categories",
+        body: "The sections of your menu (Starters, Mains, Drinks...). Drag them to change the order they appear in.",
+      },
+      menu: {
+        title: "Menu",
+        body: "Your dishes: name, price, photo, description, extras/toppings and availability. Mark them sold out when they run out.",
+      },
+      orders: {
+        title: "Orders",
+        body: "Your customers' orders arrive here live. Accept or reject each one, and create manual orders for phone calls.",
+      },
+      deliveryStaff: {
+        title: "Delivery",
+        body: "Turn it on in My restaurant to manage your delivery staff, assign them orders, and let them get notified when it's their turn to deliver.",
+      },
+      kitchenStaff: {
+        title: "Kitchen",
+        body: "Turn it on in My restaurant to keep a board (KDS) of orders: queued, preparing and ready.",
+      },
+      reviews: {
+        title: "Reviews",
+        body: "The ratings and comments your customers leave after ordering. They show up on your public menu.",
+      },
+      coupons: {
+        title: "Coupons",
+        body: "Create discount codes (percentage or fixed amount) your customers can use at checkout, with the conditions you set.",
+      },
+      notifications: {
+        title: "Notifications",
+        body: "Send a push announcement or promotion to every customer who enabled alerts for your restaurant.",
+      },
+      team: {
+        title: "Team",
+        body: "Add people from your team (by email) to manage categories, menu and orders, with no access to payments or subscription.",
+      },
+      paymentMethods: {
+        title: "Payment methods",
+        body: "Enable the methods you accept (Pago Móvil, Zelle, cash, etc.) and fill in your details so customers can pay you.",
+      },
+      subscription: {
+        title: "Subscription",
+        body: "Your restaurant's plan and its expiration date. Activate or renew it with your preferred payment method.",
+      },
+      sales: {
+        title: "Sales",
+        body: "Your sales breakdown by day, month and payment method, with PDF export.",
+      },
+      customers: {
+        title: "Customers",
+        body: "Your repeat customers, ranked by number of orders and total spent.",
+      },
+    },
   },
   superadminNav: {
     restaurants: "Restaurants",

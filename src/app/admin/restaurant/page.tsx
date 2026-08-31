@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Store } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
 import { updateRestaurant } from "@/app/admin/actions";
 import { getT } from "@/lib/i18n/locale";
+import { SectionIntro } from "@/components/section-intro";
 import { RestaurantForm } from "./restaurant-form";
 import { LogoUploader } from "./logo-uploader";
 import { CoverUploader } from "./cover-uploader";
@@ -24,6 +26,15 @@ export default async function RestaurantSettingsPage() {
           {t.restaurantPage.subtitle}
         </p>
       </div>
+
+      <SectionIntro
+        restaurantId={restaurant.id}
+        tipKey="restaurant"
+        icon={Store}
+        title={t.onboarding.restaurantIntroTitle}
+        body={t.onboarding.restaurantIntroBody}
+        dismissLabel={t.onboarding.dismiss}
+      />
 
       <div className="space-y-6">
         <div>

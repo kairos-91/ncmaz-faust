@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { CreditCard } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getOwnerRestaurant } from "@/lib/get-owner-restaurant";
 import { parsePaymentMethods } from "@/lib/payment-methods";
 import { getT } from "@/lib/i18n/locale";
+import { SectionIntro } from "@/components/section-intro";
 import { PaymentMethodsForm } from "./payment-methods-form";
 
 export const metadata: Metadata = { title: "Métodos de pago" };
@@ -22,6 +24,14 @@ export default async function PaymentMethodsPage() {
           {t.adminPaymentMethodsPage.subtitle}
         </p>
       </div>
+      <SectionIntro
+        restaurantId={restaurant.id}
+        tipKey="payment-methods"
+        icon={CreditCard}
+        title={t.onboarding.paymentMethodsIntroTitle}
+        body={t.onboarding.paymentMethodsIntroBody}
+        dismissLabel={t.onboarding.dismiss}
+      />
       <PaymentMethodsForm
         restaurantId={restaurant.id}
         values={values}
