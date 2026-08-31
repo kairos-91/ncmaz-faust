@@ -10,6 +10,8 @@ export const RESERVED_SLUGS = [
   "reset-password",
   "pricing",
   "superadmin",
+  "delivery",
+  "kitchen-board",
   "r",
   "api",
 ];

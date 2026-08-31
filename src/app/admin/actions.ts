@@ -17,6 +17,7 @@ import { DAY_KEYS, type DayHours } from "@/lib/opening-hours";
 import { computeExtendedExpiry } from "@/lib/subscription-plans";
 import { SERVICE_IDS, type ServiceId } from "@/lib/restaurant-services";
 import { formatPrice } from "@/lib/utils";
+import { isReservedSlug } from "@/lib/reserved-slugs";
 
 export type ActionState = { error?: string } | null;
 
@@ -111,6 +112,45 @@ function parseOpeningHoursForm(formData: FormData): DayHours[] {
     close: String(formData.get(`hours.${day}.close`) ?? "18:00"),
     closed: formData.get(`hours.${day}.closed`) === "on",
   }));
+}
+
+// Chequeo de disponibilidad de URL mientras el dueño escribe el nombre del
+// restaurante (tanto al crearlo como al editarlo). excludeRestaurantId deja
+// que el propio slug actual de un restaurante no se marque como "en uso".
+export async function checkSlugAvailability(
+  slug: string,
+  excludeRestaurantId?: string,
+): Promise<{ available: boolean; suggestions: string[] }> {
+  const { supabase } = await requireUser();
+  const normalized = slug.trim().toLowerCase();
+  if (!normalized) return { available: false, suggestions: [] };
+
+  const isTaken = async (candidate: string) => {
+    if (isReservedSlug(candidate)) return true;
+    let query = supabase.from("restaurants").select("id").eq("slug", candidate);
+    if (excludeRestaurantId) query = query.neq("id", excludeRestaurantId);
+    const { data } = await query.maybeSingle();
+    return Boolean(data);
+  };
+
+  if (!(await isTaken(normalized))) {
+    return { available: true, suggestions: [] };
+  }
+
+  // Genera candidatos (base-2, base-3, ...) y consulta cuáles ya existen
+  // en una sola llamada, en vez de una por candidato.
+  const candidates = Array.from({ length: 8 }, (_, i) => `${normalized}-${i + 2}`);
+  const { data: takenRows } = await supabase
+    .from("restaurants")
+    .select("slug")
+    .in("slug", candidates);
+  const takenSet = new Set((takenRows ?? []).map((r) => r.slug));
+
+  const suggestions = candidates
+    .filter((c) => !takenSet.has(c) && !isReservedSlug(c))
+    .slice(0, 3);
+
+  return { available: false, suggestions };
 }
 
 export async function createRestaurant(

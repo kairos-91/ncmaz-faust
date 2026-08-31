@@ -1,17 +1,17 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { slugify } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import { deliveryZonesToText, parseDeliveryZones } from "@/lib/delivery-zones";
 import { OpeningHoursFields } from "./opening-hours-fields";
 import { SERVICE_IDS, parseServices } from "@/lib/restaurant-services";
 import { VENEZUELAN_STATES } from "@/lib/venezuelan-states";
 import type { Restaurant } from "@/lib/supabase/database.types";
-import type { ActionState } from "@/app/admin/actions";
+import { checkSlugAvailability, type ActionState } from "@/app/admin/actions";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 const CURRENCIES = ["USD", "VES", "EUR", "MXN", "COP", "ARS", "PEN"];
@@ -34,6 +34,39 @@ export function RestaurantForm({
   const [slug, setSlug] = useState(restaurant?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(restaurant));
   const selectedServices = parseServices(restaurant?.services);
+
+  // slugResult solo se actualiza dentro del callback async (nunca de
+  // forma síncrona en el efecto): "checking"/"idle" salen de comparar el
+  // slug actual contra el último resultado ya resuelto, en vez de guardar
+  // ese estado intermedio aparte.
+  const [slugResult, setSlugResult] = useState<{
+    slug: string;
+    available: boolean;
+    suggestions: string[];
+  } | null>(null);
+
+  useEffect(() => {
+    if (!slug || slug.length < 2 || slug === (restaurant?.slug ?? "")) return;
+    const timeout = setTimeout(() => {
+      checkSlugAvailability(slug, restaurant?.id).then((result) => {
+        setSlugResult({ slug, available: result.available, suggestions: result.suggestions });
+      });
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [slug, restaurant?.id, restaurant?.slug]);
+
+  const slugCheck: {
+    status: "idle" | "checking" | "available" | "unavailable";
+    suggestions: string[];
+  } =
+    !slug || slug.length < 2 || slug === (restaurant?.slug ?? "")
+      ? { status: "idle", suggestions: [] }
+      : !slugResult || slugResult.slug !== slug
+        ? { status: "checking", suggestions: [] }
+        : {
+            status: slugResult.available ? "available" : "unavailable",
+            suggestions: slugResult.suggestions,
+          };
 
   return (
     <form action={formAction} className="space-y-5">
@@ -71,6 +104,41 @@ export function RestaurantForm({
             className="h-10 w-full border-0 bg-white px-1 text-sm text-neutral-900 outline-none dark:bg-neutral-900 dark:text-white"
           />
         </div>
+        {slugCheck.status === "checking" && (
+          <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-500">
+            {t.slugChecking}
+          </p>
+        )}
+        {slugCheck.status === "available" && (
+          <p className="mt-1.5 text-xs text-green-600 dark:text-green-500">
+            {t.slugAvailable}
+          </p>
+        )}
+        {slugCheck.status === "unavailable" && (
+          <div className="mt-1.5 space-y-1.5">
+            <p className="text-xs text-red-600">{t.slugUnavailable}</p>
+            {slugCheck.suggestions.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {slugCheck.suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    type="button"
+                    onClick={() => {
+                      setSlugTouched(true);
+                      setSlug(suggestion);
+                    }}
+                    className={cn(
+                      "rounded-full border border-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-700",
+                      "hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800",
+                    )}
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div>
@@ -394,7 +462,12 @@ export function RestaurantForm({
         <p className="text-sm text-green-600 dark:text-green-500">{t.saved}</p>
       )}
 
-      <Button type="submit" disabled={isPending}>
+      <Button
+        type="submit"
+        disabled={
+          isPending || slugCheck.status === "checking" || slugCheck.status === "unavailable"
+        }
+      >
         {isPending ? t.saving : submitLabel}
       </Button>
     </form>
