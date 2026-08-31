@@ -10,9 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FieldError } from "@/components/ui/field-error";
-import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 
-export function PasswordSection({ t }: { t: Dictionary["profileMenu"] }) {
+export function PasswordSection({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale).profileMenu;
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);

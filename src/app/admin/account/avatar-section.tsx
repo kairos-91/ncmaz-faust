@@ -6,17 +6,18 @@ import Image from "next/image";
 import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { updateProfileAvatar } from "./actions";
-import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 export function AvatarSection({
   email,
   avatarUrl,
-  t,
+  locale,
 }: {
   email: string | null;
   avatarUrl: string | null;
-  t: Dictionary["profileMenu"];
+  locale: Locale;
 }) {
+  const t = getDictionary(locale).profileMenu;
   const router = useRouter();
   const [avatar, setAvatar] = useState(avatarUrl);
   const [error, setError] = useState<string | null>(null);

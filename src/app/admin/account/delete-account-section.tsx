@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DeleteAccountModal } from "./delete-account-modal";
-import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 
-export function DeleteAccountSection({ t }: { t: Dictionary["profileMenu"] }) {
+export function DeleteAccountSection({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale).profileMenu;
   const [open, setOpen] = useState(false);
 
   return (

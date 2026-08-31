@@ -13,7 +13,7 @@ export default async function AccountPage() {
   const { userEmail, avatarUrl, isGoogleAccount } = await getStaffRestaurant();
   if (!userEmail) redirect("/login");
 
-  const { t } = await getT();
+  const { locale, t } = await getT();
   const pt = t.profileMenu;
 
   return (
@@ -51,7 +51,7 @@ export default async function AccountPage() {
               </p>
             </div>
           ) : (
-            <AvatarSection email={userEmail} avatarUrl={avatarUrl} t={pt} />
+            <AvatarSection email={userEmail} avatarUrl={avatarUrl} locale={locale} />
           )}
         </div>
       </div>
@@ -62,7 +62,7 @@ export default async function AccountPage() {
             {pt.passwordSectionTitle}
           </h2>
           <div className="mt-3">
-            <PasswordSection t={pt} />
+            <PasswordSection locale={locale} />
           </div>
         </div>
       )}
@@ -75,7 +75,7 @@ export default async function AccountPage() {
           {pt.dangerZoneBody}
         </p>
         <div className="mt-3">
-          <DeleteAccountSection t={pt} />
+          <DeleteAccountSection locale={locale} />
         </div>
       </div>
     </div>
