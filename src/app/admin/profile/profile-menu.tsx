@@ -129,22 +129,22 @@ export function ProfileMenu({
                 <KeyRound className="h-4 w-4 shrink-0" />
                 {t.changePassword}
               </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setOpen(false);
-                  setDeleteOpen(true);
-                }}
-                className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
-              >
-                <Trash2 className="h-4 w-4 shrink-0" />
-                {t.deleteAccount}
-              </button>
-
-              <div className="my-1 h-px bg-neutral-100 dark:bg-neutral-800" />
             </>
           )}
+
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              setDeleteOpen(true);
+            }}
+            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+          >
+            <Trash2 className="h-4 w-4 shrink-0" />
+            {t.deleteAccount}
+          </button>
+
+          <div className="my-1 h-px bg-neutral-100 dark:bg-neutral-800" />
 
           <form action={signOut}>
             <button
