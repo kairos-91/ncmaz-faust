@@ -26,9 +26,7 @@ export type PaymentMethodValues = {
 };
 
 export const DEFAULT_PAYMENT_METHODS: PaymentMethodValues = {
-  // A diferencia de los demás métodos, efectivo no requiere datos
-  // bancarios configurados, así que viene activado por defecto.
-  efectivo: { enabled: true },
+  efectivo: { enabled: false },
   pago_movil: { enabled: false, banco: "", telefono: "", cedula: "" },
   transferencia: { enabled: false, banco: "", cuenta: "", titular: "", rif: "" },
   zelle: { enabled: false, correo: "", titular: "" },
