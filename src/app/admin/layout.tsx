@@ -25,7 +25,8 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userEmail, restaurant, role } = await getStaffRestaurant();
+  const { userEmail, restaurant, role, avatarUrl, isGoogleAccount } =
+    await getStaffRestaurant();
   if (!userEmail) redirect("/login");
 
   // Un repartidor vinculado (delivery_staff.user_id) no es dueño ni
@@ -71,6 +72,8 @@ export default async function AdminLayout({
     <div className="flex min-h-screen flex-1 flex-col bg-neutral-50 dark:bg-neutral-950">
       <AdminTopBar
         email={userEmail}
+        avatarUrl={avatarUrl}
+        isGoogleAccount={isGoogleAccount}
         locale={locale}
         t={t.adminNav}
         openNow={openNow}

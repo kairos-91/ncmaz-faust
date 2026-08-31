@@ -3,18 +3,22 @@ import { BadgeCheck } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { signOut } from "./actions";
+import { ProfileMenu } from "./profile/profile-menu";
 import type { BcvRate } from "@/lib/bcv-rate";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 
 export function AdminTopBar({
   email,
+  avatarUrl = null,
+  isGoogleAccount = false,
   locale,
   t,
   openNow = null,
   bcvRate = null,
 }: {
   email: string | null;
+  avatarUrl?: string | null;
+  isGoogleAccount?: boolean;
   locale: Locale;
   t: Dictionary["adminNav"];
   openNow?: boolean | null;
@@ -46,23 +50,16 @@ export function AdminTopBar({
           )}
         </div>
         <div className="flex items-center gap-3">
-          {email && (
-            <span className="hidden max-w-[220px] truncate text-xs text-neutral-500 dark:text-neutral-500 sm:inline">
-              {email}
-            </span>
-          )}
           <div className="flex items-center gap-1">
             <LanguageToggle locale={locale} />
             <ThemeToggle />
           </div>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="whitespace-nowrap text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-            >
-              {t.logout}
-            </button>
-          </form>
+          <ProfileMenu
+            email={email}
+            avatarUrl={avatarUrl}
+            isGoogleAccount={isGoogleAccount}
+            locale={locale}
+          />
         </div>
       </header>
       {bcvRate && (

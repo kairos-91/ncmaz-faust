@@ -291,6 +291,13 @@ o recíbelo como prop `t` (client) donde lo necesites.
      de pedidos asignados"; cuando el restaurante le asigna un pedido
      desde /admin/orders, le llega una notificación push (título,
      cliente, total y dirección) aunque no tenga la app abierta.
+   - `supabase/migrations/0044_delete_own_account.sql` — crea la función
+     `security definer` `delete_own_account()`, que borra la fila de
+     `auth.users` del usuario autenticado. Aprovecha la cascada ya
+     existente desde `restaurants.owner_id` (y de ahí categorías, menú,
+     pedidos, etc.) para borrar todo el restaurante y liberar su slug/URL.
+     La usa el menú de perfil en /admin (solo cuentas por correo: las de
+     Google se gestionan desde Google) para "Eliminar cuenta".
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

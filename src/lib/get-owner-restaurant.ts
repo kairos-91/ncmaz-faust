@@ -40,12 +40,30 @@ export async function getStaffRestaurant(): Promise<{
   userEmail: string | null;
   restaurant: Restaurant | null;
   role: StaffRole | null;
+  avatarUrl: string | null;
+  isGoogleAccount: boolean;
 }> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { userEmail: null, restaurant: null, role: null };
+  if (!user) {
+    return {
+      userEmail: null,
+      restaurant: null,
+      role: null,
+      avatarUrl: null,
+      isGoogleAccount: false,
+    };
+  }
+
+  // Google llena user_metadata.avatar_url (o .picture, según la versión
+  // del flujo OAuth); las cuentas por correo no tienen ninguno de los dos.
+  const avatarUrl =
+    (user.user_metadata?.avatar_url as string | undefined) ??
+    (user.user_metadata?.picture as string | undefined) ??
+    null;
+  const isGoogleAccount = user.app_metadata?.provider === "google";
 
   const { data: owned } = await supabase
     .from("restaurants")
@@ -55,7 +73,13 @@ export async function getStaffRestaurant(): Promise<{
     .limit(1)
     .maybeSingle();
   if (owned) {
-    return { userEmail: user.email ?? null, restaurant: owned, role: "owner" };
+    return {
+      userEmail: user.email ?? null,
+      restaurant: owned,
+      role: "owner",
+      avatarUrl,
+      isGoogleAccount,
+    };
   }
 
   const { data: staffRow } = await supabase
@@ -64,7 +88,13 @@ export async function getStaffRestaurant(): Promise<{
     .eq("user_id", user.id)
     .maybeSingle();
   if (!staffRow) {
-    return { userEmail: user.email ?? null, restaurant: null, role: null };
+    return {
+      userEmail: user.email ?? null,
+      restaurant: null,
+      role: null,
+      avatarUrl,
+      isGoogleAccount,
+    };
   }
 
   const { data: staffRestaurant } = await supabase
@@ -77,6 +107,8 @@ export async function getStaffRestaurant(): Promise<{
     userEmail: user.email ?? null,
     restaurant: staffRestaurant,
     role: staffRestaurant ? "staff" : null,
+    avatarUrl,
+    isGoogleAccount,
   };
 }
 
