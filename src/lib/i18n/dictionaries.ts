@@ -958,6 +958,7 @@ const es = {
   superadminNav: {
     restaurants: "Restaurantes",
     payments: "Pagos",
+    bankNotifications: "Notificaciones bancarias",
     plans: "Planes",
     paymentMethods: "Métodos de pago",
     badge: "Superadmin",
@@ -1001,6 +1002,32 @@ const es = {
     amountPaid: "Monto pagado",
     receiptAlt: "Comprobante de pago",
     statuses: { pending: "Pendiente", approved: "Aprobado", rejected: "Rechazado" },
+  },
+  superadminBankNotificationsPage: {
+    title: "Notificaciones bancarias",
+    subtitle:
+      "Verificación automática de pagos de suscripción: cuando llega una notificación del banco (SMS o correo reenviado) que coincide exacto en monto y referencia con un pago pendiente, se aprueba solo, sin que tengas que hacer nada.",
+  },
+  superadminBankNotifications: {
+    webhookTitle: "URL del webhook",
+    webhookBody:
+      "Configura tu app de reenvío de SMS o tu automatización de correo para que mande un POST a esta URL con \"text\" (el mensaje del banco) y \"secret\" (el que guardaste en la base de datos).",
+    copy: "Copiar",
+    copied: "Copiada",
+    testTitle: "Probar una notificación",
+    testBody:
+      "Pega el texto de una notificación real (o de prueba) para ver qué se extrae y si empareja con algún pago pendiente.",
+    testPlaceholder: "Ej: Pago Movil recibido Bs 1.234,56 Banesco Referencia 000123456789",
+    testButton: "Probar",
+    testing: "Probando...",
+    testResultMatched: "Emparejó con un pago pendiente y quedó aprobado.",
+    testResultUnmatched: "No emparejó con ningún pago pendiente (o hay más de uno igual).",
+    fieldAmount: "Monto",
+    fieldReference: "Referencia",
+    fieldBank: "Banco",
+    matched: "Emparejado",
+    unmatched: "Sin match",
+    empty: "Todavía no ha llegado ninguna notificación.",
   },
   superadminPlansPage: {
     title: "Planes de suscripción",
@@ -1990,6 +2017,7 @@ const en: typeof es = {
   superadminNav: {
     restaurants: "Restaurants",
     payments: "Payments",
+    bankNotifications: "Bank notifications",
     plans: "Plans",
     paymentMethods: "Payment methods",
     badge: "Superadmin",
@@ -2033,6 +2061,32 @@ const en: typeof es = {
     amountPaid: "Amount paid",
     receiptAlt: "Payment receipt",
     statuses: { pending: "Pending", approved: "Approved", rejected: "Rejected" },
+  },
+  superadminBankNotificationsPage: {
+    title: "Bank notifications",
+    subtitle:
+      "Automatic subscription payment verification: when a bank notification (forwarded SMS or email) arrives that matches a pending payment exactly on amount and reference, it gets approved on its own — no action needed from you.",
+  },
+  superadminBankNotifications: {
+    webhookTitle: "Webhook URL",
+    webhookBody:
+      "Configure your SMS-forwarding app or email automation to POST to this URL with \"text\" (the bank's message) and \"secret\" (the one you saved in the database).",
+    copy: "Copy",
+    copied: "Copied",
+    testTitle: "Test a notification",
+    testBody:
+      "Paste the text of a real (or sample) notification to see what gets extracted and whether it matches a pending payment.",
+    testPlaceholder: "E.g: Pago Movil received Bs 1,234.56 Banesco Reference 000123456789",
+    testButton: "Test",
+    testing: "Testing...",
+    testResultMatched: "Matched a pending payment and it was approved.",
+    testResultUnmatched: "Didn't match any pending payment (or more than one matched).",
+    fieldAmount: "Amount",
+    fieldReference: "Reference",
+    fieldBank: "Bank",
+    matched: "Matched",
+    unmatched: "No match",
+    empty: "No notifications have arrived yet.",
   },
   superadminPlansPage: {
     title: "Subscription plans",

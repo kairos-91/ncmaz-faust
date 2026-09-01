@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { isSuperadmin } from "@/lib/superadmin";
 import { computeExtendedExpiry } from "@/lib/subscription-plans";
+import { parseBankNotification } from "@/lib/bank-notification-parser";
 import {
   PAYMENT_METHOD_IDS,
   PAYMENT_METHOD_META,
@@ -111,6 +112,28 @@ export async function updateSubscriptionPaymentStatus(
 
   revalidatePath("/superadmin/payments");
   revalidatePath("/superadmin/restaurants");
+}
+
+// ── Notificaciones bancarias (verificación automática de pagos) ──
+
+export async function testBankNotification(rawText: string) {
+  const { supabase } = await requireSuperadmin();
+
+  const { amount, reference, bank } = parseBankNotification(rawText);
+
+  const { data, error } = await supabase.rpc("superadmin_test_bank_notification", {
+    p_raw_text: rawText,
+    p_source: "manual-test",
+    p_bank: bank,
+    p_amount: amount,
+    p_reference: reference,
+  });
+  if (error) return { error: error.message };
+
+  revalidatePath("/superadmin/bank-notifications");
+  revalidatePath("/superadmin/payments");
+  revalidatePath("/superadmin/restaurants");
+  return { matched: Boolean(data), parsed: { amount, reference, bank } };
 }
 
 // ── Planes de suscripción ─────────────────────────────────────────

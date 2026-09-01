@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Store, Receipt, Sparkles, CreditCard, ArrowLeft } from "lucide-react";
+import { Store, Receipt, Sparkles, CreditCard, ArrowLeft, Landmark } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
@@ -22,6 +22,11 @@ export function SuperadminNav({
       label: t.payments,
       icon: Receipt,
       badge: pendingPayments,
+    },
+    {
+      href: "/superadmin/bank-notifications",
+      label: t.bankNotifications,
+      icon: Landmark,
     },
     { href: "/superadmin/plans", label: t.plans, icon: Sparkles },
     {

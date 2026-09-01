@@ -298,6 +298,25 @@ o recíbelo como prop `t` (client) donde lo necesites.
      pedidos, etc.) para borrar todo el restaurante y liberar su slug/URL.
      La usa el menú de perfil en /admin (solo cuentas por correo: las de
      Google se gestionan desde Google) para "Eliminar cuenta".
+   - `supabase/migrations/0045_bank_notifications.sql` — verificación
+     automática de pagos de suscripción (restaurante → Levery). Crea
+     `bank_notifications` (historial de notificaciones bancarias
+     recibidas), `app_secrets` (tabla sin políticas RLS, ilegible desde el
+     cliente incluso autenticado, para guardar el secreto del webhook) y
+     dos funciones `security definer`: `record_and_match_bank_notification`
+     (usada por `/api/bank-notifications`, protegida por el secreto
+     compartido) y `superadmin_test_bank_notification` (usada por el
+     probador en `/superadmin/bank-notifications`, protegida por sesión de
+     superadmin). Ambas insertan la notificación y, si hay exactamente un
+     pago pendiente cuyo monto y últimos 4 dígitos de referencia coinciden,
+     lo aprueban y extienden el plan automáticamente — igual que aprobar a
+     mano en `/superadmin/payments`. Después de correr esta migración,
+     genera un secreto largo y guárdalo con:
+     ```sql
+     insert into public.app_secrets (key, value)
+     values ('bank_notification_webhook_secret', 'TU_SECRETO_LARGO_AQUI')
+     on conflict (key) do update set value = excluded.value;
+     ```
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

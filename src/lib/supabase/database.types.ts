@@ -645,6 +645,42 @@ export interface Database {
         };
         Relationships: [];
       };
+      bank_notifications: {
+        Row: {
+          id: string;
+          raw_text: string;
+          source: string | null;
+          bank: string | null;
+          amount: number | null;
+          reference: string | null;
+          matched_payment_id: string | null;
+          received_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          raw_text: string;
+          source?: string | null;
+          bank?: string | null;
+          amount?: number | null;
+          reference?: string | null;
+          matched_payment_id?: string | null;
+          received_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          raw_text?: string;
+          source?: string | null;
+          bank?: string | null;
+          amount?: number | null;
+          reference?: string | null;
+          matched_payment_id?: string | null;
+          received_at?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       platform_settings: {
         Row: {
           id: boolean;
@@ -729,6 +765,27 @@ export interface Database {
         Args: Record<string, never>;
         Returns: undefined;
       };
+      record_and_match_bank_notification: {
+        Args: {
+          p_secret: string;
+          p_raw_text: string;
+          p_source: string | null;
+          p_bank: string | null;
+          p_amount: number | null;
+          p_reference: string | null;
+        };
+        Returns: string | null;
+      };
+      superadmin_test_bank_notification: {
+        Args: {
+          p_raw_text: string;
+          p_source: string | null;
+          p_bank: string | null;
+          p_amount: number | null;
+          p_reference: string | null;
+        };
+        Returns: string | null;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
@@ -747,3 +804,5 @@ export type SubscriptionPayment =
   Database["public"]["Tables"]["subscription_payments"]["Row"];
 export type PlatformSettings =
   Database["public"]["Tables"]["platform_settings"]["Row"];
+export type BankNotification =
+  Database["public"]["Tables"]["bank_notifications"]["Row"];
