@@ -1,9 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Check, Copy, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Check, Copy, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { testBankNotification } from "../actions";
+import {
+  clearUnmatchedBankNotifications,
+  deleteBankNotification,
+  testBankNotification,
+} from "../actions";
 import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 import type { BankNotification } from "@/lib/supabase/database.types";
 
@@ -150,6 +155,30 @@ function NotificationsList({
   locale: Locale;
   t: ReturnType<typeof getDictionary>["superadminBankNotifications"];
 }) {
+  const router = useRouter();
+  const [isClearing, startClear] = useTransition();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDeleting, startDelete] = useTransition();
+
+  const hasUnmatched = notifications.some((n) => !n.matched_payment_id);
+
+  const clearUnmatched = () => {
+    if (!window.confirm(t.clearUnmatchedConfirm)) return;
+    startClear(async () => {
+      await clearUnmatchedBankNotifications();
+      router.refresh();
+    });
+  };
+
+  const deleteOne = (id: string) => {
+    if (!window.confirm(t.deleteConfirm)) return;
+    setDeletingId(id);
+    startDelete(async () => {
+      await deleteBankNotification(id);
+      router.refresh();
+    });
+  };
+
   if (notifications.length === 0) {
     return (
       <p className="rounded-2xl border border-dashed border-neutral-300 bg-white p-8 text-center text-sm text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400">
@@ -160,6 +189,19 @@ function NotificationsList({
 
   return (
     <div className="space-y-3">
+      {hasUnmatched && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            disabled={isClearing}
+            onClick={clearUnmatched}
+            className="flex items-center gap-1.5 rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-600 hover:bg-neutral-50 disabled:opacity-60 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            {isClearing ? t.clearing : t.clearUnmatched}
+          </button>
+        </div>
+      )}
       {notifications.map((n) => (
         <div
           key={n.id}
@@ -172,21 +214,32 @@ function NotificationsList({
                 timeStyle: "short",
               })}
             </p>
-            <span
-              className={cn(
-                "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium",
-                n.matched_payment_id
-                  ? "bg-green-50 text-green-700 dark:bg-green-400/10 dark:text-green-400"
-                  : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
-              )}
-            >
-              {n.matched_payment_id ? (
-                <Check className="h-3 w-3" />
-              ) : (
-                <X className="h-3 w-3" />
-              )}
-              {n.matched_payment_id ? t.matched : t.unmatched}
-            </span>
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium",
+                  n.matched_payment_id
+                    ? "bg-green-50 text-green-700 dark:bg-green-400/10 dark:text-green-400"
+                    : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
+                )}
+              >
+                {n.matched_payment_id ? (
+                  <Check className="h-3 w-3" />
+                ) : (
+                  <X className="h-3 w-3" />
+                )}
+                {n.matched_payment_id ? t.matched : t.unmatched}
+              </span>
+              <button
+                type="button"
+                disabled={isDeleting && deletingId === n.id}
+                onClick={() => deleteOne(n.id)}
+                aria-label={t.deleteLabel}
+                className="rounded-full p-1 text-neutral-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-60 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
           <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-300">
             {t.fieldAmount}: {n.amount ?? "—"} · {t.fieldReference}: {n.reference ?? "—"} ·{" "}

@@ -136,6 +136,23 @@ export async function testBankNotification(rawText: string) {
   return { matched: Boolean(data), parsed: { amount, reference, bank } };
 }
 
+export async function deleteBankNotification(id: string) {
+  const { supabase } = await requireSuperadmin();
+  const { error } = await supabase.from("bank_notifications").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/superadmin/bank-notifications");
+}
+
+export async function clearUnmatchedBankNotifications() {
+  const { supabase } = await requireSuperadmin();
+  const { error } = await supabase
+    .from("bank_notifications")
+    .delete()
+    .is("matched_payment_id", null);
+  if (error) throw new Error(error.message);
+  revalidatePath("/superadmin/bank-notifications");
+}
+
 // ── Planes de suscripción ─────────────────────────────────────────
 
 function parsePlanForm(formData: FormData) {

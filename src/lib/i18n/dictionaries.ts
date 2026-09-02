@@ -1028,6 +1028,12 @@ const es = {
     matched: "Emparejado",
     unmatched: "Sin match",
     empty: "Todavía no ha llegado ninguna notificación.",
+    clearUnmatched: "Limpiar sin match",
+    clearing: "Limpiando...",
+    clearUnmatchedConfirm:
+      "¿Borrar todas las notificaciones sin match? Esta acción no se puede deshacer.",
+    deleteConfirm: "¿Borrar esta notificación?",
+    deleteLabel: "Borrar",
   },
   superadminPlansPage: {
     title: "Planes de suscripción",
@@ -2087,6 +2093,12 @@ const en: typeof es = {
     matched: "Matched",
     unmatched: "No match",
     empty: "No notifications have arrived yet.",
+    clearUnmatched: "Clear unmatched",
+    clearing: "Clearing...",
+    clearUnmatchedConfirm:
+      "Delete every unmatched notification? This can't be undone.",
+    deleteConfirm: "Delete this notification?",
+    deleteLabel: "Delete",
   },
   superadminPlansPage: {
     title: "Subscription plans",
