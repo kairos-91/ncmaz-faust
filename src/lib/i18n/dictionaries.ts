@@ -885,7 +885,7 @@ const es = {
       `Gracias. Te quedan ${days} ${days === 1 ? "día" : "días"} en tu plan.`,
     popupPendingTitle: "¡Gracias!",
     popupPendingBody:
-      "Tu pago fue reportado y se está verificando automáticamente. Te avisaremos en cuanto quede validado.",
+      "Tu pago fue reportado y se está verificando automáticamente. Te avisaremos en cuanto quede validado. Suele tardar 1 min.",
     popupClose: "Entendido",
   },
   helpPage: {
@@ -1951,7 +1951,7 @@ const en: typeof es = {
       `Thank you. You have ${days} ${days === 1 ? "day" : "days"} left on your plan.`,
     popupPendingTitle: "Thank you!",
     popupPendingBody:
-      "Your payment was reported and is being verified automatically. We'll let you know once it's validated.",
+      "Your payment was reported and is being verified automatically. We'll let you know once it's validated. Usually takes about 1 min.",
     popupClose: "Got it",
   },
   helpPage: {
