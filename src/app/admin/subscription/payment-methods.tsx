@@ -245,7 +245,10 @@ export function PaymentMethods({
             </p>
             <button
               type="button"
-              onClick={() => setPopup(null)}
+              onClick={() => {
+                setPopup(null);
+                if (popup.matched) router.push("/admin");
+              }}
               className="mt-5 w-full rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
             >
               {t.popupClose}
