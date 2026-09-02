@@ -333,6 +333,15 @@ o recíbelo como prop `t` (client) donde lo necesites.
      y `superadmin_test_bank_notification` ahora devuelven `restaurant_id`
      y `plan_expires_at` (antes solo el id del pago) para poder mandar la
      notificación push de "pago validado" sin una consulta aparte.
+   - `supabase/migrations/0048_fix_ambiguous_plan_expires_at.sql` —
+     corrige un bug real de la 0047: al declarar
+     `returns table (..., plan_expires_at timestamptz)`, Postgres crea una
+     variable implícita `plan_expires_at` en el cuerpo de la función, que
+     choca con la columna `restaurants.plan_expires_at` cuando se
+     selecciona sin calificar con el alias de la tabla ("column reference
+     'plan_expires_at' is ambiguous"). Esto rompía por completo la
+     aprobación automática (tanto el webhook real como el probador
+     manual) desde que se desplegó la 0047.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
