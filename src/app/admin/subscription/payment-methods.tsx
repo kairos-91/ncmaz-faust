@@ -199,6 +199,7 @@ export function PaymentMethods({
           onChange={setConfirm}
           upload={uploadPaymentProof}
           onReceiptUploaded={setReceiptUrl}
+          minimal
         />
       </div>
 
