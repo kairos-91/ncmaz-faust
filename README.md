@@ -317,6 +317,22 @@ o recíbelo como prop `t` (client) donde lo necesites.
      values ('bank_notification_webhook_secret', 'TU_SECRETO_LARGO_AQUI')
      on conflict (key) do update set value = excluded.value;
      ```
+   - `supabase/migrations/0046_bank_notifications_delete.sql` — agrega la
+     política RLS de `delete` para que el superadmin pueda borrar
+     notificaciones bancarias desde `/superadmin/bank-notifications`
+     (botón "Limpiar sin match" y borrado individual).
+   - `supabase/migrations/0047_instant_payment_match.sql` — agrega la
+     dirección contraria de emparejamiento: hasta esta migración, solo se
+     revisaba "llega una notificación → busca un pago pendiente que
+     coincida". Si el restaurante reporta el pago DESPUÉS de que ya
+     llegó la notificación (el caso más común), se quedaba sin revisar
+     de nuevo. La nueva función `security definer`
+     `match_new_subscription_payment(p_payment_id)` se llama al reportar
+     el pago y revisa si ya hay una notificación sin emparejar que
+     coincida, aprobando al toque. De paso, `record_and_match_bank_notification`
+     y `superadmin_test_bank_notification` ahora devuelven `restaurant_id`
+     y `plan_expires_at` (antes solo el id del pago) para poder mandar la
+     notificación push de "pago validado" sin una consulta aparte.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
