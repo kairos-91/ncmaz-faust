@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { formatBs, formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
 import {
@@ -40,6 +41,7 @@ export function PaymentMethods({
   locale: Locale;
   t: Dictionary["subscriptionPaymentMethods"];
 }) {
+  const router = useRouter();
   const methods = enabledPaymentMethods(platformPaymentMethods);
   const [methodId, setMethodId] = useState<PaymentMethodId | null>(
     methods[0] ?? null,
@@ -219,6 +221,7 @@ export function PaymentMethods({
           });
           setSending(false);
           if (result.error) return;
+          if (result.matched) router.refresh();
           setPopup({
             matched: Boolean(result.matched),
             days: daysUntil(result.planExpiresAt ?? null),

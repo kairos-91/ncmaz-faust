@@ -9,6 +9,7 @@ import { daysUntil } from "@/lib/subscription-plans";
 import { getT } from "@/lib/i18n/locale";
 import { getSupportWhatsappNumber } from "@/lib/support";
 import { SubscriptionView } from "./subscription-view";
+import { SubscriptionRealtimeRefresh } from "./subscription-realtime-refresh";
 
 export const metadata: Metadata = { title: "Suscripción" };
 
@@ -28,6 +29,7 @@ export default async function SubscriptionPage() {
 
   return (
     <div className="space-y-6">
+      <SubscriptionRealtimeRefresh restaurantId={restaurant.id} />
       <div>
         <h1 className="text-xl font-semibold">{t.subscriptionPage.title}</h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">

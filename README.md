@@ -342,6 +342,13 @@ o recíbelo como prop `t` (client) donde lo necesites.
      'plan_expires_at' is ambiguous"). Esto rompía por completo la
      aprobación automática (tanto el webhook real como el probador
      manual) desde que se desplegó la 0047.
+   - `supabase/migrations/0049_restaurants_realtime.sql` — agrega
+     `restaurants` a la publicación `supabase_realtime` para que
+     `/admin/subscription` se refresque solo cuando el plan se aprueba en
+     segundo plano (la notificación del banco puede llegar minutos
+     después de que el restaurante reportó el pago, mientras la pantalla
+     sigue abierta) — antes había que recargar a mano (F5) para ver los
+     días actualizados.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
