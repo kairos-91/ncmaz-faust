@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { after } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { parseBankNotification } from "@/lib/bank-notification-parser";
+import { notifyPaymentApproved } from "@/lib/notify-admin-push";
 import type { Database } from "@/lib/supabase/database.types";
 
 // Webhook público (sin sesión de Supabase) para recibir notificaciones
@@ -77,7 +79,15 @@ async function handle(request: Request) {
     return NextResponse.json({ error: error.message }, { status });
   }
 
-  return NextResponse.json({ matched: Boolean(data), parsed: { amount, reference, bank } });
+  const match = data?.[0];
+  if (match?.payment_id && match.restaurant_id) {
+    after(() => notifyPaymentApproved(supabase, match.restaurant_id!, match.plan_expires_at));
+  }
+
+  return NextResponse.json({
+    matched: Boolean(match?.payment_id),
+    parsed: { amount, reference, bank },
+  });
 }
 
 export async function POST(request: Request) {

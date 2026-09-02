@@ -867,26 +867,26 @@ const es = {
   subscriptionPaymentMethods: {
     payPlan: (name: string, price: string) => `Paga tu plan ${name} (${price})`,
     instructions:
-      "Elige tu método de pago preferido, realiza el pago y notifícanos por WhatsApp para activar tu suscripción.",
+      "Elige tu método de pago preferido, realiza el pago y confirma abajo. Verificamos tu pago automáticamente.",
     bcvAmountLabel: "Monto a pagar (tasa BCV)",
     bcvRateLabel: (rate: string) => `Tasa BCV: Bs ${rate} por USD`,
     bcvUpdatedAt: (date: string) => `actualizada ${date}`,
     bcvUnavailable:
       "No pudimos obtener la tasa BCV del día. Paga el equivalente en bolívares a la tasa oficial vigente y notifícanos el monto.",
     amountBsFieldLabel: "Monto (Bs)",
-    notify: "Ya realicé el pago, notificar por WhatsApp",
+    notify: "Ya realicé el pago",
     notifying: "Enviando...",
+    referenceRequiredError: "Ingresa la referencia del pago",
     noMethodsTitle: (name: string) =>
       `Levery todavía no configuró sus métodos de pago. Escríbenos por WhatsApp para coordinar el pago de tu plan ${name}.`,
     whatsappSupport: "Escribir por WhatsApp",
-    messageIntro: (restaurantName: string, planName: string, planPrice: string, amountBs: string) =>
-      `Hola! Soy ${restaurantName} y ya realicé el pago del plan ${planName} (${planPrice}${amountBs}).`,
-    messageMethod: (label: string) => `Método de pago: ${label}.`,
-    messageBankFrom: (bank: string) => `Banco desde el que pagué: ${bank}.`,
-    messageReference: (ref: string) => `Referencia: ${ref}.`,
-    messageAmountPaid: (amount: string) => `Monto pagado: Bs ${amount}.`,
-    messageReceipt: (url: string) => `Comprobante: ${url}`,
-    messageReceiptPending: "Adjunto el comprobante.",
+    popupApprovedTitle: "¡Pago validado exitosamente! ❤️",
+    popupApprovedBody: (days: number) =>
+      `Gracias. Te quedan ${days} ${days === 1 ? "día" : "días"} en tu plan.`,
+    popupPendingTitle: "¡Gracias!",
+    popupPendingBody:
+      "Tu pago fue reportado y se está verificando automáticamente. Te avisaremos en cuanto quede validado.",
+    popupClose: "Entendido",
   },
   helpPage: {
     title: "Ayuda",
@@ -1933,26 +1933,26 @@ const en: typeof es = {
   subscriptionPaymentMethods: {
     payPlan: (name: string, price: string) => `Pay for your ${name} plan (${price})`,
     instructions:
-      "Choose your preferred payment method, make the payment, and notify us on WhatsApp to activate your subscription.",
+      "Choose your preferred payment method, make the payment, and confirm below. We verify your payment automatically.",
     bcvAmountLabel: "Amount to pay (BCV rate)",
     bcvRateLabel: (rate: string) => `BCV rate: Bs ${rate} per USD`,
     bcvUpdatedAt: (date: string) => `updated ${date}`,
     bcvUnavailable:
       "We couldn't get today's BCV rate. Pay the equivalent in bolívares at the current official rate and let us know the amount.",
     amountBsFieldLabel: "Amount (Bs)",
-    notify: "I already paid, notify via WhatsApp",
+    notify: "I already paid",
     notifying: "Sending...",
+    referenceRequiredError: "Enter the payment reference",
     noMethodsTitle: (name: string) =>
       `Levery hasn't set up its payment methods yet. Write to us on WhatsApp to arrange payment for your ${name} plan.`,
     whatsappSupport: "Write on WhatsApp",
-    messageIntro: (restaurantName: string, planName: string, planPrice: string, amountBs: string) =>
-      `Hi! I'm ${restaurantName} and I already paid for the ${planName} plan (${planPrice}${amountBs}).`,
-    messageMethod: (label: string) => `Payment method: ${label}.`,
-    messageBankFrom: (bank: string) => `Bank I paid from: ${bank}.`,
-    messageReference: (ref: string) => `Reference: ${ref}.`,
-    messageAmountPaid: (amount: string) => `Amount paid: Bs ${amount}.`,
-    messageReceipt: (url: string) => `Receipt: ${url}`,
-    messageReceiptPending: "Receipt attached.",
+    popupApprovedTitle: "Payment validated successfully! ❤️",
+    popupApprovedBody: (days: number) =>
+      `Thank you. You have ${days} ${days === 1 ? "day" : "days"} left on your plan.`,
+    popupPendingTitle: "Thank you!",
+    popupPendingBody:
+      "Your payment was reported and is being verified automatically. We'll let you know once it's validated.",
+    popupClose: "Got it",
   },
   helpPage: {
     title: "Help",

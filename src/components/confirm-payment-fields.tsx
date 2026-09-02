@@ -71,7 +71,9 @@ export function ConfirmPaymentFields({
       )}
 
       <div>
-        <Label htmlFor="reference">Referencia (últimos 6 dígitos)</Label>
+        <Label htmlFor="reference">
+          Referencia (últimos 6 dígitos){minimal && <span className="text-red-600"> *</span>}
+        </Label>
         <Input
           id="reference"
           value={values.reference}
@@ -79,6 +81,7 @@ export function ConfirmPaymentFields({
           placeholder="123456"
           inputMode="numeric"
           maxLength={6}
+          required={minimal}
         />
       </div>
 

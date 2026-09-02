@@ -11,7 +11,6 @@ import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 export function SubscriptionView({
   restaurantId,
-  restaurantName,
   currentPlanKey,
   daysLeft,
   plans,
@@ -21,7 +20,6 @@ export function SubscriptionView({
   locale,
 }: {
   restaurantId: string;
-  restaurantName: string;
   currentPlanKey: string;
   daysLeft: number | null;
   plans: SubscriptionPlan[];
@@ -164,7 +162,6 @@ export function SubscriptionView({
         <div ref={paymentSectionRef}>
           <PaymentMethods
             restaurantId={restaurantId}
-            restaurantName={restaurantName}
             plan={selectedPlan}
             platformPaymentMethods={platformPaymentMethods}
             supportWhatsappNumber={supportWhatsappNumber}

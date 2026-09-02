@@ -36,7 +36,6 @@ export default async function SubscriptionPage() {
       </div>
       <SubscriptionView
         restaurantId={restaurant.id}
-        restaurantName={restaurant.name}
         currentPlanKey={restaurant.plan}
         daysLeft={daysUntil(restaurant.plan_expires_at)}
         plans={plans}

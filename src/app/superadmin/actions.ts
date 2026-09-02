@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isSuperadmin } from "@/lib/superadmin";
 import { computeExtendedExpiry } from "@/lib/subscription-plans";
 import { parseBankNotification } from "@/lib/bank-notification-parser";
+import { notifyPaymentApproved } from "@/lib/notify-admin-push";
 import {
   PAYMENT_METHOD_IDS,
   PAYMENT_METHOD_META,
@@ -130,10 +132,15 @@ export async function testBankNotification(rawText: string) {
   });
   if (error) return { error: error.message };
 
+  const match = data?.[0];
+  if (match?.payment_id && match.restaurant_id) {
+    after(() => notifyPaymentApproved(supabase, match.restaurant_id!, match.plan_expires_at));
+  }
+
   revalidatePath("/superadmin/bank-notifications");
   revalidatePath("/superadmin/payments");
   revalidatePath("/superadmin/restaurants");
-  return { matched: Boolean(data), parsed: { amount, reference, bank } };
+  return { matched: Boolean(match?.payment_id), parsed: { amount, reference, bank } };
 }
 
 export async function deleteBankNotification(id: string) {

@@ -11,7 +11,7 @@ import {
   type PaymentMethodValues,
 } from "@/lib/payment-methods";
 import { bankLabel } from "@/lib/venezuelan-banks";
-import { formatPlanPrice, type SubscriptionPlan } from "@/lib/subscription-plans";
+import { daysUntil, formatPlanPrice, type SubscriptionPlan } from "@/lib/subscription-plans";
 import {
   PaymentDetailsCard,
   type PaymentDetailRow,
@@ -25,7 +25,6 @@ import { createSubscriptionPayment, uploadPaymentProof } from "./actions";
 
 export function PaymentMethods({
   restaurantId,
-  restaurantName,
   plan,
   platformPaymentMethods,
   supportWhatsappNumber,
@@ -34,7 +33,6 @@ export function PaymentMethods({
   t,
 }: {
   restaurantId: string;
-  restaurantName: string;
   plan: SubscriptionPlan;
   platformPaymentMethods: PaymentMethodValues;
   supportWhatsappNumber: string;
@@ -53,6 +51,10 @@ export function PaymentMethods({
     reference: "",
     amountPaid: "",
   });
+  const [popup, setPopup] = useState<{ matched: boolean; days: number | null } | null>(
+    null,
+  );
+  const [referenceError, setReferenceError] = useState(false);
 
   const activeMeta = methodId ? PAYMENT_METHOD_META[methodId] : null;
   const activeValues = methodId
@@ -101,18 +103,6 @@ export function PaymentMethods({
           amountBsRaw,
         )
       : undefined;
-
-  const message = [
-    t.messageIntro(restaurantName, plan.name, planPrice, amountBs ? ` · ${amountBs}` : ""),
-    activeMeta && t.messageMethod(activeMeta.label),
-    confirmValues.bankPaidFrom && t.messageBankFrom(confirmValues.bankPaidFrom),
-    confirmValues.reference && t.messageReference(confirmValues.reference),
-    confirmValues.amountPaid && t.messageAmountPaid(confirmValues.amountPaid),
-    receiptUrl ? t.messageReceipt(receiptUrl) : t.messageReceiptPending,
-  ]
-    .filter(Boolean)
-    .join(" ");
-  const whatsappHref = `https://wa.me/${supportWhatsappNumber}?text=${encodeURIComponent(message)}`;
 
   if (methods.length === 0) {
     return (
@@ -203,12 +193,21 @@ export function PaymentMethods({
         />
       </div>
 
+      {referenceError && (
+        <p className="mt-3 text-sm text-red-600">{t.referenceRequiredError}</p>
+      )}
+
       <button
         type="button"
         disabled={sending}
         onClick={async () => {
+          if (!confirmValues.reference.trim()) {
+            setReferenceError(true);
+            return;
+          }
+          setReferenceError(false);
           setSending(true);
-          await createSubscriptionPayment(restaurantId, {
+          const result = await createSubscriptionPayment(restaurantId, {
             planId: plan.id,
             planName: plan.name,
             amountUsd: plan.priceUsd,
@@ -219,12 +218,38 @@ export function PaymentMethods({
             receiptUrl: receiptUrl ?? undefined,
           });
           setSending(false);
-          window.open(whatsappHref, "_blank", "noopener,noreferrer");
+          if (result.error) return;
+          setPopup({
+            matched: Boolean(result.matched),
+            days: daysUntil(result.planExpiresAt ?? null),
+          });
         }}
         className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"
       >
         {sending ? t.notifying : t.notify}
       </button>
+
+      {popup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-xl dark:bg-neutral-900">
+            <p className="text-lg font-bold text-neutral-900 dark:text-white">
+              {popup.matched ? t.popupApprovedTitle : t.popupPendingTitle}
+            </p>
+            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+              {popup.matched && popup.days !== null
+                ? t.popupApprovedBody(popup.days)
+                : t.popupPendingBody}
+            </p>
+            <button
+              type="button"
+              onClick={() => setPopup(null)}
+              className="mt-5 w-full rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+            >
+              {t.popupClose}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

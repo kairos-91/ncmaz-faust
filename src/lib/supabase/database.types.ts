@@ -774,7 +774,7 @@ export interface Database {
           p_amount: number | null;
           p_reference: string | null;
         };
-        Returns: string | null;
+        Returns: { payment_id: string | null; restaurant_id: string | null; plan_expires_at: string | null }[];
       };
       superadmin_test_bank_notification: {
         Args: {
@@ -784,7 +784,11 @@ export interface Database {
           p_amount: number | null;
           p_reference: string | null;
         };
-        Returns: string | null;
+        Returns: { payment_id: string | null; restaurant_id: string | null; plan_expires_at: string | null }[];
+      };
+      match_new_subscription_payment: {
+        Args: { p_payment_id: string };
+        Returns: { matched: boolean; restaurant_id: string | null; plan_expires_at: string | null }[];
       };
     };
     Enums: Record<string, never>;
