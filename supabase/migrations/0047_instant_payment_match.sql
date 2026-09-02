@@ -14,6 +14,12 @@
 -- notificación push de "pago validado" con los días que quedan, sin una
 -- segunda consulta.
 
+-- Postgres no permite cambiar el tipo de retorno de una función con
+-- CREATE OR REPLACE (de "uuid" a "table(...)") — hay que borrarla primero.
+drop function if exists public._ingest_and_match_bank_notification(text, text, text, numeric, text);
+drop function if exists public.record_and_match_bank_notification(text, text, text, text, numeric, text);
+drop function if exists public.superadmin_test_bank_notification(text, text, text, numeric, text);
+
 create or replace function public._ingest_and_match_bank_notification(
   p_raw_text text,
   p_source text,
