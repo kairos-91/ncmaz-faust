@@ -349,6 +349,21 @@ o recíbelo como prop `t` (client) donde lo necesites.
      después de que el restaurante reportó el pago, mientras la pantalla
      sigue abierta) — antes había que recargar a mano (F5) para ver los
      días actualizados.
+   - `supabase/migrations/0050_bypass_plan_protection_for_matching.sql` —
+     corrige el bug raíz de todo el sistema de verificación automática: el
+     trigger `restaurants_protect_plan_fields` (que existe para que solo
+     el superadmin autenticado pueda editar `plan`/`plan_expires_at`)
+     revertía en silencio cualquier cambio a esos campos que no viniera
+     de una sesión con el correo del superadmin — incluyendo las
+     funciones `security definer` de emparejamiento automático (el
+     webhook no tiene sesión, y el dueño reportando su propio pago
+     tampoco es superadmin). El pago quedaba "approved" pero el plan
+     nunca se extendía de verdad. Se agrega una bandera de configuración
+     local a la transacción (`set_config('app.bypass_plan_protection',
+     'on', true)`, se resetea sola al terminar) que solo activan
+     `_ingest_and_match_bank_notification` y
+     `match_new_subscription_payment` justo antes de su propio `UPDATE` a
+     `restaurants`, sin abrirle la puerta a nadie más.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
