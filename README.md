@@ -480,6 +480,22 @@ o recíbelo como prop `t` (client) donde lo necesites.
 7. Abre [http://localhost:3000](http://localhost:3000). Regístrate en
    `/signup`, crea tu restaurante desde `/admin` y publica tu menú.
 
+## Despliegue (Vercel)
+
+`vercel.json` fija la región de las funciones serverless en `gru1`
+(São Paulo) para que corran cerca del proyecto de Supabase (también en
+São Paulo) — casi todas las rutas de esta app son dinámicas (Server
+Components/Actions que consultan la base de datos), así que sin esto
+cada request cruzaba el continente dos veces (Vercel en EE.UU. ⇄
+Supabase en São Paulo) sin necesidad. Si algún día cambias el proyecto
+de Supabase a otra región, actualiza `regions` en `vercel.json` para
+que coincida.
+
+El proxy (`src/proxy.ts`, antes `middleware.ts`) sí corre siempre en
+Edge Runtime — eso lo exige Next.js, no se puede fijar a una región — pero
+es una capa liviana (sesión + headers de seguridad); el trabajo pesado
+contra la base de datos ya corre en `gru1`.
+
 ## Modelo de datos
 
 - **restaurants** — cada fila es una sucursal, con slug público único,
