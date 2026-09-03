@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { ActionState } from "@/app/admin/actions";
+import { imageExtension, validateImageFile } from "@/lib/file-validation";
 
 async function requireUser() {
   const supabase = await createClient();
@@ -18,9 +19,10 @@ export async function updateProfileAvatar(formData: FormData) {
   const { supabase, user } = await requireUser();
   const file = formData.get("file") as File | null;
   if (!file || file.size === 0) return { error: "Selecciona una imagen" };
+  const validationError = validateImageFile(file);
+  if (validationError) return { error: validationError };
 
-  const ext = file.name.split(".").pop() ?? "jpg";
-  const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+  const path = `${user.id}/${crypto.randomUUID()}.${imageExtension(file)}`;
   const { error: uploadError } = await supabase.storage
     .from("menu-images")
     .upload(path, file, { contentType: file.type });

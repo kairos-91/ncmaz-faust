@@ -3,6 +3,7 @@
 import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { notifyPaymentApproved } from "@/lib/notify-admin-push";
+import { imageExtension, validateImageFile } from "@/lib/file-validation";
 
 export async function createSubscriptionPayment(
   restaurantId: string,
@@ -67,12 +68,10 @@ export async function uploadPaymentProof(formData: FormData) {
 
   const file = formData.get("file") as File | null;
   if (!file || file.size === 0) return { error: "No se recibió ninguna imagen" };
-  if (!file.type.startsWith("image/")) {
-    return { error: "El comprobante debe ser una imagen" };
-  }
+  const validationError = validateImageFile(file);
+  if (validationError) return { error: validationError };
 
-  const ext = file.type.split("/")[1] ?? "png";
-  const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+  const path = `${user.id}/${crypto.randomUUID()}.${imageExtension(file)}`;
   const { error } = await supabase.storage
     .from("payment-proofs")
     .upload(path, file, { contentType: file.type });

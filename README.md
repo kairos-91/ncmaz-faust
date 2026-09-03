@@ -404,6 +404,21 @@ o recíbelo como prop `t` (client) donde lo necesites.
      coordenadas, se agrega un link de Google Maps al mensaje de WhatsApp
      y aparece un "Ver ubicación en el mapa" en `/admin/orders` y en el
      panel del repartidor (`/delivery`), para abrir la ruta con un toque.
+   - `supabase/migrations/0054_storage_upload_limits.sql` — cierra un hueco
+     de seguridad real: las políticas RLS de `storage.objects` (0001, 0003,
+     0005) solo validaban `bucket_id` en el insert, así que cualquiera con
+     la anon key (pública, va en cada página) podía subir directo a la API
+     de Storage sin pasar por la app — cualquier tipo de archivo, sin
+     límite de tamaño. El chequeo de `file.type` que hace el código
+     (`uploadImage`, `uploadOrderReceipt`, `uploadPaymentProof`,
+     `updateProfileAvatar`, ahora unificados en
+     `src/lib/file-validation.ts`) es solo para dar un buen mensaje de
+     error en la UI, no una barrera real. Esta migración pone
+     `allowed_mime_types` (jpg/png/webp/gif — sin SVG, que puede llevar
+     `<script>` embebido) y `file_size_limit` (5 MB) en los buckets
+     `menu-images`, `order-receipts` y `payment-proofs`, algo que Supabase
+     Storage aplica en su propio endpoint de subida sin importar qué
+     cliente haga la petición.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

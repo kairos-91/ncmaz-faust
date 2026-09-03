@@ -20,6 +20,7 @@ import { computeExtendedExpiry } from "@/lib/subscription-plans";
 import { SERVICE_IDS, type ServiceId } from "@/lib/restaurant-services";
 import { formatPrice } from "@/lib/utils";
 import { isReservedSlug } from "@/lib/reserved-slugs";
+import { imageExtension, validateImageFile } from "@/lib/file-validation";
 
 export type ActionState = { error?: string } | null;
 
@@ -272,8 +273,10 @@ async function uploadImage(
   userId: string,
   file: File,
 ) {
-  const ext = file.name.split(".").pop() ?? "jpg";
-  const path = `${userId}/${crypto.randomUUID()}.${ext}`;
+  const validationError = validateImageFile(file);
+  if (validationError) throw new Error(validationError);
+
+  const path = `${userId}/${crypto.randomUUID()}.${imageExtension(file)}`;
   const { error } = await supabase.storage
     .from("menu-images")
     .upload(path, file, { contentType: file.type });
@@ -291,7 +294,12 @@ export async function updateRestaurantLogo(
   const file = formData.get("file") as File | null;
   if (!file || file.size === 0) return { error: "Selecciona una imagen" };
 
-  const url = await uploadImage(supabase, user.id, file);
+  let url: string;
+  try {
+    url = await uploadImage(supabase, user.id, file);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "No pudimos subir la imagen" };
+  }
   const update = field === "logo_url" ? { logo_url: url } : { cover_url: url };
   const { error } = await supabase
     .from("restaurants")
@@ -430,8 +438,8 @@ export async function createMenuItem(
   if (file && file.size > 0) {
     try {
       image_url = await uploadImage(supabase, user.id, file);
-    } catch {
-      return { error: "No pudimos subir la imagen" };
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : "No pudimos subir la imagen" };
     }
   }
 
@@ -468,8 +476,8 @@ export async function updateMenuItem(
   if (file && file.size > 0) {
     try {
       image_url = await uploadImage(supabase, user.id, file);
-    } catch {
-      return { error: "No pudimos subir la imagen" };
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : "No pudimos subir la imagen" };
     }
   }
 
