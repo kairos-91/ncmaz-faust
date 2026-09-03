@@ -37,14 +37,14 @@ export function LogoUploader({
 
   return (
     <div className="flex items-center gap-4">
-      <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800">
+      <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800">
         {logoUrl ? (
           <Image
             src={logoUrl}
             alt="Logo"
             width={64}
             height={64}
-            className="h-full w-full object-contain p-1"
+            className="h-full w-full object-cover"
             unoptimized
           />
         ) : (
