@@ -313,6 +313,35 @@ export async function updateRestaurantLogo(
   return { url };
 }
 
+// "N% N%", cada N entre 0 y 100 — lo único que produce el arrastre en
+// CoverUploader, y el único formato válido como object-position/
+// background-position CSS que aceptamos guardar.
+const COVER_POSITION_RE = /^(\d{1,3}(?:\.\d+)?)% (\d{1,3}(?:\.\d+)?)%$/;
+
+function isValidCoverPosition(value: string): boolean {
+  const match = COVER_POSITION_RE.exec(value);
+  if (!match) return false;
+  const x = Number(match[1]);
+  const y = Number(match[2]);
+  return x >= 0 && x <= 100 && y >= 0 && y <= 100;
+}
+
+export async function updateRestaurantCoverPosition(
+  restaurantId: string,
+  position: string,
+) {
+  if (!isValidCoverPosition(position)) return { error: "Posición inválida" };
+  const { supabase } = await requireOwnedRestaurant(restaurantId);
+  const { error } = await supabase
+    .from("restaurants")
+    .update({ cover_position: position })
+    .eq("id", restaurantId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/restaurant");
+  return { position };
+}
+
 export async function createCategory(
   restaurantId: string,
   _prev: ActionState,

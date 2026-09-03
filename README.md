@@ -449,6 +449,12 @@ o recíbelo como prop `t` (client) donde lo necesites.
      restaurante activa la opción, define qué porcentaje del envío se
      lleva el repartidor y el resto pasa a ser ganancia del restaurante.
      Ver "Envío: ¿de quién es la ganancia?" más abajo.
+   - `supabase/migrations/0057_cover_position.sql` — agrega
+     `cover_position` (text, default `'50% 50%'`, un valor
+     `background-position`/`object-position` CSS) a `restaurants`. Se usa
+     para recordar dónde quedó la portada al arrastrarla en
+     `/admin/restaurant` (`CoverUploader`), en vez de mostrarla siempre
+     centrada.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

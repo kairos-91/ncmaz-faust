@@ -18,6 +18,7 @@ export interface Database {
           description: string | null;
           logo_url: string | null;
           cover_url: string | null;
+          cover_position: string;
           address: string | null;
           state: string | null;
           country: string;
@@ -59,6 +60,7 @@ export interface Database {
           description?: string | null;
           logo_url?: string | null;
           cover_url?: string | null;
+          cover_position?: string;
           address?: string | null;
           state?: string | null;
           country?: string;
@@ -100,6 +102,7 @@ export interface Database {
           description?: string | null;
           logo_url?: string | null;
           cover_url?: string | null;
+          cover_position?: string;
           address?: string | null;
           state?: string | null;
           country?: string;

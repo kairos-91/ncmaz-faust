@@ -427,6 +427,10 @@ const es = {
     change: "Cambiar portada",
     uploading: "Subiendo...",
     sizeHint: "Horizontal y ancha (ej. 1600x500 px), con lo importante centrado.",
+    repositionHint: "Arrastra la imagen para ajustar qué parte se muestra.",
+    savePosition: "Guardar posición",
+    savingPosition: "Guardando...",
+    cancelPosition: "Cancelar",
   },
   openingHours: {
     title: "Horario de atención",
@@ -1552,6 +1556,10 @@ const en: typeof es = {
     change: "Change cover",
     uploading: "Uploading...",
     sizeHint: "Wide and horizontal (e.g. 1600x500 px), with the subject centered.",
+    repositionHint: "Drag the image to adjust what part is shown.",
+    savePosition: "Save position",
+    savingPosition: "Saving...",
+    cancelPosition: "Cancel",
   },
   openingHours: {
     title: "Opening hours",

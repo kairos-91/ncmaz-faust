@@ -220,12 +220,13 @@ export default async function PublicMenuPage({
   return (
     <div className="min-h-screen bg-neutral-50 pb-16 dark:bg-neutral-950">
       <div
-        className="relative h-32 w-full bg-cover bg-center sm:h-48"
+        className="relative h-32 w-full bg-cover sm:h-48"
         style={{
           backgroundColor: restaurant.theme_color,
           backgroundImage: restaurant.cover_url
             ? `url(${restaurant.cover_url})`
             : undefined,
+          backgroundPosition: restaurant.cover_position,
         }}
       >
         <div className="absolute right-4 top-4">
