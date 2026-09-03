@@ -24,7 +24,9 @@ export default async function SalesPage() {
   const [{ data: orders }, bcvRate] = await Promise.all([
     supabase
       .from("orders")
-      .select("total, status, created_at, payment_method")
+      .select(
+        "total, status, created_at, payment_method, order_type, delivery_fee, delivery_staff_id, delivery_accepted_at",
+      )
       .eq("restaurant_id", restaurant.id),
     restaurant.currency === "USD" ? getBcvRate() : Promise.resolve(null),
   ]);

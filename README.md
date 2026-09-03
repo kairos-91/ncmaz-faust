@@ -496,6 +496,26 @@ Row Level Security garantiza que cada dueño solo pueda editar su propio
 restaurante, y que el público solo vea restaurantes publicados y platos
 disponibles.
 
+### Envío: ¿de quién es la ganancia?
+
+`orders.total` incluye el `delivery_fee`, pero ese envío no siempre es
+ganancia del restaurante: en cuanto el dueño le asigna un repartidor
+(`delivery_staff_id`) Y ese repartidor acepta el pedido
+(`delivery_accepted_at`, se pone al tocar "Aceptar" en `/delivery`), el
+envío pasa a ser la ganancia del repartidor — ya se cuenta en "Ganancias
+de hoy" de su panel (suma `delivery_fee` de sus entregas). Si el
+repartidor rechaza la asignación, `reject_delivery_assignment` limpia
+ambos campos y el envío vuelve a ser del restaurante automáticamente; lo
+mismo si nunca se asignó nadie (el restaurante hizo la entrega él
+mismo).
+
+`src/lib/sales.ts` (`restaurantAmount()`, usada por `computeSalesSummary`,
+`groupSalesByDay/Month` y `groupSalesByPaymentMethod` — todas las cifras
+de `/admin` y `/admin/sales`) resta el envío del total en ese caso, para
+no contarlo dos veces. `src/lib/customers.ts` (gasto total por cliente)
+NO se toca — ahí sí corresponde sumar el envío, porque es lo que el
+cliente pagó de verdad, sin importar a quién le llega.
+
 ## Seguridad
 
 Además de RLS en cada tabla, los `security definer` acotados (nunca la

@@ -97,7 +97,9 @@ export default async function AdminDashboardPage() {
         .eq("restaurant_id", restaurant.id),
       supabase
         .from("orders")
-        .select("total, status, created_at")
+        .select(
+          "total, status, created_at, order_type, delivery_fee, delivery_staff_id, delivery_accepted_at",
+        )
         .eq("restaurant_id", restaurant.id),
       restaurant.currency === "USD" ? getBcvRate() : Promise.resolve(null),
       supabase

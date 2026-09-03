@@ -5,7 +5,28 @@ export type SalesOrder = {
   status: string;
   created_at: string;
   payment_method?: string | null;
+  order_type?: string;
+  delivery_fee?: number;
+  delivery_staff_id?: string | null;
+  delivery_accepted_at?: string | null;
 };
+
+// El envío es ganancia del restaurante solo mientras el restaurante se
+// encarga de la entrega. En cuanto el dueño le asigna un repartidor Y
+// ese repartidor acepta el pedido (delivery_accepted_at), el envío pasa
+// a ser la ganancia del repartidor (ver "Ganancias de hoy" en
+// /delivery, que ya suma delivery_fee de sus entregas) — así que aquí
+// hay que restarlo para no contarlo dos veces. Si el repartidor rechaza
+// la asignación, reject_delivery_assignment limpia ambos campos y el
+// envío vuelve a ser del restaurante automáticamente.
+function restaurantAmount(order: SalesOrder): number {
+  const deliveryFee = order.delivery_fee ?? 0;
+  const goesToDeliveryStaff =
+    order.order_type === "delivery" &&
+    Boolean(order.delivery_staff_id) &&
+    Boolean(order.delivery_accepted_at);
+  return goesToDeliveryStaff ? order.total - deliveryFee : order.total;
+}
 
 export type DailySales = { day: string; count: number; total: number };
 
@@ -55,10 +76,11 @@ export function computeSalesSummary(
 
   for (const order of accepted) {
     const { year: y, month: m, day: d } = caracasParts(new Date(order.created_at));
-    allTime += order.total;
-    if (y === currentYear) year += order.total;
-    if (y === currentYear && m === currentMonth) month += order.total;
-    if (`${y}-${m}-${d}` === todayKey) today += order.total;
+    const amount = restaurantAmount(order);
+    allTime += amount;
+    if (y === currentYear) year += amount;
+    if (y === currentYear && m === currentMonth) month += amount;
+    if (`${y}-${m}-${d}` === todayKey) today += amount;
   }
 
   return { today, month, year, allTime };
@@ -71,7 +93,7 @@ export function groupSalesByDay(orders: SalesOrder[]): DailySales[] {
     const day = caracasDayKey(new Date(order.created_at));
     const entry = byDay.get(day) ?? { day, count: 0, total: 0 };
     entry.count += 1;
-    entry.total += order.total;
+    entry.total += restaurantAmount(order);
     byDay.set(day, entry);
   }
   return [...byDay.values()].sort((a, b) => b.day.localeCompare(a.day));
@@ -85,7 +107,7 @@ export function groupSalesByMonth(orders: SalesOrder[]): MonthlySales[] {
   for (const order of accepted) {
     const { year, month } = caracasParts(new Date(order.created_at));
     const key = `${year}-${month}`;
-    byMonth.set(key, (byMonth.get(key) ?? 0) + order.total);
+    byMonth.set(key, (byMonth.get(key) ?? 0) + restaurantAmount(order));
   }
   return [...byMonth.entries()]
     .map(([month, total]) => ({ month, total }))
@@ -102,7 +124,7 @@ export function groupSalesByPaymentMethod(orders: SalesOrder[]): PaymentMethodSa
     const key = method ?? "__none__";
     const entry = byMethod.get(key) ?? { method, count: 0, total: 0 };
     entry.count += 1;
-    entry.total += order.total;
+    entry.total += restaurantAmount(order);
     byMethod.set(key, entry);
   }
   return [...byMethod.values()].sort((a, b) => b.total - a.total);
