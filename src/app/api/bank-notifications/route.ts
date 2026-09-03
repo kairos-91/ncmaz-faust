@@ -3,6 +3,7 @@ import { after } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { parseBankNotification } from "@/lib/bank-notification-parser";
 import { notifyPaymentApproved } from "@/lib/notify-admin-push";
+import { checkIpRateLimit } from "@/lib/rate-limit";
 import type { Database } from "@/lib/supabase/database.types";
 
 // Webhook público (sin sesión de Supabase) para recibir notificaciones
@@ -53,6 +54,14 @@ async function extractParams(request: Request) {
 }
 
 async function handle(request: Request) {
+  // Este endpoint no tiene sesión — su única defensa es el secreto
+  // compartido. Sin límite de intentos, alguien podría fuerza-brutear el
+  // secreto probando valores sin parar; esto acota esa ventana.
+  const canProceed = await checkIpRateLimit("bank-notifications", 30, 600);
+  if (!canProceed) {
+    return NextResponse.json({ error: "Demasiadas solicitudes." }, { status: 429 });
+  }
+
   const { text, secret, source } = await extractParams(request);
 
   if (!text || !secret) {

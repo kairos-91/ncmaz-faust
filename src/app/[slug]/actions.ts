@@ -7,6 +7,7 @@ import { reviewSchema } from "@/lib/validations";
 import { ORDER_TYPE_LABELS, type OrderItemSnapshot } from "@/lib/orders";
 import { formatPrice } from "@/lib/utils";
 import { imageExtension, validateImageFile } from "@/lib/file-validation";
+import { checkIpRateLimit } from "@/lib/rate-limit";
 
 async function notifyAdminsOfNewOrder(
   restaurantId: string,
@@ -90,6 +91,11 @@ export async function createOrder(
     return { error: "Faltan los datos del cliente" };
   }
 
+  const canProceed = await checkIpRateLimit(`order:${restaurantId}`, 8, 900);
+  if (!canProceed) {
+    return { error: "Hiciste demasiados pedidos en poco tiempo. Intenta de nuevo en unos minutos." };
+  }
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("orders")
@@ -150,6 +156,11 @@ export async function uploadOrderReceipt(
   const validationError = validateImageFile(file);
   if (validationError) return { error: validationError };
 
+  const canProceed = await checkIpRateLimit("order-receipt", 15, 900);
+  if (!canProceed) {
+    return { error: "Demasiados intentos. Espera unos minutos e intenta de nuevo." };
+  }
+
   const supabase = await createClient();
   const path = `${restaurantId}/${crypto.randomUUID()}.${imageExtension(file)}`;
   const { error } = await supabase.storage
@@ -173,6 +184,11 @@ export async function createReview(
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
+  }
+
+  const canProceed = await checkIpRateLimit(`review:${restaurantId}`, 5, 3600);
+  if (!canProceed) {
+    return { error: "Ya dejaste varias reseñas seguidas. Intenta de nuevo más tarde." };
   }
 
   const supabase = await createClient();

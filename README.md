@@ -419,6 +419,23 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `menu-images`, `order-receipts` y `payment-proofs`, algo que Supabase
      Storage aplica en su propio endpoint de subida sin importar qué
      cliente haga la petición.
+   - `supabase/migrations/0055_rate_limiting.sql` — límite de intentos para
+     los endpoints públicos sin sesión, que hasta ahora no tenían ninguno:
+     crear pedido, dejar reseña, subir comprobante y el webhook de
+     `/api/bank-notifications` (protegido por secreto, pero sin límite de
+     intentos alguien podía fuerza-bruteario probando valores sin parar).
+     Crea `rate_limits` (contador de ventana fija por clave, sin política
+     RLS — como `app_secrets`, solo se toca desde dentro de una función) y
+     `check_rate_limit(p_key, p_max, p_window_seconds)`, un `security
+     definer` que sube el contador y devuelve si sigue dentro del límite;
+     el upsert es atómico por fila, así que no hay condición de carrera
+     entre pedidos simultáneos. `src/lib/rate-limit.ts` la envuelve
+     (`checkIpRateLimit`, clave por IP + acción, vía el header
+     `x-forwarded-for`) y falla abierto si el RPC mismo falla, para no
+     bloquear pedidos reales por un problema del rate limiter. Límites:
+     8 pedidos / 15 min por restaurante+IP, 5 reseñas / hora por
+     restaurante+IP, 15 subidas de comprobante / 15 min por IP, 30
+     llamadas al webhook bancario / 10 min por IP.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

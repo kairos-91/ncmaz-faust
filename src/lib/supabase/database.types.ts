@@ -836,6 +836,10 @@ export interface Database {
         Args: { p_table_id: string };
         Returns: undefined;
       };
+      check_rate_limit: {
+        Args: { p_key: string; p_max: number; p_window_seconds: number };
+        Returns: boolean;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
