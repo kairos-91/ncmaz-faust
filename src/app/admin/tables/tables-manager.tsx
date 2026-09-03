@@ -273,7 +273,7 @@ function TableQrModal({
 }) {
   const tableUrl = `${publicUrl}?table=${table.id}`;
 
-  const [dotColor, setDotColor] = useState(themeColor || "#f97316");
+  const [dotColor, setDotColor] = useState(themeColor || "#84cc16");
   const [bgColor, setBgColor] = useState("#ffffff");
   const [shape, setShape] = useState<ShapePreset>("rounded");
   const [logoOption, setLogoOption] = useState<"none" | "restaurant" | "custom">(

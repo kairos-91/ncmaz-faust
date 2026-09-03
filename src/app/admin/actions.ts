@@ -90,7 +90,7 @@ function parseRestaurantForm(formData: FormData) {
     facebook_url: buildFacebookUrl(formData.get("facebook_handle") as string | null),
     phone: formData.get("phone") ?? "",
     whatsapp: formData.get("whatsapp") ?? "",
-    theme_color: formData.get("theme_color") || "#f97316",
+    theme_color: formData.get("theme_color") || "#84cc16",
     currency: formData.get("currency") || "USD",
     is_published: formData.get("is_published") === "on",
     has_wifi: formData.get("has_wifi") === "on",

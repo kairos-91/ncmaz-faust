@@ -28,7 +28,7 @@ export function QrCard({
   restaurantLogoUrl: string | null;
   t: Pick<Dictionary["dashboard"], "qrTitle" | "qrHint"> & Dictionary["qrCustomizer"];
 }) {
-  const [dotColor, setDotColor] = useState(themeColor || "#f97316");
+  const [dotColor, setDotColor] = useState(themeColor || "#84cc16");
   const [bgColor, setBgColor] = useState("#ffffff");
   const [shape, setShape] = useState<ShapePreset>("rounded");
   const [logoOption, setLogoOption] = useState<"none" | "restaurant" | "custom">(

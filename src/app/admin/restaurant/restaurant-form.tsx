@@ -435,7 +435,7 @@ export function RestaurantForm({
             id="theme_color"
             name="theme_color"
             type="color"
-            defaultValue={restaurant?.theme_color ?? "#f97316"}
+            defaultValue={restaurant?.theme_color ?? "#84cc16"}
             className="h-10 w-full cursor-pointer rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900"
           />
         </div>

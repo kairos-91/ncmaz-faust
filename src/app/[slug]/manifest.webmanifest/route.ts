@@ -30,7 +30,7 @@ export async function GET(
       scope: `/${slug}`,
       display: "standalone",
       background_color: "#ffffff",
-      theme_color: restaurant?.theme_color ?? "#f97316",
+      theme_color: restaurant?.theme_color ?? "#84cc16",
       icons,
     },
     { headers: { "Content-Type": "application/manifest+json" } },
