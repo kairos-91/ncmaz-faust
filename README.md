@@ -482,19 +482,21 @@ o recíbelo como prop `t` (client) donde lo necesites.
 
 ## Despliegue (Vercel)
 
-`vercel.json` fija la región de las funciones serverless en `gru1`
-(São Paulo) para que corran cerca del proyecto de Supabase (también en
-São Paulo) — casi todas las rutas de esta app son dinámicas (Server
-Components/Actions que consultan la base de datos), así que sin esto
-cada request cruzaba el continente dos veces (Vercel en EE.UU. ⇄
-Supabase en São Paulo) sin necesidad. Si algún día cambias el proyecto
-de Supabase a otra región, actualiza `regions` en `vercel.json` para
-que coincida.
+`vercel.json` fija la región de las funciones serverless en `cle1`
+(Cleveland, Ohio) para que corran en la misma zona que el proyecto de
+Supabase (`us-east-2`, East US / Ohio — confírmalo en tu dashboard de
+Supabase en **Settings → General → Project region**) — casi todas las
+rutas de esta app son dinámicas (Server Components/Actions que
+consultan la base de datos), así que sin esto cada request corría en la
+región por defecto de Vercel (`iad1`, Washington D.C.), una zona
+distinta a la de la base de datos aunque igual de EE.UU. Si algún día
+cambias el proyecto de Supabase a otra región, actualiza `regions` en
+`vercel.json` para que coincida.
 
 El proxy (`src/proxy.ts`, antes `middleware.ts`) sí corre siempre en
 Edge Runtime — eso lo exige Next.js, no se puede fijar a una región — pero
 es una capa liviana (sesión + headers de seguridad); el trabajo pesado
-contra la base de datos ya corre en `gru1`.
+contra la base de datos ya corre en `cle1`.
 
 ## Modelo de datos
 
