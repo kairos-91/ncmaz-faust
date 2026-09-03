@@ -16,21 +16,17 @@ export function parseDeliveryZones(json: Json | null | undefined): DeliveryZone[
     .filter((zone) => zone.name.length > 0);
 }
 
-export function deliveryZonesToText(zones: DeliveryZone[]) {
-  return zones.map((z) => `${z.name}, ${z.fee}`).join("\n");
-}
-
-export function parseDeliveryZonesText(text: string): DeliveryZone[] {
-  return text
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [name, feeRaw] = line.split(",");
-      return {
-        name: (name ?? "").trim(),
-        fee: Number((feeRaw ?? "0").trim()) || 0,
-      };
-    })
-    .filter((zone) => zone.name.length > 0);
+// Lee las filas que arma DeliveryZonesFields (delivery_zones.0.name,
+// delivery_zones.0.fee, delivery_zones.1.name, ...) — se detiene en el
+// primer índice sin nombre, así que no importa si el cliente reordenó
+// o borró filas antes de enviar el formulario.
+export function parseDeliveryZonesForm(formData: FormData): DeliveryZone[] {
+  const zones: DeliveryZone[] = [];
+  for (let i = 0; formData.has(`delivery_zones.${i}.name`); i++) {
+    const name = String(formData.get(`delivery_zones.${i}.name`) ?? "").trim();
+    const feeRaw = String(formData.get(`delivery_zones.${i}.fee`) ?? "0").trim();
+    if (!name) continue;
+    zones.push({ name, fee: Number(feeRaw) || 0 });
+  }
+  return zones;
 }

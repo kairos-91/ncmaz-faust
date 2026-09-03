@@ -56,7 +56,14 @@ export const restaurantSchema = z.object({
   is_published: z.boolean(),
   has_wifi: z.boolean(),
   accepts_pets: z.boolean(),
-  delivery_zones: z.string().max(2000).optional().or(z.literal("")),
+  delivery_zones: z
+    .array(
+      z.object({
+        name: z.string().min(1).max(120),
+        fee: z.coerce.number().min(0),
+      }),
+    )
+    .max(50),
   packaging_fee_enabled: z.boolean(),
   packaging_fee: z.coerce.number().min(0, "El costo no puede ser negativo"),
   allow_orders_when_closed: z.boolean(),

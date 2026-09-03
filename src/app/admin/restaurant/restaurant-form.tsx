@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn, slugify } from "@/lib/utils";
-import { deliveryZonesToText, parseDeliveryZones } from "@/lib/delivery-zones";
+import { DeliveryZonesFields } from "./delivery-zones-fields";
 import { extractSocialHandle } from "@/lib/social-links";
 import { OpeningHoursFields } from "./opening-hours-fields";
 import { SERVICE_IDS, parseServices } from "@/lib/restaurant-services";
@@ -299,19 +299,7 @@ export function RestaurantForm({
         </p>
       </div>
 
-      <div>
-        <Label htmlFor="delivery_zones">{t.deliveryZonesLabel}</Label>
-        <Textarea
-          id="delivery_zones"
-          name="delivery_zones"
-          rows={3}
-          defaultValue={deliveryZonesToText(parseDeliveryZones(restaurant?.delivery_zones))}
-          placeholder={t.deliveryZonesPlaceholder}
-        />
-        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
-          {t.deliveryZonesHint}
-        </p>
-      </div>
+      <DeliveryZonesFields deliveryZones={restaurant?.delivery_zones} t={t} />
 
       <div>
         <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">

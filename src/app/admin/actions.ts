@@ -14,7 +14,7 @@ import {
 } from "@/lib/validations";
 import { extrasTotal, parseExtras, parseExtrasText } from "@/lib/menu-item-extras";
 import type { OrderItemSnapshot } from "@/lib/orders";
-import { parseDeliveryZonesText } from "@/lib/delivery-zones";
+import { parseDeliveryZonesForm } from "@/lib/delivery-zones";
 import { DAY_KEYS, type DayHours } from "@/lib/opening-hours";
 import { computeExtendedExpiry } from "@/lib/subscription-plans";
 import { SERVICE_IDS, type ServiceId } from "@/lib/restaurant-services";
@@ -95,7 +95,7 @@ function parseRestaurantForm(formData: FormData) {
     is_published: formData.get("is_published") === "on",
     has_wifi: formData.get("has_wifi") === "on",
     accepts_pets: formData.get("accepts_pets") === "on",
-    delivery_zones: formData.get("delivery_zones") ?? "",
+    delivery_zones: parseDeliveryZonesForm(formData),
     packaging_fee_enabled: formData.get("packaging_fee_enabled") === "on",
     packaging_fee: formData.get("packaging_fee") || "0",
     allow_orders_when_closed: formData.get("allow_orders_when_closed") === "on",
@@ -184,7 +184,6 @@ export async function createRestaurant(
     .from("restaurants")
     .insert({
       ...parsed.data,
-      delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
       opening_hours: parseOpeningHoursForm(formData),
       services: parseServicesForm(formData),
       owner_id: user.id,
@@ -252,7 +251,6 @@ export async function updateRestaurant(
     .from("restaurants")
     .update({
       ...parsed.data,
-      delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
       opening_hours: parseOpeningHoursForm(formData),
       services: parseServicesForm(formData),
     })
