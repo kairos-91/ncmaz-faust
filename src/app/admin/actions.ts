@@ -4,7 +4,9 @@ import webpush from "web-push";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { ACTIVE_RESTAURANT_COOKIE } from "@/lib/get-owner-restaurant";
 import {
   categorySchema,
   menuItemSchema,
@@ -153,19 +155,17 @@ export async function checkSlugAvailability(
   return { available: false, suggestions };
 }
 
+// Crea un restaurante para el usuario logueado. Se usa tanto para la
+// primera sucursal (formulario de onboarding en /admin cuando el dueño
+// todavía no tiene ninguna) como para agregar sucursales adicionales
+// desde /admin/restaurants/new — ya no hay límite de uno por dueño (ver
+// 0051_multi_branch_restaurants.sql). La sucursal recién creada queda
+// como la activa (cookie) para que el panel se abra mostrándola.
 export async function createRestaurant(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
   const { supabase, user } = await requireUser();
-
-  const { count: existingCount } = await supabase
-    .from("restaurants")
-    .select("id", { count: "exact", head: true })
-    .eq("owner_id", user.id);
-  if (existingCount && existingCount > 0) {
-    redirect("/admin");
-  }
 
   const parsed = parseRestaurantForm(formData);
   if (!parsed.success) {
@@ -178,20 +178,58 @@ export async function createRestaurant(
     .eq("key", "trial")
     .maybeSingle();
 
-  const { error } = await supabase.from("restaurants").insert({
-    ...parsed.data,
-    delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
-    opening_hours: parseOpeningHoursForm(formData),
-    services: parseServicesForm(formData),
-    owner_id: user.id,
-    plan_expires_at: computeExtendedExpiry(null, trialPlan?.duration_days ?? 15),
-  });
+  const { data: inserted, error } = await supabase
+    .from("restaurants")
+    .insert({
+      ...parsed.data,
+      delivery_zones: parseDeliveryZonesText(parsed.data.delivery_zones ?? ""),
+      opening_hours: parseOpeningHoursForm(formData),
+      services: parseServicesForm(formData),
+      owner_id: user.id,
+      plan_expires_at: computeExtendedExpiry(null, trialPlan?.duration_days ?? 15),
+    })
+    .select("id")
+    .single();
 
-  if (error) {
+  if (error || !inserted) {
     return {
-      error: error.code === "23505" ? "Esa URL ya está en uso." : error.message,
+      error: error?.code === "23505" ? "Esa URL ya está en uso." : error?.message,
     };
   }
+
+  const cookieStore = await cookies();
+  cookieStore.set(ACTIVE_RESTAURANT_COOKIE, inserted.id, {
+    path: "/",
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 365,
+  });
+
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+// Cambia la sucursal activa del dueño (ver getOwnerRestaurant /
+// getStaffRestaurant). Verifica que la sucursal sea suya antes de fijar
+// la cookie, para que nadie pueda "cambiarse" a un restaurante ajeno
+// adivinando su id.
+export async function setActiveRestaurant(restaurantId: string) {
+  const { supabase, user } = await requireUser();
+  const { data: restaurant } = await supabase
+    .from("restaurants")
+    .select("id")
+    .eq("id", restaurantId)
+    .eq("owner_id", user.id)
+    .maybeSingle();
+  if (!restaurant) throw new Error("No autorizado");
+
+  const cookieStore = await cookies();
+  cookieStore.set(ACTIVE_RESTAURANT_COOKIE, restaurantId, {
+    path: "/",
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 365,
+  });
 
   revalidatePath("/admin");
   redirect("/admin");

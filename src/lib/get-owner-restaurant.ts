@@ -1,5 +1,31 @@
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { DeliveryStaff, Restaurant } from "@/lib/supabase/database.types";
+
+export const ACTIVE_RESTAURANT_COOKIE = "active_restaurant_id";
+
+// Un dueño puede tener varias sucursales (restaurants con el mismo
+// owner_id, ver 0051_multi_branch_restaurants.sql). Cuál se muestra en el
+// panel se decide con esta cookie (la fija el switcher de sucursales / al
+// crear una nueva). Sin cookie, o si apunta a una sucursal que ya no le
+// pertenece, se cae de vuelta a la más antigua para no dejar el panel sin
+// restaurante.
+function pickActiveRestaurant(
+  restaurants: Restaurant[],
+  activeId: string | null,
+): Restaurant | null {
+  if (restaurants.length === 0) return null;
+  if (activeId) {
+    const match = restaurants.find((r) => r.id === activeId);
+    if (match) return match;
+  }
+  return restaurants[0];
+}
+
+async function getActiveRestaurantIdCookie(): Promise<string | null> {
+  const cookieStore = await cookies();
+  return cookieStore.get(ACTIVE_RESTAURANT_COOKIE)?.value ?? null;
+}
 
 export async function getOwnerRestaurant(): Promise<{
   userEmail: string | null;
@@ -11,21 +37,36 @@ export async function getOwnerRestaurant(): Promise<{
   } = await supabase.auth.getUser();
   if (!user) return { userEmail: null, restaurant: null };
 
-  // .eq + .maybeSingle() sin límite lanza un error si el dueño terminó con
-  // más de un restaurante (no debería pasar, pero no hay constraint que lo
-  // impida) — eso lo resolvía como "sin restaurante" en silencio y mandaba
-  // al usuario de vuelta a la pantalla de "crear restaurante". Con
-  // .order + .limit(1) siempre nos quedamos con el más antiguo en vez de
-  // que la consulta falle.
-  const { data: restaurant } = await supabase
+  const { data: restaurants } = await supabase
     .from("restaurants")
     .select("*")
     .eq("owner_id", user.id)
-    .order("created_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
+    .order("created_at", { ascending: true });
 
-  return { userEmail: user.email ?? null, restaurant };
+  const activeId = await getActiveRestaurantIdCookie();
+  return {
+    userEmail: user.email ?? null,
+    restaurant: pickActiveRestaurant(restaurants ?? [], activeId),
+  };
+}
+
+// Todas las sucursales del dueño logueado, para el switcher de /admin y
+// la pantalla de "agregar sucursal". Devuelve [] si no hay sesión o el
+// usuario no es dueño de ningún restaurante.
+export async function getOwnerRestaurants(): Promise<Restaurant[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: restaurants } = await supabase
+    .from("restaurants")
+    .select("*")
+    .eq("owner_id", user.id)
+    .order("created_at", { ascending: true });
+
+  return restaurants ?? [];
 }
 
 export type StaffRole = "owner" | "staff";
@@ -69,13 +110,12 @@ export async function getStaffRestaurant(): Promise<{
     .from("restaurants")
     .select("*")
     .eq("owner_id", user.id)
-    .order("created_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
-  if (owned) {
+    .order("created_at", { ascending: true });
+  if (owned && owned.length > 0) {
+    const activeId = await getActiveRestaurantIdCookie();
     return {
       userEmail: user.email ?? null,
-      restaurant: owned,
+      restaurant: pickActiveRestaurant(owned, activeId),
       role: "owner",
       avatarUrl,
       isGoogleAccount,

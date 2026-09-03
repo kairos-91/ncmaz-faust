@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
+import { getStaffRestaurant, getOwnerRestaurants } from "@/lib/get-owner-restaurant";
 import { getT } from "@/lib/i18n/locale";
 import { isOpenNow, parseOpeningHours } from "@/lib/opening-hours";
 import { getBcvRate } from "@/lib/bcv-rate";
@@ -66,6 +66,7 @@ export default async function AdminLayout({
     : null;
 
   const bcvRate = await getBcvRate();
+  const branches = role === "owner" ? await getOwnerRestaurants() : null;
 
   return (
     <div className="flex min-h-screen flex-1 flex-col bg-neutral-50 dark:bg-neutral-950">
@@ -76,6 +77,8 @@ export default async function AdminLayout({
         t={t.adminNav}
         openNow={openNow}
         bcvRate={bcvRate}
+        branches={branches}
+        currentRestaurantId={restaurant?.id ?? null}
       />
       <div className="flex flex-1 flex-col md:flex-row">
         <AdminNav

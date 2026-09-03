@@ -4,8 +4,10 @@ import { Logo } from "@/components/logo";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProfileMenu } from "./account/profile-menu";
+import { BranchSwitcher } from "./branch-switcher";
 import type { BcvRate } from "@/lib/bcv-rate";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
+import type { Restaurant } from "@/lib/supabase/database.types";
 
 export function AdminTopBar({
   email,
@@ -14,6 +16,8 @@ export function AdminTopBar({
   t,
   openNow = null,
   bcvRate = null,
+  branches = null,
+  currentRestaurantId = null,
 }: {
   email: string | null;
   avatarUrl?: string | null;
@@ -21,6 +25,8 @@ export function AdminTopBar({
   t: Dictionary["adminNav"];
   openNow?: boolean | null;
   bcvRate?: BcvRate | null;
+  branches?: Restaurant[] | null;
+  currentRestaurantId?: string | null;
 }) {
   return (
     <>
@@ -29,6 +35,13 @@ export function AdminTopBar({
           <Link href="/" className="shrink-0">
             <Logo height={44} />
           </Link>
+          {branches && currentRestaurantId && (
+            <BranchSwitcher
+              restaurants={branches}
+              currentRestaurantId={currentRestaurantId}
+              locale={locale}
+            />
+          )}
           {openNow !== null && (
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${

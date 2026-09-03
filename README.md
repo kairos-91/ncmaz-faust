@@ -364,6 +364,20 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `_ingest_and_match_bank_notification` y
      `match_new_subscription_payment` justo antes de su propio `UPDATE` a
      `restaurants`, sin abrirle la puerta a nadie más.
+   - `supabase/migrations/0051_multi_branch_restaurants.sql` — multi-sucursal:
+     elimina `restaurants_owner_id_unique` (0018), que hasta ahora impedía
+     que un mismo dueño (`owner_id`) tuviera más de un restaurante. Cada
+     sucursal sigue siendo una fila independiente en `restaurants` con su
+     propio menú, pedidos, staff, plan y suscripción — el mismo
+     aislamiento por `restaurant_id` que ya usa el resto del esquema, así
+     que no hizo falta tocar RLS ni ninguna otra tabla. El panel recuerda
+     cuál sucursal está activa con la cookie `active_restaurant_id`
+     (`getOwnerRestaurant`/`getStaffRestaurant` en
+     `src/lib/get-owner-restaurant.ts`); el switcher junto al logo en
+     `/admin` permite cambiar entre sucursales o crear una nueva desde
+     `/admin/restaurants/new` (reutiliza `createRestaurant`, que ahora deja
+     al dueño repetir el flujo de alta en vez de bloquearlo después de la
+     primera sucursal).
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
@@ -405,8 +419,12 @@ o recíbelo como prop `t` (client) donde lo necesites.
 
 ## Modelo de datos
 
-- **restaurants** — un restaurante por usuario dueño (`owner_id`), con slug
-  público único, color de marca, moneda y estado de publicación.
+- **restaurants** — cada fila es una sucursal, con slug público único,
+  color de marca, moneda, estado de publicación y su propio plan de
+  suscripción. Un mismo dueño (`owner_id`) puede tener varias (multi-sucursal,
+  ver migración 0051) — el panel recuerda cuál está activa con la cookie
+  `active_restaurant_id` y permite cambiar entre ellas desde el switcher
+  en `/admin`.
 - **categories** — secciones del menú (entradas, postres, etc).
 - **menu_items** — platos con precio, imagen, disponibilidad, destacado y
   etiquetas.

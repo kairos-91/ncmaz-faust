@@ -238,6 +238,14 @@ const es = {
     closedNow: "Cerrado",
     bcvRateLabel: "Tasa Oficial BCV",
   },
+  branchSwitcher: {
+    label: "Sucursales",
+    addBranch: "Agregar sucursal",
+    newBranchTitle: "Agregar nueva sucursal",
+    newBranchSubtitle:
+      "Configura los datos de tu nueva sucursal. Va a tener su propio menú, pedidos y suscripción — podrás cambiar entre sucursales desde el panel.",
+    newBranchSubmitLabel: "Crear sucursal",
+  },
   profileMenu: {
     menuLabel: "Menú de perfil",
     myAccount: "Mi cuenta",
@@ -1306,6 +1314,14 @@ const en: typeof es = {
     openNow: "Open",
     closedNow: "Closed",
     bcvRateLabel: "Official BCV rate",
+  },
+  branchSwitcher: {
+    label: "Branches",
+    addBranch: "Add branch",
+    newBranchTitle: "Add new branch",
+    newBranchSubtitle:
+      "Set up your new branch. It'll have its own menu, orders, and subscription — you can switch between branches from the dashboard.",
+    newBranchSubmitLabel: "Create branch",
   },
   profileMenu: {
     menuLabel: "Profile menu",
