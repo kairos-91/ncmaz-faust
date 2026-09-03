@@ -3,9 +3,18 @@ export type BcvRate = {
   updatedAt: string | null;
 };
 
-export async function getBcvRate(): Promise<BcvRate | null> {
+// Restaurantes en USD y EUR muestran su equivalente en bolívares a la
+// tasa oficial del BCV; el resto de monedas no tiene una tasa BCV que
+// aplicarles, así que siempre caen en dólares/oficial por compatibilidad.
+const BCV_ENDPOINT_BY_CURRENCY: Record<string, string> = {
+  EUR: "https://ve.dolarapi.com/v1/euros/oficial",
+  USD: "https://ve.dolarapi.com/v1/dolares/oficial",
+};
+
+export async function getBcvRate(currency = "USD"): Promise<BcvRate | null> {
   try {
-    const res = await fetch("https://ve.dolarapi.com/v1/dolares/oficial", {
+    const endpoint = BCV_ENDPOINT_BY_CURRENCY[currency] ?? BCV_ENDPOINT_BY_CURRENCY.USD;
+    const res = await fetch(endpoint, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return null;

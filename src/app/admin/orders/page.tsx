@@ -27,7 +27,7 @@ export default async function OrdersPage() {
   const needsBcvRate = (orders ?? []).some(
     (o) => o.payment_method === "pago_movil" || o.payment_method === "transferencia",
   );
-  const bcvRate = needsBcvRate ? await getBcvRate() : null;
+  const bcvRate = needsBcvRate ? await getBcvRate(restaurant.currency) : null;
 
   let deliveryStaff: { id: string; name: string }[] = [];
   if (restaurant.manages_delivery_staff) {

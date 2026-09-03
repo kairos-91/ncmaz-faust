@@ -65,7 +65,7 @@ export default async function AdminLayout({
     ? isOpenNow(parseOpeningHours(restaurant!.opening_hours))
     : null;
 
-  const bcvRate = await getBcvRate();
+  const bcvRate = await getBcvRate(restaurant?.currency);
   const branches = role === "owner" ? await getOwnerRestaurants() : null;
 
   return (

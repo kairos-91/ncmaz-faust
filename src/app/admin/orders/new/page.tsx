@@ -38,7 +38,7 @@ export default async function NewOrderPage() {
   const needsBcvRate = enabledPaymentMethods(paymentMethods).some(
     (id) => PAYMENT_METHOD_META[id].convertToVes,
   );
-  const bcvRate = needsBcvRate ? await getBcvRate() : null;
+  const bcvRate = needsBcvRate ? await getBcvRate(restaurant.currency) : null;
 
   return (
     <div className="space-y-6">

@@ -186,7 +186,7 @@ export default async function PublicMenuPage({
   const needsBcvRate = enabledPaymentMethods(paymentMethods).some(
     (id) => PAYMENT_METHOD_META[id].convertToVes,
   );
-  const bcvRate = needsBcvRate ? await getBcvRate() : null;
+  const bcvRate = needsBcvRate ? await getBcvRate(restaurant.currency) : null;
 
   const services = parseServices(restaurant.services);
   const hasAmenities = services.length > 0 || restaurant.has_wifi || restaurant.accepts_pets;

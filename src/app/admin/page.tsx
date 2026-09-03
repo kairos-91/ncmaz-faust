@@ -101,7 +101,9 @@ export default async function AdminDashboardPage() {
           "total, status, created_at, order_type, delivery_fee, delivery_staff_id, delivery_accepted_at",
         )
         .eq("restaurant_id", restaurant.id),
-      restaurant.currency === "USD" ? getBcvRate() : Promise.resolve(null),
+      restaurant.currency === "USD" || restaurant.currency === "EUR"
+        ? getBcvRate(restaurant.currency)
+        : Promise.resolve(null),
       supabase
         .from("subscription_plans")
         .select("duration_days")
