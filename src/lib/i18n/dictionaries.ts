@@ -250,6 +250,8 @@ const es = {
   profileMenu: {
     menuLabel: "Menú de perfil",
     myAccount: "Mi cuenta",
+    language: "Idioma",
+    theme: "Tema",
     changePhoto: "Cambiar foto de perfil",
     uploadingPhoto: "Subiendo...",
     changePassword: "Cambiar contraseña",
@@ -1364,6 +1366,8 @@ const en: typeof es = {
   profileMenu: {
     menuLabel: "Profile menu",
     myAccount: "My account",
+    language: "Language",
+    theme: "Theme",
     changePhoto: "Change profile photo",
     uploadingPhoto: "Uploading...",
     changePassword: "Change password",

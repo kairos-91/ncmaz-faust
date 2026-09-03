@@ -43,7 +43,7 @@ export function BranchSwitcher({
         aria-label={t.label}
       >
         <Store className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
-        <span className="truncate">{current.name}</span>
+        <span className="hidden truncate md:inline">{current.name}</span>
         <ChevronDown className="h-4 w-4 shrink-0 text-neutral-400" />
       </button>
 

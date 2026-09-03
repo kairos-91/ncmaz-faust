@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, LogOut, UserCircle } from "lucide-react";
+import { ChevronDown, Globe, LogOut, Moon, UserCircle } from "lucide-react";
 import { signOut } from "@/app/admin/actions";
+import { LanguageToggle } from "@/components/language-toggle";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { getDictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 export function ProfileMenu({
@@ -76,6 +78,23 @@ export function ProfileMenu({
             <UserCircle className="h-4 w-4 shrink-0" />
             {t.myAccount}
           </Link>
+
+          {/* Idioma/tema ya están en la barra superior en escritorio —
+              aquí solo se muestran en móvil, donde esa barra los oculta. */}
+          <div className="flex items-center justify-between rounded-xl px-3 py-1 md:hidden">
+            <span className="flex items-center gap-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              <Globe className="h-4 w-4 shrink-0" />
+              {t.language}
+            </span>
+            <LanguageToggle locale={locale} />
+          </div>
+          <div className="flex items-center justify-between rounded-xl px-3 py-1 md:hidden">
+            <span className="flex items-center gap-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              <Moon className="h-4 w-4 shrink-0" />
+              {t.theme}
+            </span>
+            <ThemeToggle />
+          </div>
 
           <div className="my-1 h-px bg-neutral-100 dark:bg-neutral-800" />
 

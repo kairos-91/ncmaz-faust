@@ -61,7 +61,9 @@ export function AdminTopBar({
           )}
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
+          {/* En móvil, idioma y tema se mueven dentro del menú de perfil
+              (ver profile-menu.tsx) para no apretar la barra superior. */}
+          <div className="hidden items-center gap-1 md:flex">
             <LanguageToggle locale={locale} />
             <ThemeToggle />
           </div>
