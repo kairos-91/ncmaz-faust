@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
-import QRCodeStyling from "qr-code-styling";
+import QRCodeStyling, { type DotType } from "qr-code-styling";
 import { QrCode, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,21 +11,26 @@ import type { RestaurantTable } from "@/lib/supabase/database.types";
 import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
 type T = Dictionary["tablesManager"];
+type QrT = Dictionary["qrCustomizer"];
 
 export function TablesManager({
   restaurantId,
   tables,
   publicUrl,
   themeColor,
+  restaurantLogoUrl,
   locale,
 }: {
   restaurantId: string;
   tables: RestaurantTable[];
   publicUrl: string;
   themeColor: string;
+  restaurantLogoUrl: string | null;
   locale: Locale;
 }) {
-  const t = getDictionary(locale).tablesManager;
+  const dict = getDictionary(locale);
+  const t = dict.tablesManager;
+  const qrT = dict.qrCustomizer;
   const boundCreate = createTable.bind(null, restaurantId);
   const [state, formAction, isPending] = useActionState(boundCreate, null);
   const [qrTable, setQrTable] = useState<RestaurantTable | null>(null);
@@ -90,7 +95,9 @@ export function TablesManager({
           table={qrTable}
           publicUrl={publicUrl}
           themeColor={themeColor}
+          restaurantLogoUrl={restaurantLogoUrl}
           t={t}
+          qrT={qrT}
           onClose={() => setQrTable(null)}
         />
       )}
@@ -238,57 +245,117 @@ function TableRow({
   );
 }
 
+type ShapePreset = "square" | "rounded" | "dots" | "classy";
+
+const SHAPE_DOT_TYPE: Record<ShapePreset, DotType> = {
+  square: "square",
+  rounded: "rounded",
+  dots: "dots",
+  classy: "classy-rounded",
+};
+
 function TableQrModal({
   table,
   publicUrl,
   themeColor,
+  restaurantLogoUrl,
   t,
+  qrT,
   onClose,
 }: {
   table: RestaurantTable;
   publicUrl: string;
   themeColor: string;
+  restaurantLogoUrl: string | null;
   t: T;
+  qrT: QrT;
   onClose: () => void;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const qrExportRef = useRef<QRCodeStyling | null>(null);
   const tableUrl = `${publicUrl}?table=${table.id}`;
 
+  const [dotColor, setDotColor] = useState(themeColor || "#f97316");
+  const [bgColor, setBgColor] = useState("#ffffff");
+  const [shape, setShape] = useState<ShapePreset>("rounded");
+  const [logoOption, setLogoOption] = useState<"none" | "restaurant" | "custom">(
+    restaurantLogoUrl ? "restaurant" : "none",
+  );
+  const [customLogo, setCustomLogo] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const qrRef = useRef<QRCodeStyling | null>(null);
+  const qrExportRef = useRef<QRCodeStyling | null>(null);
+
+  const logoImage =
+    logoOption === "restaurant"
+      ? restaurantLogoUrl ?? undefined
+      : logoOption === "custom"
+        ? customLogo ?? undefined
+        : undefined;
+
+  const styleOptions = (scale: number) => ({
+    qrOptions: { errorCorrectionLevel: "H" as const },
+    imageOptions: { crossOrigin: "anonymous", margin: 6 * scale, imageSize: 0.35 },
+    dotsOptions: { type: SHAPE_DOT_TYPE[shape], color: dotColor },
+    cornersSquareOptions: {
+      type: shape === "square" ? ("square" as const) : ("extra-rounded" as const),
+    },
+    cornersDotOptions: { type: shape === "square" ? ("square" as const) : ("dot" as const) },
+    backgroundOptions: { color: bgColor },
+    image: logoImage,
+  });
+
   useEffect(() => {
-    const qr = new QRCodeStyling({
-      width: 220,
-      height: 220,
+    qrRef.current = new QRCodeStyling({
+      width: 200,
+      height: 200,
       type: "svg",
       data: tableUrl,
       margin: 8,
-      qrOptions: { errorCorrectionLevel: "H" },
-      dotsOptions: { type: "rounded", color: themeColor || "#f97316" },
-      cornersSquareOptions: { type: "extra-rounded" },
-      cornersDotOptions: { type: "dot" },
-      backgroundOptions: { color: "#ffffff" },
+      ...styleOptions(1),
     });
     if (containerRef.current) {
       containerRef.current.innerHTML = "";
-      qr.append(containerRef.current);
+      qrRef.current.append(containerRef.current);
     }
+
     qrExportRef.current = new QRCodeStyling({
       width: 1024,
       height: 1024,
       type: "canvas",
       data: tableUrl,
       margin: 40,
-      qrOptions: { errorCorrectionLevel: "H" },
-      dotsOptions: { type: "rounded", color: themeColor || "#f97316" },
-      cornersSquareOptions: { type: "extra-rounded" },
-      cornersDotOptions: { type: "dot" },
-      backgroundOptions: { color: "#ffffff" },
+      ...styleOptions(1024 / 200),
     });
-  }, [tableUrl, themeColor]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableUrl]);
+
+  useEffect(() => {
+    qrRef.current?.update(styleOptions(1));
+    qrExportRef.current?.update(styleOptions(1024 / 200));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shape, dotColor, bgColor, logoImage]);
+
+  const handleCustomLogo = (file: File | undefined) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCustomLogo(typeof reader.result === "string" ? reader.result : null);
+      setLogoOption("custom");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const shapeOptions: { id: ShapePreset; label: string }[] = [
+    { id: "square", label: qrT.shapeSquare },
+    { id: "rounded", label: qrT.shapeRounded },
+    { id: "dots", label: qrT.shapeDots },
+    { id: "classy", label: qrT.shapeClassy },
+  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-xl dark:bg-neutral-900">
+      <div className="max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-3xl bg-white p-6 shadow-xl dark:bg-neutral-900">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-neutral-900 dark:text-white">
             {t.qrModalTitle(table.name)}
@@ -301,12 +368,115 @@ function TableQrModal({
             <X className="h-4 w-4" />
           </button>
         </div>
+
         <div className="mt-4 flex justify-center">
           <div className="rounded-xl border border-neutral-100 bg-white p-3 dark:border-neutral-700">
             <div ref={containerRef} />
           </div>
         </div>
-        <p className="mt-3 text-xs text-neutral-500 dark:text-neutral-500">{t.qrHint}</p>
+        <p className="mt-3 text-center text-xs text-neutral-500 dark:text-neutral-500">
+          {t.qrHint}
+        </p>
+
+        <div className="mt-5 space-y-4 text-left">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                {qrT.dotColorLabel}
+              </label>
+              <input
+                type="color"
+                value={dotColor}
+                onChange={(e) => setDotColor(e.target.value)}
+                className="h-9 w-full cursor-pointer rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                {qrT.bgColorLabel}
+              </label>
+              <input
+                type="color"
+                value={bgColor}
+                onChange={(e) => setBgColor(e.target.value)}
+                className="h-9 w-full cursor-pointer rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900"
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400">
+              {qrT.shapeLabel}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {shapeOptions.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setShape(opt.id)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium ${
+                    shape === opt.id
+                      ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                      : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400">
+              {qrT.logoLabel}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setLogoOption("none")}
+                className={`rounded-full border px-3 py-1.5 text-xs font-medium ${
+                  logoOption === "none"
+                    ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                    : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                }`}
+              >
+                {qrT.logoNone}
+              </button>
+              {restaurantLogoUrl && (
+                <button
+                  type="button"
+                  onClick={() => setLogoOption("restaurant")}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium ${
+                    logoOption === "restaurant"
+                      ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                      : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                  }`}
+                >
+                  {qrT.logoRestaurant}
+                </button>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleCustomLogo(e.target.files?.[0])}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className={`rounded-full border px-3 py-1.5 text-xs font-medium ${
+                  logoOption === "custom"
+                    ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
+                    : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                }`}
+              >
+                {qrT.logoCustom}
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div className="mt-5 flex gap-2">
           <Button
             type="button"

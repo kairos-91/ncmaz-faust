@@ -35,6 +35,7 @@ export default async function TablesPage() {
         tables={tables ?? []}
         publicUrl={publicUrl}
         themeColor={restaurant.theme_color}
+        restaurantLogoUrl={restaurant.logo_url}
         locale={locale}
       />
     </div>
