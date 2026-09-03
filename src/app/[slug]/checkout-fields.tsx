@@ -31,6 +31,8 @@ import {
 import { createOrder, uploadOrderReceipt } from "./actions";
 import { createClient } from "@/lib/supabase/client";
 import type { MenuItem, RestaurantTable } from "@/lib/supabase/database.types";
+import { LocationPicker, type LatLng } from "./location-picker";
+import { buildMapsUrl } from "@/lib/maps";
 
 type OrderType = "delivery" | "pickup" | "dine_in";
 
@@ -90,6 +92,7 @@ export function CheckoutFields({
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [location, setLocation] = useState<LatLng | null>(null);
   const [table, setTable] = useState(fixedTable?.name ?? "");
   const [tableId, setTableId] = useState<string | null>(fixedTable?.id ?? null);
   const [deliveryZone, setDeliveryZone] = useState("");
@@ -323,6 +326,9 @@ export function CheckoutFields({
     if (orderType === "delivery" && address.trim()) {
       parts.push(`🏠 Dirección: ${address.trim()}`);
     }
+    if (orderType === "delivery" && location) {
+      parts.push(`📍 Ubicación en el mapa: ${buildMapsUrl(location.lat, location.lng)}`);
+    }
     if (orderType === "dine_in" && table.trim()) {
       parts.push(`🍽️ Mesa: ${table.trim()}`);
     }
@@ -373,6 +379,7 @@ export function CheckoutFields({
     discountAmount,
     amountBs,
     address,
+    location,
     table,
     isCash,
     needsChange,
@@ -507,6 +514,12 @@ export function CheckoutFields({
               </select>
             </div>
           )}
+          <div>
+            <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+              Ubicación (opcional)
+            </label>
+            <LocationPicker value={location} onChange={setLocation} />
+          </div>
           <div>
             <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
               Dirección de entrega
@@ -776,6 +789,8 @@ export function CheckoutFields({
               customerName,
               customerPhone,
               address: orderType === "delivery" ? address : undefined,
+              lat: orderType === "delivery" ? location?.lat : undefined,
+              lng: orderType === "delivery" ? location?.lng : undefined,
               tableNumber: orderType === "dine_in" ? table : undefined,
               tableId: orderType === "dine_in" ? tableId ?? undefined : undefined,
               deliveryZone: orderType === "delivery" ? deliveryZone || undefined : undefined,

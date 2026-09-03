@@ -394,6 +394,16 @@ o recíbelo como prop `t` (client) donde lo necesites.
      el local" para esa mesa — sin opción de delivery/pickup. Mientras
      una mesa está ocupada, no aparece en el selector de mesas del menú
      público para quien pide sin haber escaneado un QR específico.
+   - `supabase/migrations/0053_order_location.sql` — agrega `lat`/`lng` a
+     `orders`. En el checkout público, al pedir delivery el cliente puede
+     tocar "Usar mi ubicación actual" (Geolocation API del navegador, sin
+     costo ni API key) y ajustar el pin arrastrándolo sobre un mapa
+     (Leaflet + tiles de OpenStreetMap, también gratis) antes de enviar el
+     pedido — es opcional, sigue pudiendo escribir solo la dirección en
+     texto si no da permiso o no quiere compartir su ubicación. Cuando hay
+     coordenadas, se agrega un link de Google Maps al mensaje de WhatsApp
+     y aparece un "Ver ubicación en el mapa" en `/admin/orders` y en el
+     panel del repartidor (`/delivery`), para abrir la ruta con un toque.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

@@ -12,6 +12,7 @@ import {
   rejectDeliveryAssignment,
 } from "./actions";
 import { NotifyDeliveryButton } from "./notify-delivery-button";
+import { buildMapsUrl } from "@/lib/maps";
 import type { Order } from "@/lib/supabase/database.types";
 import { getDictionary, type Dictionary, type Locale } from "@/lib/i18n/dictionaries";
 
@@ -227,6 +228,16 @@ function DeliveryOrderCard({
           {order.address}
           {order.delivery_zone && ` · ${order.delivery_zone}`}
         </p>
+      )}
+      {order.lat !== null && order.lng !== null && (
+        <a
+          href={buildMapsUrl(order.lat, order.lng)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-5 mt-1 inline-block text-sm text-blue-600 hover:underline dark:text-blue-400"
+        >
+          {t.viewOnMap}
+        </a>
       )}
 
       <div className="mt-3 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-500">

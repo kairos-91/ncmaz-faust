@@ -9,6 +9,7 @@ import { PAYMENT_METHOD_META, type PaymentMethodId } from "@/lib/payment-methods
 import { formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
 import { assignDeliveryStaff, setSentToKitchen, updateOrderStatus } from "@/app/admin/actions";
 import { createClient } from "@/lib/supabase/client";
+import { buildMapsUrl } from "@/lib/maps";
 import type { Order } from "@/lib/supabase/database.types";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 
@@ -242,6 +243,16 @@ function OrderCard({
             <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
               📍 {order.address}
             </p>
+          )}
+          {order.order_type === "delivery" && order.lat !== null && order.lng !== null && (
+            <a
+              href={buildMapsUrl(order.lat, order.lng)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 inline-block text-sm text-blue-600 hover:underline dark:text-blue-400"
+            >
+              {t.viewOnMap}
+            </a>
           )}
           {order.packaging_fee > 0 && (
             <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">

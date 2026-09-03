@@ -272,6 +272,8 @@ export interface Database {
           address: string | null;
           table_number: string | null;
           table_id: string | null;
+          lat: number | null;
+          lng: number | null;
           items: Json;
           total: number;
           currency: string;
@@ -304,6 +306,8 @@ export interface Database {
           address?: string | null;
           table_number?: string | null;
           table_id?: string | null;
+          lat?: number | null;
+          lng?: number | null;
           items?: Json;
           total?: number;
           currency?: string;
@@ -336,6 +340,8 @@ export interface Database {
           address?: string | null;
           table_number?: string | null;
           table_id?: string | null;
+          lat?: number | null;
+          lng?: number | null;
           items?: Json;
           total?: number;
           currency?: string;

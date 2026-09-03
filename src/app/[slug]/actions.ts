@@ -65,6 +65,8 @@ export async function createOrder(
     customerName: string;
     customerPhone: string;
     address?: string;
+    lat?: number;
+    lng?: number;
     tableNumber?: string;
     tableId?: string;
     deliveryZone?: string;
@@ -96,6 +98,8 @@ export async function createOrder(
       customer_name: input.customerName.trim(),
       customer_phone: input.customerPhone.trim(),
       address: input.address?.trim() || null,
+      lat: input.lat ?? null,
+      lng: input.lng ?? null,
       table_number: input.tableNumber?.trim() || null,
       table_id: input.tableId || null,
       delivery_zone: input.deliveryZone?.trim() || null,
