@@ -781,7 +781,7 @@ const es = {
     yes: "Sí",
     no: "No",
     changeForLabel: "¿Con cuánto va a pagar?",
-    changeForPlaceholder: "Billete de $20",
+    changeForPlaceholder: "20$",
     cartTitle: "Resumen del pedido",
     emptyCart: "Agrega platos desde la lista.",
     total: "Total",

@@ -705,7 +705,7 @@ export function CheckoutFields({
                 id="changeFor"
                 value={changeFor}
                 onChange={(e) => setChangeFor(e.target.value)}
-                placeholder="Billete de $20"
+                placeholder="20$"
               />
             </div>
           )}
