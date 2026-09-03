@@ -54,7 +54,7 @@ async function getRestaurant(slug: string) {
     .maybeSingle();
   if (!restaurant) return null;
 
-  const [{ data: categories }, { data: items }, { data: ratingRows }] =
+  const [{ data: categories }, { data: items }, { data: ratingRows }, { data: tables }] =
     await Promise.all([
       supabase
         .from("categories")
@@ -68,6 +68,12 @@ async function getRestaurant(slug: string) {
         .eq("is_available", true)
         .order("sort_order"),
       supabase.rpc("restaurant_rating", { p_restaurant_id: restaurant.id }),
+      supabase
+        .from("restaurant_tables")
+        .select("*")
+        .eq("restaurant_id", restaurant.id)
+        .eq("is_occupied", false)
+        .order("sort_order"),
     ]);
 
   return {
@@ -75,7 +81,19 @@ async function getRestaurant(slug: string) {
     categories: categories ?? [],
     items: items ?? [],
     avgRating: ratingRows?.[0]?.avg_rating ?? null,
+    availableTables: tables ?? [],
   };
+}
+
+async function getFixedTable(restaurantId: string, tableId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("restaurant_tables")
+    .select("*")
+    .eq("id", tableId)
+    .eq("restaurant_id", restaurantId)
+    .maybeSingle();
+  return data;
 }
 
 export async function generateMetadata({
@@ -104,14 +122,18 @@ export async function generateMetadata({
 
 export default async function PublicMenuPage({
   params,
+  searchParams,
 }: {
   params: Promise<Params>;
+  searchParams: Promise<{ table?: string }>;
 }) {
   const { slug } = await params;
+  const { table: tableParam } = await searchParams;
   const data = await getRestaurant(slug);
   if (!data) notFound();
 
-  const { restaurant, categories, items, avgRating } = data;
+  const { restaurant, categories, items, avgRating, availableTables } = data;
+  const fixedTable = tableParam ? await getFixedTable(restaurant.id, tableParam) : null;
 
   const isSubscriptionExpired =
     restaurant.plan_expires_at !== null &&
@@ -446,6 +468,8 @@ export default async function PublicMenuPage({
             deliveryZones={parseDeliveryZones(restaurant.delivery_zones)}
             packagingFeeEnabled={restaurant.packaging_fee_enabled}
             packagingFeeAmount={restaurant.packaging_fee}
+            availableTables={availableTables}
+            fixedTable={fixedTable ?? null}
             orderingAllowed={orderingAllowed}
             closedMessage={closedMessage}
           />

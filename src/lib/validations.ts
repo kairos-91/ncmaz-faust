@@ -121,6 +121,13 @@ export const staffMemberSchema = z.object({
 });
 export type StaffMemberInput = z.infer<typeof staffMemberSchema>;
 
+export const tableSchema = z.object({
+  zone: z.string().max(60).optional().or(z.literal("")).transform((v) => v ?? ""),
+  name: z.string().min(1, "Ponle un nombre o número a la mesa").max(40),
+  capacity: z.coerce.number().int().min(1, "Mínimo 1 persona").max(100),
+});
+export type TableInput = z.infer<typeof tableSchema>;
+
 export const pushNotificationSchema = z.object({
   title: z.string().min(1, "Escribe un título").max(65),
   body: z.string().min(1, "Escribe un mensaje").max(200),

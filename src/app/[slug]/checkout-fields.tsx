@@ -30,7 +30,7 @@ import {
 } from "@/components/confirm-payment-fields";
 import { createOrder, uploadOrderReceipt } from "./actions";
 import { createClient } from "@/lib/supabase/client";
-import type { MenuItem } from "@/lib/supabase/database.types";
+import type { MenuItem, RestaurantTable } from "@/lib/supabase/database.types";
 
 type OrderType = "delivery" | "pickup" | "dine_in";
 
@@ -61,6 +61,8 @@ export function CheckoutFields({
   deliveryZones,
   packagingFeeEnabled,
   packagingFeeAmount,
+  availableTables,
+  fixedTable,
   onOrderPlaced,
 }: {
   restaurantId: string;
@@ -75,13 +77,21 @@ export function CheckoutFields({
   deliveryZones: DeliveryZone[];
   packagingFeeEnabled: boolean;
   packagingFeeAmount: number;
+  availableTables: RestaurantTable[];
+  fixedTable: RestaurantTable | null;
   onOrderPlaced: () => void;
 }) {
-  const [orderType, setOrderType] = useState<OrderType | null>(null);
+  // Si el pedido viene del QR de una mesa específica, el tipo de pedido
+  // queda fijo en "Comer en el local" para esa mesa — no se muestran
+  // delivery ni para retirar (ese QR es solo para pedir desde la mesa).
+  const [orderType, setOrderType] = useState<OrderType | null>(
+    fixedTable ? "dine_in" : null,
+  );
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [table, setTable] = useState("");
+  const [table, setTable] = useState(fixedTable?.name ?? "");
+  const [tableId, setTableId] = useState<string | null>(fixedTable?.id ?? null);
   const [deliveryZone, setDeliveryZone] = useState("");
   const [methodId, setMethodId] = useState<PaymentMethodId | null>(null);
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
@@ -430,32 +440,45 @@ export function CheckoutFields({
         </div>
       </div>
 
-      <div>
-        <p className="mb-2 text-sm font-medium text-neutral-900 dark:text-white">
-          ¿Cómo lo quieres?
-        </p>
-        <div className="grid grid-cols-3 gap-2">
-          {ORDER_TYPES.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setOrderType(id)}
-              className={cn(
-                "flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-center text-xs font-medium",
-                orderType === id
-                  ? "border-transparent text-white"
-                  : "border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400",
-              )}
-              style={
-                orderType === id ? { backgroundColor: themeColor } : undefined
-              }
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-            </button>
-          ))}
+      {fixedTable ? (
+        <div
+          className="flex items-center gap-2 rounded-xl border px-3 py-3 text-sm font-medium"
+          style={{ borderColor: themeColor, color: themeColor, backgroundColor: `${themeColor}1A` }}
+        >
+          <UtensilsCrossed className="h-4 w-4 shrink-0" />
+          <span>
+            Pedido para comer en el local · {fixedTable.name}
+            {fixedTable.zone ? ` (${fixedTable.zone})` : ""}
+          </span>
         </div>
-      </div>
+      ) : (
+        <div>
+          <p className="mb-2 text-sm font-medium text-neutral-900 dark:text-white">
+            ¿Cómo lo quieres?
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            {ORDER_TYPES.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setOrderType(id)}
+                className={cn(
+                  "flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-center text-xs font-medium",
+                  orderType === id
+                    ? "border-transparent text-white"
+                    : "border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400",
+                )}
+                style={
+                  orderType === id ? { backgroundColor: themeColor } : undefined
+                }
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {packagingFee > 0 && (
         <p className="text-sm font-medium text-neutral-900 dark:text-white">
@@ -505,7 +528,33 @@ export function CheckoutFields({
         </div>
       )}
 
-      {orderType === "dine_in" && (
+      {orderType === "dine_in" && !fixedTable && availableTables.length > 0 && (
+        <div>
+          <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
+            Mesa
+          </label>
+          <select
+            value={tableId ?? ""}
+            onChange={(e) => {
+              const selected = availableTables.find((tb) => tb.id === e.target.value);
+              setTableId(selected?.id ?? null);
+              setTable(selected ? `${selected.name}${selected.zone ? ` (${selected.zone})` : ""}` : "");
+            }}
+            className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          >
+            <option value="">Selecciona tu mesa</option>
+            {availableTables.map((tb) => (
+              <option key={tb.id} value={tb.id}>
+                {tb.name}
+                {tb.zone ? ` · ${tb.zone}` : ""} · {tb.capacity}{" "}
+                {tb.capacity === 1 ? "persona" : "personas"}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {orderType === "dine_in" && !fixedTable && availableTables.length === 0 && (
         <div>
           <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-400">
             Mesa (opcional)
@@ -728,6 +777,7 @@ export function CheckoutFields({
               customerPhone,
               address: orderType === "delivery" ? address : undefined,
               tableNumber: orderType === "dine_in" ? table : undefined,
+              tableId: orderType === "dine_in" ? tableId ?? undefined : undefined,
               deliveryZone: orderType === "delivery" ? deliveryZone || undefined : undefined,
               deliveryFee,
               packagingFee: packagingFee || undefined,

@@ -378,6 +378,22 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `/admin/restaurants/new` (reutiliza `createRestaurant`, que ahora deja
      al dueño repetir el flujo de alta en vez de bloquearlo después de la
      primera sucursal).
+   - `supabase/migrations/0052_restaurant_tables.sql` — gestión de mesas
+     para pedidos "Comer en el local". Crea `restaurant_tables` (zona,
+     nombre/número, capacidad, `is_occupied`) gestionable desde
+     `/admin/tables`, con lectura pública para restaurantes publicados
+     (la usan tanto el selector de mesas del menú público como la
+     pantalla fija al escanear el QR de una mesa) y escritura solo del
+     dueño. Agrega `orders.table_id` (referencia opcional a la mesa) y la
+     función `security definer` `mark_table_occupied(p_table_id)`, que el
+     checkout público y el de admin llaman justo después de crear un
+     pedido dine_in con mesa — así no hace falta abrir una política
+     pública de `UPDATE` en `restaurant_tables`. Cada mesa tiene su
+     propio QR (`/{slug}?table=<id>`, generado con `qr-code-styling` en
+     `/admin/tables`) que abre el menú con el pedido fijado en "Comer en
+     el local" para esa mesa — sin opción de delivery/pickup. Mientras
+     una mesa está ocupada, no aparece en el selector de mesas del menú
+     público para quien pide sin haber escaneado un QR específico.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

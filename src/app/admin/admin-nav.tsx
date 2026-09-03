@@ -12,6 +12,7 @@ import {
   Tags,
   UtensilsCrossed,
   ClipboardList,
+  LayoutGrid,
   Star,
   Ticket,
   Bell,
@@ -169,6 +170,7 @@ export function AdminNav({
       badge: pendingOrders,
       ownerOnly: false,
     },
+    { href: "/admin/tables", label: t.tables, icon: LayoutGrid, ownerOnly: true },
     {
       href: "/admin/delivery-staff",
       label: t.deliveryStaff,

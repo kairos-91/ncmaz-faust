@@ -658,6 +658,7 @@ export async function createOrderFromAdmin(
     customerPhone: string;
     address?: string;
     tableNumber?: string;
+    tableId?: string;
     deliveryZone?: string;
     deliveryFee?: number;
     packagingFee?: number;
@@ -718,6 +719,7 @@ export async function createOrderFromAdmin(
     customer_phone: input.customerPhone.trim(),
     address: input.address?.trim() || null,
     table_number: input.tableNumber?.trim() || null,
+    table_id: input.tableId || null,
     delivery_zone: input.deliveryZone?.trim() || null,
     delivery_fee: deliveryFee,
     packaging_fee: packagingFee,
@@ -732,6 +734,13 @@ export async function createOrderFromAdmin(
     change_for: input.changeFor || null,
   });
   if (error) return { error: error.message };
+
+  if (input.tableId) {
+    const tableId = input.tableId;
+    after(async () => {
+      await supabase.rpc("mark_table_occupied", { p_table_id: tableId });
+    });
+  }
 
   revalidatePath("/admin/orders");
   return { success: true };

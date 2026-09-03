@@ -271,6 +271,7 @@ export interface Database {
           customer_phone: string;
           address: string | null;
           table_number: string | null;
+          table_id: string | null;
           items: Json;
           total: number;
           currency: string;
@@ -302,6 +303,7 @@ export interface Database {
           customer_phone: string;
           address?: string | null;
           table_number?: string | null;
+          table_id?: string | null;
           items?: Json;
           total?: number;
           currency?: string;
@@ -333,6 +335,7 @@ export interface Database {
           customer_phone?: string;
           address?: string | null;
           table_number?: string | null;
+          table_id?: string | null;
           items?: Json;
           total?: number;
           currency?: string;
@@ -354,6 +357,39 @@ export interface Database {
           delivered_at?: string | null;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      restaurant_tables: {
+        Row: {
+          id: string;
+          restaurant_id: string;
+          zone: string;
+          name: string;
+          capacity: number;
+          is_occupied: boolean;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          restaurant_id: string;
+          zone?: string;
+          name: string;
+          capacity?: number;
+          is_occupied?: boolean;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          restaurant_id?: string;
+          zone?: string;
+          name?: string;
+          capacity?: number;
+          is_occupied?: boolean;
+          sort_order?: number;
+          created_at?: string;
         };
         Relationships: [];
       };
@@ -790,6 +826,10 @@ export interface Database {
         Args: { p_payment_id: string };
         Returns: { matched: boolean; restaurant_id: string | null; plan_expires_at: string | null }[];
       };
+      mark_table_occupied: {
+        Args: { p_table_id: string };
+        Returns: undefined;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
@@ -810,3 +850,5 @@ export type PlatformSettings =
   Database["public"]["Tables"]["platform_settings"]["Row"];
 export type BankNotification =
   Database["public"]["Tables"]["bank_notifications"]["Row"];
+export type RestaurantTable =
+  Database["public"]["Tables"]["restaurant_tables"]["Row"];

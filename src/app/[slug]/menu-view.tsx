@@ -8,7 +8,7 @@ import type { BcvRate } from "@/lib/bcv-rate";
 import type { PaymentMethodValues } from "@/lib/payment-methods";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
 import type { DeliveryZone } from "@/lib/delivery-zones";
-import type { Category, MenuItem } from "@/lib/supabase/database.types";
+import type { Category, MenuItem, RestaurantTable } from "@/lib/supabase/database.types";
 import { CheckoutFields } from "./checkout-fields";
 
 type CartLine = { itemId: string; extraNames: string[]; qty: number; note?: string };
@@ -31,6 +31,8 @@ export function MenuView({
   deliveryZones,
   packagingFeeEnabled,
   packagingFeeAmount,
+  availableTables,
+  fixedTable,
   orderingAllowed,
   closedMessage,
 }: {
@@ -46,6 +48,8 @@ export function MenuView({
   deliveryZones: DeliveryZone[];
   packagingFeeEnabled: boolean;
   packagingFeeAmount: number;
+  availableTables: RestaurantTable[];
+  fixedTable: RestaurantTable | null;
   orderingAllowed: boolean;
   closedMessage: string | null;
 }) {
@@ -296,6 +300,8 @@ export function MenuView({
           deliveryZones={deliveryZones}
           packagingFeeEnabled={packagingFeeEnabled}
           packagingFeeAmount={packagingFeeAmount}
+          availableTables={availableTables}
+          fixedTable={fixedTable}
           onQtyChange={(itemId, extraNames, qty) =>
             setLineQty(itemId, extraNames, qty)
           }
@@ -570,6 +576,8 @@ function CartSheet({
   deliveryZones,
   packagingFeeEnabled,
   packagingFeeAmount,
+  availableTables,
+  fixedTable,
   onQtyChange,
   onClose,
   onOrderPlaced,
@@ -585,6 +593,8 @@ function CartSheet({
   deliveryZones: DeliveryZone[];
   packagingFeeEnabled: boolean;
   packagingFeeAmount: number;
+  availableTables: RestaurantTable[];
+  fixedTable: RestaurantTable | null;
   onQtyChange: (itemId: string, extraNames: string[], qty: number) => void;
   onClose: () => void;
   onOrderPlaced: () => void;
@@ -689,6 +699,8 @@ function CartSheet({
             deliveryZones={deliveryZones}
             packagingFeeEnabled={packagingFeeEnabled}
             packagingFeeAmount={packagingFeeAmount}
+            availableTables={availableTables}
+            fixedTable={fixedTable}
             onOrderPlaced={() => {
               setJustPlacedOrder(true);
               onOrderPlaced();
