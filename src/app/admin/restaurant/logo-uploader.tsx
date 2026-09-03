@@ -68,6 +68,7 @@ export function LogoUploader({
         >
           {isPending ? t.uploading : t.change}
         </Button>
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">{t.sizeHint}</p>
         {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
       </div>
     </div>

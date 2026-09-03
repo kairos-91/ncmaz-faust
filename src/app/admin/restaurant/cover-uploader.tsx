@@ -74,6 +74,7 @@ export function CoverUploader({
         </Button>
         {error && <p className="text-xs text-red-600">{error}</p>}
       </div>
+      <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">{t.sizeHint}</p>
     </div>
   );
 }

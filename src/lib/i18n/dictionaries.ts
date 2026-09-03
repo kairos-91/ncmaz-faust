@@ -419,12 +419,14 @@ const es = {
     placeholder: "Logo",
     change: "Cambiar logo",
     uploading: "Subiendo...",
+    sizeHint: "Cuadrada (ej. 512x512 px) para que no se vea recortada.",
   },
   coverUploader: {
     alt: "Portada",
     noCover: "Sin portada",
     change: "Cambiar portada",
     uploading: "Subiendo...",
+    sizeHint: "Horizontal y ancha (ej. 1600x500 px), con lo importante centrado.",
   },
   openingHours: {
     title: "Horario de atención",
@@ -1535,12 +1537,14 @@ const en: typeof es = {
     placeholder: "Logo",
     change: "Change logo",
     uploading: "Uploading...",
+    sizeHint: "Square (e.g. 512x512 px) so it doesn't look cropped.",
   },
   coverUploader: {
     alt: "Cover",
     noCover: "No cover",
     change: "Change cover",
     uploading: "Uploading...",
+    sizeHint: "Wide and horizontal (e.g. 1600x500 px), with the subject centered.",
   },
   openingHours: {
     title: "Opening hours",
