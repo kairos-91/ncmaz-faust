@@ -52,7 +52,11 @@ export default async function Home() {
                     {t.hero.ctaPrimary}
                   </Button>
                 </Link>
-                <Link href="#how-it-works">
+                <a
+                  href="https://leveryapp.vercel.app/vaquita-hot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Button
                     size="lg"
                     variant="secondary"
@@ -60,7 +64,7 @@ export default async function Home() {
                   >
                     {t.hero.ctaSecondary}
                   </Button>
-                </Link>
+                </a>
               </div>
             </div>
 

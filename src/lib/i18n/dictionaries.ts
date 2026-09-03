@@ -26,7 +26,7 @@ const es = {
     description:
       "Crea una tienda y un menú digital con código QR en minutos. Edita platos y precios desde tu panel, sin reimprimir nada.",
     ctaPrimary: "Crea tu menú gratis",
-    ctaSecondary: "Cómo funciona",
+    ctaSecondary: "Ver demo",
   },
   howItWorks: {
     heading: "Cómo funciona",
@@ -1157,7 +1157,7 @@ const en: typeof es = {
     description:
       "Create a landing page and a digital menu with a QR code in minutes. Edit dishes and prices from your dashboard, no reprinting needed.",
     ctaPrimary: "Create your free menu",
-    ctaSecondary: "How it works",
+    ctaSecondary: "View demo",
   },
   howItWorks: {
     heading: "How it works",
