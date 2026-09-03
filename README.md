@@ -490,3 +490,34 @@ o recíbelo como prop `t` (client) donde lo necesites.
 Row Level Security garantiza que cada dueño solo pueda editar su propio
 restaurante, y que el público solo vea restaurantes publicados y platos
 disponibles.
+
+## Seguridad
+
+Además de RLS en cada tabla, los `security definer` acotados (nunca la
+service-role key) y las migraciones 0054/0055 (subida de archivos y rate
+limiting, ver arriba), `src/proxy.ts` agrega en cada respuesta:
+
+- **Content-Security-Policy** con nonce por request (`'nonce-...' 'strict-dynamic'`
+  en `script-src`), generado en el proxy y propagado al `<script>` inline
+  del layout (prevención de flash de tema oscuro) vía el header
+  `x-nonce` — así ese script sigue permitido sin abrir la puerta a
+  cualquier script inyectado. `style-src` sí incluye `'unsafe-inline'`
+  a propósito: toda la app usa `style={{ backgroundColor: theme_color }}`
+  para el color de marca de cada restaurante, y CSS no puede ejecutar JS
+  arbitrario como sí puede un script. `img-src`/`connect-src` están
+  acotados al proyecto de Supabase (leído de `NEXT_PUBLIC_SUPABASE_URL`,
+  incluyendo `wss://` para Realtime) más `unpkg.com` y
+  `*.tile.openstreetmap.org` (íconos y tiles del mapa de ubicación,
+  ver `src/app/[slug]/location-picker.tsx`). En `next dev` se agrega
+  `'unsafe-eval'` solo a `script-src` (React lo necesita en desarrollo
+  para reconstruir stack traces; nunca en producción) — condicionado a
+  `NODE_ENV`, así que el sitio real nunca lo tiene.
+- **X-Content-Type-Options: nosniff**, **X-Frame-Options: SAMEORIGIN** /
+  `frame-ancestors 'self'`, **Referrer-Policy**,
+  **Permissions-Policy** (solo `geolocation=(self)`, todo lo demás
+  bloqueado) y **Strict-Transport-Security**.
+
+Si agregas un recurso externo nuevo (otro CDN, otra API), hay que sumarlo
+a la lista de `buildCsp()` en `src/proxy.ts` o el navegador lo bloquea
+en silencio — revisa la consola del navegador (busca "Content Security
+Policy" o "Refused to") si algo deja de cargar después de un cambio.
