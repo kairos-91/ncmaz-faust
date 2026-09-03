@@ -1,0 +1,31 @@
+# Config de ejemplo para el sitio de Nginx que hace de proxy reverso
+# hacia Next.js (PM2 lo corre en localhost:3000). Cópialo a
+# /etc/nginx/sites-available/levery, edita "tudominio.com", y actívalo:
+#   sudo ln -s /etc/nginx/sites-available/levery /etc/nginx/sites-enabled/
+#   sudo nginx -t && sudo systemctl reload nginx
+# Después corre certbot (ver DEPLOY.md) — reescribe este archivo solo
+# para agregar los bloques de HTTPS, no lo sobrescribas a mano.
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name tudominio.com www.tudominio.com;
+
+    # Sube el límite de tamaño de body: los comprobantes de pago y fotos
+    # de platos se suben vía Server Actions (bodySizeLimit: 10mb en
+    # next.config.ts) — Nginx debe permitir al menos lo mismo, si no
+    # corta la subida antes de que llegue a Next.js.
+    client_max_body_size 12m;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}

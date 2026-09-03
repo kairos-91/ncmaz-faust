@@ -480,7 +480,9 @@ o recíbelo como prop `t` (client) donde lo necesites.
 7. Abre [http://localhost:3000](http://localhost:3000). Regístrate en
    `/signup`, crea tu restaurante desde `/admin` y publica tu menú.
 
-## Despliegue (Vercel)
+## Despliegue
+
+### Vercel
 
 `vercel.json` fija la región de las funciones serverless en `cle1`
 (Cleveland, Ohio) para que corran en la misma zona que el proyecto de
@@ -497,6 +499,13 @@ El proxy (`src/proxy.ts`, antes `middleware.ts`) sí corre siempre en
 Edge Runtime — eso lo exige Next.js, no se puede fijar a una región — pero
 es una capa liviana (sesión + headers de seguridad); el trabajo pesado
 contra la base de datos ya corre en `cle1`.
+
+### VPS propio (PM2 + Nginx)
+
+Supabase sigue siendo el backend en cualquiera de los dos casos — esto
+solo mueve dónde corre el proceso de Next.js. Guía completa paso a paso
+en [`DEPLOY.md`](./DEPLOY.md); `ecosystem.config.js` (PM2) y
+`deploy/nginx.conf.example` ya están en el repo listos para copiar.
 
 ## Modelo de datos
 
