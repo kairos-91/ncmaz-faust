@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn, slugify } from "@/lib/utils";
 import { deliveryZonesToText, parseDeliveryZones } from "@/lib/delivery-zones";
+import { extractSocialHandle } from "@/lib/social-links";
 import { OpeningHoursFields } from "./opening-hours-fields";
 import { SERVICE_IDS, parseServices } from "@/lib/restaurant-services";
 import { VENEZUELAN_STATES } from "@/lib/venezuelan-states";
@@ -242,40 +243,55 @@ export function RestaurantForm({
         <Label>{t.socialLabel}</Label>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div>
-            <Label htmlFor="instagram_url" className="text-xs font-normal text-neutral-500 dark:text-neutral-500">
+            <Label htmlFor="instagram_handle" className="text-xs font-normal text-neutral-500 dark:text-neutral-500">
               {t.instagramLabel}
             </Label>
-            <Input
-              id="instagram_url"
-              name="instagram_url"
-              type="url"
-              defaultValue={restaurant?.instagram_url ?? ""}
-              placeholder="https://instagram.com/turestaurante"
-            />
+            <div className="flex items-center overflow-hidden rounded-lg border border-neutral-200 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-200 dark:border-neutral-700 dark:focus-within:border-neutral-500 dark:focus-within:ring-neutral-700">
+              <span className="whitespace-nowrap bg-neutral-50 px-2.5 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+                instagram.com/
+              </span>
+              <input
+                id="instagram_handle"
+                name="instagram_handle"
+                defaultValue={extractSocialHandle(restaurant?.instagram_url)}
+                placeholder="turestaurante"
+                className="h-10 w-full min-w-0 bg-white px-2 text-sm text-neutral-900 outline-none dark:bg-neutral-900 dark:text-white"
+              />
+            </div>
           </div>
           <div>
-            <Label htmlFor="tiktok_url" className="text-xs font-normal text-neutral-500 dark:text-neutral-500">
+            <Label htmlFor="tiktok_handle" className="text-xs font-normal text-neutral-500 dark:text-neutral-500">
               {t.tiktokLabel}
             </Label>
-            <Input
-              id="tiktok_url"
-              name="tiktok_url"
-              type="url"
-              defaultValue={restaurant?.tiktok_url ?? ""}
-              placeholder="https://tiktok.com/@turestaurante"
-            />
+            <div className="flex items-center overflow-hidden rounded-lg border border-neutral-200 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-200 dark:border-neutral-700 dark:focus-within:border-neutral-500 dark:focus-within:ring-neutral-700">
+              <span className="whitespace-nowrap bg-neutral-50 px-2.5 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+                tiktok.com/@
+              </span>
+              <input
+                id="tiktok_handle"
+                name="tiktok_handle"
+                defaultValue={extractSocialHandle(restaurant?.tiktok_url)}
+                placeholder="turestaurante"
+                className="h-10 w-full min-w-0 bg-white px-2 text-sm text-neutral-900 outline-none dark:bg-neutral-900 dark:text-white"
+              />
+            </div>
           </div>
           <div>
-            <Label htmlFor="facebook_url" className="text-xs font-normal text-neutral-500 dark:text-neutral-500">
+            <Label htmlFor="facebook_handle" className="text-xs font-normal text-neutral-500 dark:text-neutral-500">
               {t.facebookLabel}
             </Label>
-            <Input
-              id="facebook_url"
-              name="facebook_url"
-              type="url"
-              defaultValue={restaurant?.facebook_url ?? ""}
-              placeholder="https://facebook.com/turestaurante"
-            />
+            <div className="flex items-center overflow-hidden rounded-lg border border-neutral-200 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-200 dark:border-neutral-700 dark:focus-within:border-neutral-500 dark:focus-within:ring-neutral-700">
+              <span className="whitespace-nowrap bg-neutral-50 px-2.5 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+                facebook.com/
+              </span>
+              <input
+                id="facebook_handle"
+                name="facebook_handle"
+                defaultValue={extractSocialHandle(restaurant?.facebook_url)}
+                placeholder="turestaurante"
+                className="h-10 w-full min-w-0 bg-white px-2 text-sm text-neutral-900 outline-none dark:bg-neutral-900 dark:text-white"
+              />
+            </div>
           </div>
         </div>
         <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">

@@ -20,6 +20,7 @@ import { computeExtendedExpiry } from "@/lib/subscription-plans";
 import { SERVICE_IDS, type ServiceId } from "@/lib/restaurant-services";
 import { formatPrice } from "@/lib/utils";
 import { isReservedSlug } from "@/lib/reserved-slugs";
+import { buildFacebookUrl, buildInstagramUrl, buildTiktokUrl } from "@/lib/social-links";
 import { imageExtension, validateImageFile } from "@/lib/file-validation";
 
 export type ActionState = { error?: string } | null;
@@ -84,9 +85,9 @@ function parseRestaurantForm(formData: FormData) {
     country: formData.get("country") ?? "",
     rif: formData.get("rif") ?? "",
     maps_url: formData.get("maps_url") ?? "",
-    instagram_url: formData.get("instagram_url") ?? "",
-    tiktok_url: formData.get("tiktok_url") ?? "",
-    facebook_url: formData.get("facebook_url") ?? "",
+    instagram_url: buildInstagramUrl(formData.get("instagram_handle") as string | null),
+    tiktok_url: buildTiktokUrl(formData.get("tiktok_handle") as string | null),
+    facebook_url: buildFacebookUrl(formData.get("facebook_handle") as string | null),
     phone: formData.get("phone") ?? "",
     whatsapp: formData.get("whatsapp") ?? "",
     theme_color: formData.get("theme_color") || "#f97316",
