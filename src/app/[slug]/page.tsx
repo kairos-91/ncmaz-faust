@@ -142,14 +142,14 @@ export default async function PublicMenuPage({
   if (isSubscriptionExpired) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-neutral-50 px-4 text-center dark:bg-neutral-950">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-900">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm dark:bg-neutral-900">
           {restaurant.logo_url ? (
             <Image
               src={restaurant.logo_url}
               alt={restaurant.name}
               width={64}
               height={64}
-              className="h-full w-full object-contain p-2"
+              className="h-full w-full object-cover"
               unoptimized
             />
           ) : (
@@ -237,14 +237,14 @@ export default async function PublicMenuPage({
 
       <div className="relative mx-auto max-w-2xl px-4">
         <div className="relative z-10 -mt-10 flex items-end justify-center gap-4">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-neutral-50 bg-white shadow-sm dark:border-neutral-950 dark:bg-neutral-900">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-neutral-50 bg-white shadow-sm dark:border-neutral-950 dark:bg-neutral-900">
             {restaurant.logo_url ? (
               <Image
                 src={restaurant.logo_url}
                 alt={restaurant.name}
                 width={80}
                 height={80}
-                className="h-full w-full object-contain p-1.5"
+                className="h-full w-full object-cover"
                 unoptimized
               />
             ) : (
