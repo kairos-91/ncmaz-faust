@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { Check, MapPin, MessageCircle, Package, X } from "lucide-react";
+import { Check, MapPin, MessageCircle, Package, Phone, X } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { parseOrderItems } from "@/lib/orders";
 import { caracasDayKey } from "@/lib/sales";
@@ -204,15 +204,24 @@ function DeliveryOrderCard({
           <p className="text-sm font-semibold text-neutral-900 dark:text-white">
             {order.customer_name}
           </p>
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-0.5 flex items-center gap-1.5 text-sm text-green-600 hover:underline dark:text-green-400"
-          >
-            <MessageCircle className="h-3.5 w-3.5 shrink-0" />
-            {order.customer_phone}
-          </a>
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-sm text-green-600 hover:underline dark:text-green-400"
+            >
+              <MessageCircle className="h-3.5 w-3.5 shrink-0" />
+              {t.whatsappButton}
+            </a>
+            <a
+              href={`tel:${order.customer_phone.replace(/[^0-9+]/g, "")}`}
+              className="flex items-center gap-1.5 text-sm text-neutral-600 hover:underline dark:text-neutral-400"
+            >
+              <Phone className="h-3.5 w-3.5 shrink-0" />
+              {t.callButton}
+            </a>
+          </div>
         </div>
         <p className="shrink-0 text-xs text-neutral-500 dark:text-neutral-500">
           {new Date(order.created_at).toLocaleTimeString(locale === "en" ? "en-US" : "es-VE", {
