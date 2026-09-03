@@ -34,6 +34,9 @@ export function RestaurantForm({
   const [name, setName] = useState(restaurant?.name ?? "");
   const [slug, setSlug] = useState(restaurant?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(restaurant));
+  const [packagingFeeEnabled, setPackagingFeeEnabled] = useState(
+    restaurant?.packaging_fee_enabled ?? false,
+  );
   const selectedServices = parseServices(restaurant?.services);
 
   // slugResult solo se actualiza dentro del callback async (nunca de
@@ -306,7 +309,8 @@ export function RestaurantForm({
           <input
             type="checkbox"
             name="packaging_fee_enabled"
-            defaultChecked={restaurant?.packaging_fee_enabled ?? false}
+            checked={packagingFeeEnabled}
+            onChange={(e) => setPackagingFeeEnabled(e.target.checked)}
             className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
           />
           {t.packagingFeeEnableLabel}
@@ -319,6 +323,7 @@ export function RestaurantForm({
             type="number"
             min="0"
             step="0.01"
+            disabled={!packagingFeeEnabled}
             defaultValue={restaurant?.packaging_fee ?? 0}
           />
         </div>
