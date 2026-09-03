@@ -1889,7 +1889,7 @@ const en: typeof es = {
     yes: "Yes",
     no: "No",
     changeForLabel: "How much will they pay with?",
-    changeForPlaceholder: "$20 bill",
+    changeForPlaceholder: "$20",
     cartTitle: "Order summary",
     emptyCart: "Add dishes from the list.",
     total: "Total",
