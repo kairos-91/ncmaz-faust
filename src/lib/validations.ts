@@ -66,6 +66,11 @@ export const restaurantSchema = z.object({
     .max(50),
   packaging_fee_enabled: z.boolean(),
   packaging_fee: z.coerce.number().min(0, "El costo no puede ser negativo"),
+  delivery_fee_percentage_enabled: z.boolean(),
+  delivery_staff_fee_percentage: z.coerce
+    .number()
+    .min(0, "El porcentaje no puede ser negativo")
+    .max(100, "El porcentaje no puede ser mayor a 100"),
   allow_orders_when_closed: z.boolean(),
   manages_delivery_staff: z.boolean(),
   manages_kitchen_staff: z.boolean(),

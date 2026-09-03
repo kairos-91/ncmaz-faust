@@ -37,6 +37,9 @@ export function RestaurantForm({
   const [packagingFeeEnabled, setPackagingFeeEnabled] = useState(
     restaurant?.packaging_fee_enabled ?? false,
   );
+  const [deliveryFeePercentageEnabled, setDeliveryFeePercentageEnabled] = useState(
+    restaurant?.delivery_fee_percentage_enabled ?? false,
+  );
   const selectedServices = parseServices(restaurant?.services);
 
   // slugResult solo se actualiza dentro del callback async (nunca de
@@ -410,6 +413,43 @@ export function RestaurantForm({
         </label>
         <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
           {t.managesDeliveryStaffHint}
+        </p>
+      </div>
+
+      <div>
+        <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <input
+            type="checkbox"
+            name="delivery_fee_percentage_enabled"
+            checked={deliveryFeePercentageEnabled}
+            onChange={(e) => setDeliveryFeePercentageEnabled(e.target.checked)}
+            className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
+          />
+          {t.deliveryFeePercentageEnableLabel}
+        </label>
+        <div className="mt-2 max-w-[220px]">
+          <Label htmlFor="delivery_staff_fee_percentage">
+            {t.deliveryStaffFeePercentageLabel}
+          </Label>
+          <div className="relative">
+            <Input
+              id="delivery_staff_fee_percentage"
+              name="delivery_staff_fee_percentage"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              disabled={!deliveryFeePercentageEnabled}
+              defaultValue={restaurant?.delivery_staff_fee_percentage ?? 100}
+              className="pr-7"
+            />
+            <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-neutral-400">
+              %
+            </span>
+          </div>
+        </div>
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.deliveryFeePercentageHint}
         </p>
       </div>
 

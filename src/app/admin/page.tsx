@@ -114,12 +114,23 @@ export default async function AdminDashboardPage() {
   const planDaysLeft = daysUntil(restaurant.plan_expires_at);
   const isPaidPlan = restaurant.plan === "pro" || restaurant.plan === "annual";
 
-  const sales = computeSalesSummary(orders ?? []);
+  const deliveryStaffSharePercent = restaurant.delivery_fee_percentage_enabled
+    ? restaurant.delivery_staff_fee_percentage
+    : 100;
+  const sales = computeSalesSummary(orders ?? [], new Date(), deliveryStaffSharePercent);
   const pendingOrders = (orders ?? []).filter((o) => o.status === "pending").length;
   const bsFor = (amountUsd: number) =>
     bcvRate ? formatBs(amountUsd, bcvRate.rate) : null;
-  const dailyChart = lastNDays(groupSalesByDay(orders ?? []), new Date(), 30);
-  const monthlyChart = lastNMonths(groupSalesByMonth(orders ?? []), new Date(), 12);
+  const dailyChart = lastNDays(
+    groupSalesByDay(orders ?? [], deliveryStaffSharePercent),
+    new Date(),
+    30,
+  );
+  const monthlyChart = lastNMonths(
+    groupSalesByMonth(orders ?? [], deliveryStaffSharePercent),
+    new Date(),
+    12,
+  );
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const publicUrl = `${siteUrl}/${restaurant.slug}`;

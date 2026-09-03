@@ -489,6 +489,10 @@ const es = {
     managesDeliveryStaffLabel: "Manejas personal de delivery",
     managesDeliveryStaffHint:
       "Si lo activas, podrás agregar a tu personal de delivery y asignarlo a los pedidos desde el menú de Pedidos.",
+    deliveryFeePercentageEnableLabel: "Definir un porcentaje del envío para el repartidor",
+    deliveryStaffFeePercentageLabel: "Porcentaje para el repartidor",
+    deliveryFeePercentageHint:
+      "Si no lo activas, el repartidor se queda con el 100% del costo de envío. Si lo activas, el repartidor recibe solo el porcentaje que indiques y el resto queda como ganancia del restaurante.",
     managesKitchenStaffLabel: "Manejas personal de cocina",
     managesKitchenStaffHint:
       "Si lo activas, podrás agregar a tu personal de cocina y enviar los pedidos a cocina desde el menú de Pedidos.",
@@ -1610,6 +1614,10 @@ const en: typeof es = {
     managesDeliveryStaffLabel: "Manage delivery staff",
     managesDeliveryStaffHint:
       "If enabled, you can add your delivery staff and assign them to orders from the Orders menu.",
+    deliveryFeePercentageEnableLabel: "Set a delivery fee percentage for the courier",
+    deliveryStaffFeePercentageLabel: "Courier percentage",
+    deliveryFeePercentageHint:
+      "If disabled, the courier keeps 100% of the delivery fee. If enabled, the courier only gets the percentage you set and the rest stays as restaurant revenue.",
     managesKitchenStaffLabel: "Manage kitchen staff",
     managesKitchenStaffHint:
       "If enabled, you can add your kitchen staff and send orders to the kitchen from the Orders menu.",

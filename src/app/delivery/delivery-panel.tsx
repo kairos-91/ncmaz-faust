@@ -23,12 +23,14 @@ export function DeliveryPanel({
   currency,
   deliveryStaffId,
   orders: initialOrders,
+  deliveryStaffSharePercent = 100,
   locale,
 }: {
   restaurantId: string;
   currency: string;
   deliveryStaffId: string;
   orders: Order[];
+  deliveryStaffSharePercent?: number;
   locale: Locale;
 }) {
   const t = getDictionary(locale).deliveryPortal;
@@ -89,7 +91,10 @@ export function DeliveryPanel({
   const deliveredToday = orders.filter(
     (o) => o.delivered_at && caracasDayKey(new Date(o.delivered_at)) === todayKey,
   );
-  const earningsToday = deliveredToday.reduce((sum, o) => sum + (o.delivery_fee ?? 0), 0);
+  const earningsToday = deliveredToday.reduce(
+    (sum, o) => sum + (o.delivery_fee ?? 0) * (deliveryStaffSharePercent / 100),
+    0,
+  );
 
   return (
     <div className="space-y-6">

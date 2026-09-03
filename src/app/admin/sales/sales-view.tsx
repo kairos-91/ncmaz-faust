@@ -38,6 +38,7 @@ export function SalesView({
   monthlyChart,
   orders,
   bcvRate,
+  deliveryStaffSharePercent = 100,
   locale,
 }: {
   restaurantName: string;
@@ -48,6 +49,7 @@ export function SalesView({
   monthlyChart: MonthlySales[];
   orders: SalesOrder[];
   bcvRate: number | null;
+  deliveryStaffSharePercent?: number;
   locale: Locale;
 }) {
   const dict = getDictionary(locale);
@@ -65,8 +67,12 @@ export function SalesView({
     all: t.periodAll,
   };
   const byPaymentMethod = useMemo(
-    () => groupSalesByPaymentMethod(filterOrdersByPeriod(orders, period)),
-    [orders, period],
+    () =>
+      groupSalesByPaymentMethod(
+        filterOrdersByPeriod(orders, period),
+        deliveryStaffSharePercent,
+      ),
+    [orders, period, deliveryStaffSharePercent],
   );
 
   const methodLabel = (method: string | null) =>

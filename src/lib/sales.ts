@@ -13,19 +13,22 @@ export type SalesOrder = {
 
 // El envío es ganancia del restaurante solo mientras el restaurante se
 // encarga de la entrega. En cuanto el dueño le asigna un repartidor Y
-// ese repartidor acepta el pedido (delivery_accepted_at), el envío pasa
-// a ser la ganancia del repartidor (ver "Ganancias de hoy" en
-// /delivery, que ya suma delivery_fee de sus entregas) — así que aquí
-// hay que restarlo para no contarlo dos veces. Si el repartidor rechaza
+// ese repartidor acepta el pedido (delivery_accepted_at), la parte del
+// envío que le corresponde al repartidor (staffSharePercent, 100% por
+// defecto — ver "Ganancias de hoy" en /delivery, que suma esa misma
+// parte de delivery_fee de sus entregas) deja de contar como ganancia
+// del restaurante, para no contarla dos veces. Si el repartidor rechaza
 // la asignación, reject_delivery_assignment limpia ambos campos y el
-// envío vuelve a ser del restaurante automáticamente.
-function restaurantAmount(order: SalesOrder): number {
+// envío completo vuelve a ser del restaurante automáticamente.
+function restaurantAmount(order: SalesOrder, staffSharePercent: number): number {
   const deliveryFee = order.delivery_fee ?? 0;
   const goesToDeliveryStaff =
     order.order_type === "delivery" &&
     Boolean(order.delivery_staff_id) &&
     Boolean(order.delivery_accepted_at);
-  return goesToDeliveryStaff ? order.total - deliveryFee : order.total;
+  if (!goesToDeliveryStaff) return order.total;
+  const staffShare = deliveryFee * (staffSharePercent / 100);
+  return order.total - staffShare;
 }
 
 export type DailySales = { day: string; count: number; total: number };
@@ -63,6 +66,7 @@ function acceptedOnly(orders: SalesOrder[]): SalesOrder[] {
 export function computeSalesSummary(
   orders: SalesOrder[],
   now: Date = new Date(),
+  staffSharePercent = 100,
 ): SalesSummary {
   const accepted = acceptedOnly(orders);
   const { year: currentYear, month: currentMonth, day: currentDay } =
@@ -76,7 +80,7 @@ export function computeSalesSummary(
 
   for (const order of accepted) {
     const { year: y, month: m, day: d } = caracasParts(new Date(order.created_at));
-    const amount = restaurantAmount(order);
+    const amount = restaurantAmount(order, staffSharePercent);
     allTime += amount;
     if (y === currentYear) year += amount;
     if (y === currentYear && m === currentMonth) month += amount;
@@ -86,14 +90,17 @@ export function computeSalesSummary(
   return { today, month, year, allTime };
 }
 
-export function groupSalesByDay(orders: SalesOrder[]): DailySales[] {
+export function groupSalesByDay(
+  orders: SalesOrder[],
+  staffSharePercent = 100,
+): DailySales[] {
   const accepted = acceptedOnly(orders);
   const byDay = new Map<string, DailySales>();
   for (const order of accepted) {
     const day = caracasDayKey(new Date(order.created_at));
     const entry = byDay.get(day) ?? { day, count: 0, total: 0 };
     entry.count += 1;
-    entry.total += restaurantAmount(order);
+    entry.total += restaurantAmount(order, staffSharePercent);
     byDay.set(day, entry);
   }
   return [...byDay.values()].sort((a, b) => b.day.localeCompare(a.day));
@@ -101,13 +108,19 @@ export function groupSalesByDay(orders: SalesOrder[]): DailySales[] {
 
 export type MonthlySales = { month: string; total: number };
 
-export function groupSalesByMonth(orders: SalesOrder[]): MonthlySales[] {
+export function groupSalesByMonth(
+  orders: SalesOrder[],
+  staffSharePercent = 100,
+): MonthlySales[] {
   const accepted = acceptedOnly(orders);
   const byMonth = new Map<string, number>();
   for (const order of accepted) {
     const { year, month } = caracasParts(new Date(order.created_at));
     const key = `${year}-${month}`;
-    byMonth.set(key, (byMonth.get(key) ?? 0) + restaurantAmount(order));
+    byMonth.set(
+      key,
+      (byMonth.get(key) ?? 0) + restaurantAmount(order, staffSharePercent),
+    );
   }
   return [...byMonth.entries()]
     .map(([month, total]) => ({ month, total }))
@@ -116,7 +129,10 @@ export function groupSalesByMonth(orders: SalesOrder[]): MonthlySales[] {
 
 export type PaymentMethodSales = { method: string | null; count: number; total: number };
 
-export function groupSalesByPaymentMethod(orders: SalesOrder[]): PaymentMethodSales[] {
+export function groupSalesByPaymentMethod(
+  orders: SalesOrder[],
+  staffSharePercent = 100,
+): PaymentMethodSales[] {
   const accepted = acceptedOnly(orders);
   const byMethod = new Map<string, PaymentMethodSales>();
   for (const order of accepted) {
@@ -124,7 +140,7 @@ export function groupSalesByPaymentMethod(orders: SalesOrder[]): PaymentMethodSa
     const key = method ?? "__none__";
     const entry = byMethod.get(key) ?? { method, count: 0, total: 0 };
     entry.count += 1;
-    entry.total += restaurantAmount(order);
+    entry.total += restaurantAmount(order, staffSharePercent);
     byMethod.set(key, entry);
   }
   return [...byMethod.values()].sort((a, b) => b.total - a.total);

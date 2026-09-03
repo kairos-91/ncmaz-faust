@@ -43,6 +43,8 @@ export interface Database {
           accepts_pets: boolean;
           packaging_fee_enabled: boolean;
           packaging_fee: number;
+          delivery_fee_percentage_enabled: boolean;
+          delivery_staff_fee_percentage: number;
           allow_orders_when_closed: boolean;
           manages_delivery_staff: boolean;
           manages_kitchen_staff: boolean;
@@ -82,6 +84,8 @@ export interface Database {
           accepts_pets?: boolean;
           packaging_fee_enabled?: boolean;
           packaging_fee?: number;
+          delivery_fee_percentage_enabled?: boolean;
+          delivery_staff_fee_percentage?: number;
           allow_orders_when_closed?: boolean;
           manages_delivery_staff?: boolean;
           manages_kitchen_staff?: boolean;
@@ -121,6 +125,8 @@ export interface Database {
           accepts_pets?: boolean;
           packaging_fee_enabled?: boolean;
           packaging_fee?: number;
+          delivery_fee_percentage_enabled?: boolean;
+          delivery_staff_fee_percentage?: number;
           allow_orders_when_closed?: boolean;
           manages_delivery_staff?: boolean;
           manages_kitchen_staff?: boolean;

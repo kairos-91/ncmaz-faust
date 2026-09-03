@@ -98,6 +98,9 @@ function parseRestaurantForm(formData: FormData) {
     delivery_zones: parseDeliveryZonesForm(formData),
     packaging_fee_enabled: formData.get("packaging_fee_enabled") === "on",
     packaging_fee: formData.get("packaging_fee") || "0",
+    delivery_fee_percentage_enabled:
+      formData.get("delivery_fee_percentage_enabled") === "on",
+    delivery_staff_fee_percentage: formData.get("delivery_staff_fee_percentage") || "100",
     allow_orders_when_closed: formData.get("allow_orders_when_closed") === "on",
     manages_delivery_staff: formData.get("manages_delivery_staff") === "on",
     manages_kitchen_staff: formData.get("manages_kitchen_staff") === "on",

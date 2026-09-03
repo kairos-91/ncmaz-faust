@@ -441,6 +441,14 @@ o recíbelo como prop `t` (client) donde lo necesites.
      navegador con el cliente anon (`supabase.rpc("get_coupon_usage")` +
      `select` a `coupons`), así que cualquiera podía probar códigos sin
      ningún límite; 20 intentos / 10 min por restaurante+IP.
+   - `supabase/migrations/0056_delivery_fee_split.sql` — agrega
+     `delivery_fee_percentage_enabled` (boolean, default `false`) y
+     `delivery_staff_fee_percentage` (numeric 0-100, default `100`) a
+     `restaurants`. Por defecto el repartidor sigue quedándose con el
+     100% del envío (comportamiento previo, sin cambios); si el
+     restaurante activa la opción, define qué porcentaje del envío se
+     lleva el repartidor y el resto pasa a ser ganancia del restaurante.
+     Ver "Envío: ¿de quién es la ganancia?" más abajo.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
@@ -528,20 +536,30 @@ disponibles.
 `orders.total` incluye el `delivery_fee`, pero ese envío no siempre es
 ganancia del restaurante: en cuanto el dueño le asigna un repartidor
 (`delivery_staff_id`) Y ese repartidor acepta el pedido
-(`delivery_accepted_at`, se pone al tocar "Aceptar" en `/delivery`), el
-envío pasa a ser la ganancia del repartidor — ya se cuenta en "Ganancias
-de hoy" de su panel (suma `delivery_fee` de sus entregas). Si el
-repartidor rechaza la asignación, `reject_delivery_assignment` limpia
-ambos campos y el envío vuelve a ser del restaurante automáticamente; lo
+(`delivery_accepted_at`, se pone al tocar "Aceptar" en `/delivery`), la
+parte del envío que le corresponde al repartidor pasa a ser su ganancia
+— ya se cuenta en "Ganancias de hoy" de su panel. Si el repartidor
+rechaza la asignación, `reject_delivery_assignment` limpia ambos campos
+y el envío completo vuelve a ser del restaurante automáticamente; lo
 mismo si nunca se asignó nadie (el restaurante hizo la entrega él
 mismo).
 
+Por defecto esa parte es el 100% del envío (comportamiento original). El
+restaurante puede cambiarlo desde `/admin/restaurant`
+(`delivery_fee_percentage_enabled` + `delivery_staff_fee_percentage`,
+migración 0056): si activa la opción y define, por ejemplo, 70%, el
+repartidor se queda con el 70% del `delivery_fee` de cada entrega y el
+30% restante pasa a ser ganancia del restaurante.
+
 `src/lib/sales.ts` (`restaurantAmount()`, usada por `computeSalesSummary`,
 `groupSalesByDay/Month` y `groupSalesByPaymentMethod` — todas las cifras
-de `/admin` y `/admin/sales`) resta el envío del total en ese caso, para
-no contarlo dos veces. `src/lib/customers.ts` (gasto total por cliente)
-NO se toca — ahí sí corresponde sumar el envío, porque es lo que el
-cliente pagó de verdad, sin importar a quién le llega.
+de `/admin` y `/admin/sales`) recibe ese porcentaje como parámetro y
+resta solo la parte del repartidor, para no contarla dos veces. El panel
+`/delivery` (`earningsToday`) aplica el mismo porcentaje sobre
+`delivery_fee` al sumar las ganancias del día. `src/lib/customers.ts`
+(gasto total por cliente) NO se toca — ahí sí corresponde sumar el envío
+completo, porque es lo que el cliente pagó de verdad, sin importar cómo
+se reparte después.
 
 ## Seguridad
 

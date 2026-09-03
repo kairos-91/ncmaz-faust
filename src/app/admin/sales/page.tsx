@@ -33,10 +33,17 @@ export default async function SalesPage() {
       : Promise.resolve(null),
   ]);
 
-  const summary = computeSalesSummary(orders ?? []);
-  const daily = groupSalesByDay(orders ?? []);
+  const deliveryStaffSharePercent = restaurant.delivery_fee_percentage_enabled
+    ? restaurant.delivery_staff_fee_percentage
+    : 100;
+  const summary = computeSalesSummary(orders ?? [], new Date(), deliveryStaffSharePercent);
+  const daily = groupSalesByDay(orders ?? [], deliveryStaffSharePercent);
   const dailyChart = lastNDays(daily, new Date(), 30);
-  const monthlyChart = lastNMonths(groupSalesByMonth(orders ?? []), new Date(), 12);
+  const monthlyChart = lastNMonths(
+    groupSalesByMonth(orders ?? [], deliveryStaffSharePercent),
+    new Date(),
+    12,
+  );
 
   return (
     <SalesView
@@ -48,6 +55,7 @@ export default async function SalesPage() {
       monthlyChart={monthlyChart}
       orders={orders ?? []}
       bcvRate={bcvRate?.rate ?? null}
+      deliveryStaffSharePercent={deliveryStaffSharePercent}
       locale={locale}
     />
   );

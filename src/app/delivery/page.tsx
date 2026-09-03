@@ -19,12 +19,17 @@ export default async function DeliveryPage() {
     .order("created_at", { ascending: false })
     .limit(150);
 
+  const deliveryStaffSharePercent = restaurant.delivery_fee_percentage_enabled
+    ? restaurant.delivery_staff_fee_percentage
+    : 100;
+
   return (
     <DeliveryPanel
       restaurantId={restaurant.id}
       currency={restaurant.currency}
       deliveryStaffId={deliveryStaff.id}
       orders={orders ?? []}
+      deliveryStaffSharePercent={deliveryStaffSharePercent}
       locale={locale}
     />
   );
