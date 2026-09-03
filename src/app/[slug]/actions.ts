@@ -8,6 +8,12 @@ import { ORDER_TYPE_LABELS, type OrderItemSnapshot } from "@/lib/orders";
 import { formatPrice } from "@/lib/utils";
 import { imageExtension, validateImageFile } from "@/lib/file-validation";
 import { checkIpRateLimit } from "@/lib/rate-limit";
+import {
+  parseValidDays,
+  parseValidPaymentMethods,
+  validateCoupon,
+  type Coupon,
+} from "@/lib/coupons";
 
 async function notifyAdminsOfNewOrder(
   restaurantId: string,
@@ -171,6 +177,88 @@ export async function uploadOrderReceipt(
   const url = supabase.storage.from("order-receipts").getPublicUrl(path).data
     .publicUrl;
   return { url };
+}
+
+// Antes esto corría directo en el navegador con el cliente anon —
+// cualquiera podía probar códigos de cupón a la velocidad que quisiera
+// sin pasar por ningún límite. Moverlo a una Server Action deja aplicar
+// checkIpRateLimit; RLS sigue siendo la misma (lectura pública de
+// coupons ya existía), esto solo cierra la puerta a probar códigos sin
+// límite alguno.
+export async function checkCoupon(
+  restaurantId: string,
+  input: {
+    code: string;
+    customerPhone: string;
+    orderTotal: number;
+    currency: string;
+    paymentMethodId: string | null;
+  },
+): Promise<
+  | { error: string }
+  | { coupon: Coupon; usage: { totalUses: number; customerUses: number } }
+> {
+  const code = input.code.trim().toUpperCase();
+  if (!code) return { error: "Ingresa un código de cupón" };
+
+  const canProceed = await checkIpRateLimit(`coupon:${restaurantId}`, 20, 600);
+  if (!canProceed) {
+    return { error: "Demasiados intentos. Espera unos minutos e intenta de nuevo." };
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("coupons")
+    .select(
+      "id, code, discount_type, discount_value, is_active, expires_at, min_order_amount, max_total_uses, max_uses_per_customer, starts_at, valid_time_start, valid_time_end, valid_days, valid_payment_methods",
+    )
+    .eq("restaurant_id", restaurantId)
+    .eq("code", code)
+    .maybeSingle();
+  if (!data) {
+    return { error: "Ese cupón no existe o ya venció." };
+  }
+
+  const coupon: Coupon = {
+    id: data.id,
+    code: data.code,
+    discount_type: data.discount_type,
+    discount_value: data.discount_value,
+    is_active: data.is_active,
+    expires_at: data.expires_at,
+    min_order_amount: data.min_order_amount,
+    max_total_uses: data.max_total_uses,
+    max_uses_per_customer: data.max_uses_per_customer,
+    starts_at: data.starts_at,
+    valid_time_start: data.valid_time_start,
+    valid_time_end: data.valid_time_end,
+    valid_days: parseValidDays(data.valid_days),
+    valid_payment_methods: parseValidPaymentMethods(data.valid_payment_methods),
+  };
+
+  let usage = { totalUses: 0, customerUses: 0 };
+  if (coupon.max_total_uses !== null || coupon.max_uses_per_customer !== null) {
+    const { data: usageRows } = await supabase.rpc("get_coupon_usage", {
+      p_restaurant_id: restaurantId,
+      p_code: coupon.code,
+      p_customer_phone: input.customerPhone.trim(),
+    });
+    const row = usageRows?.[0];
+    if (row) usage = { totalUses: row.total_uses, customerUses: row.customer_uses };
+  }
+
+  const result = validateCoupon(coupon, {
+    orderTotal: input.orderTotal,
+    currency: input.currency,
+    paymentMethodId: input.paymentMethodId,
+    totalUses: usage.totalUses,
+    customerUses: usage.customerUses,
+  });
+  if (!result.valid) {
+    return { error: result.reason ?? "Este cupón no se puede usar." };
+  }
+
+  return { coupon, usage };
 }
 
 export async function createReview(

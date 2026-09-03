@@ -14,13 +14,7 @@ import {
 import { bankLabel } from "@/lib/venezuelan-banks";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
 import type { DeliveryZone } from "@/lib/delivery-zones";
-import {
-  computeDiscount,
-  parseValidDays,
-  parseValidPaymentMethods,
-  validateCoupon,
-  type Coupon,
-} from "@/lib/coupons";
+import { computeDiscount, validateCoupon, type Coupon } from "@/lib/coupons";
 import { PaymentDetailsCard } from "@/components/payment-details-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,8 +22,7 @@ import {
   ConfirmPaymentFields,
   type ConfirmPaymentValues,
 } from "@/components/confirm-payment-fields";
-import { createOrder, uploadOrderReceipt } from "./actions";
-import { createClient } from "@/lib/supabase/client";
+import { checkCoupon, createOrder, uploadOrderReceipt } from "./actions";
 import type { MenuItem, RestaurantTable } from "@/lib/supabase/database.types";
 import { LocationPicker, type LatLng } from "./location-picker";
 import { buildMapsUrl } from "@/lib/maps";
@@ -171,73 +164,30 @@ export function CheckoutFields({
   }, [methodId]);
 
   const applyCoupon = async () => {
-    const code = couponCode.trim().toUpperCase();
+    const code = couponCode.trim();
     if (!code) return;
     setCheckingCoupon(true);
     setCouponError(null);
-    const supabase = createClient();
-    const { data } = await supabase
-      .from("coupons")
-      .select(
-        "id, code, discount_type, discount_value, is_active, expires_at, min_order_amount, max_total_uses, max_uses_per_customer, starts_at, valid_time_start, valid_time_end, valid_days, valid_payment_methods",
-      )
-      .eq("restaurant_id", restaurantId)
-      .eq("code", code)
-      .maybeSingle();
-    if (!data) {
-      setCheckingCoupon(false);
-      setCouponError("Ese cupón no existe o ya venció.");
-      setAppliedCoupon(null);
-      setCouponUsage(null);
-      return;
-    }
 
-    const coupon: Coupon = {
-      id: data.id,
-      code: data.code,
-      discount_type: data.discount_type,
-      discount_value: data.discount_value,
-      is_active: data.is_active,
-      expires_at: data.expires_at,
-      min_order_amount: data.min_order_amount,
-      max_total_uses: data.max_total_uses,
-      max_uses_per_customer: data.max_uses_per_customer,
-      starts_at: data.starts_at,
-      valid_time_start: data.valid_time_start,
-      valid_time_end: data.valid_time_end,
-      valid_days: parseValidDays(data.valid_days),
-      valid_payment_methods: parseValidPaymentMethods(data.valid_payment_methods),
-    };
-
-    let usage = { totalUses: 0, customerUses: 0 };
-    if (coupon.max_total_uses !== null || coupon.max_uses_per_customer !== null) {
-      const { data: usageRows } = await supabase.rpc("get_coupon_usage", {
-        p_restaurant_id: restaurantId,
-        p_code: coupon.code,
-        p_customer_phone: customerPhone.trim(),
-      });
-      const row = usageRows?.[0];
-      if (row) usage = { totalUses: row.total_uses, customerUses: row.customer_uses };
-    }
-
-    setCheckingCoupon(false);
-
-    const result = validateCoupon(coupon, {
+    const result = await checkCoupon(restaurantId, {
+      code,
+      customerPhone: customerPhone.trim(),
       orderTotal: total,
       currency,
       paymentMethodId: methodId,
-      totalUses: usage.totalUses,
-      customerUses: usage.customerUses,
     });
-    if (!result.valid) {
-      setCouponError(result.reason ?? "Este cupón no se puede usar.");
+
+    setCheckingCoupon(false);
+
+    if ("error" in result) {
+      setCouponError(result.error);
       setAppliedCoupon(null);
       setCouponUsage(null);
       return;
     }
 
-    setAppliedCoupon(coupon);
-    setCouponUsage(usage);
+    setAppliedCoupon(result.coupon);
+    setCouponUsage(result.usage);
   };
 
   const removeCoupon = () => {

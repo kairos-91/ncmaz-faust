@@ -435,7 +435,12 @@ o recíbelo como prop `t` (client) donde lo necesites.
      bloquear pedidos reales por un problema del rate limiter. Límites:
      8 pedidos / 15 min por restaurante+IP, 5 reseñas / hora por
      restaurante+IP, 15 subidas de comprobante / 15 min por IP, 30
-     llamadas al webhook bancario / 10 min por IP.
+     llamadas al webhook bancario / 10 min por IP. La validación de
+     cupones (`checkCoupon` en `src/app/[slug]/actions.ts`) también se
+     movió detrás de esta Server Action — antes corría directo en el
+     navegador con el cliente anon (`supabase.rpc("get_coupon_usage")` +
+     `select` a `coupons`), así que cualquiera podía probar códigos sin
+     ningún límite; 20 intentos / 10 min por restaurante+IP.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
