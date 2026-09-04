@@ -438,9 +438,16 @@ function MenuItemCard({
         )}
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-medium leading-tight text-neutral-900 dark:text-white">
-              {item.name}
-            </h3>
+            <div className="min-w-0">
+              <h3 className="font-medium leading-tight text-neutral-900 dark:text-white">
+                {item.name}
+              </h3>
+              {item.description && (
+                <p className="mt-0 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
+                  {item.description}
+                </p>
+              )}
+            </div>
             <span className="shrink-0 text-right">
               {discounted && (
                 <span className="flex items-center justify-end gap-1.5">
@@ -462,11 +469,6 @@ function MenuItemCard({
               )}
             </span>
           </div>
-          {item.description && (
-            <p className="mt-0 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
-              {item.description}
-            </p>
-          )}
           {(isBestSeller || item.tags.length > 0) && (
             <div className="mt-1.5 flex flex-wrap gap-1">
               {isBestSeller && (
