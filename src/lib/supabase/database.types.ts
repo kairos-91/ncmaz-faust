@@ -30,6 +30,7 @@ export interface Database {
           phone: string | null;
           whatsapp: string | null;
           theme_color: string;
+          menu_layout: string;
           currency: string;
           is_published: boolean;
           is_partner: boolean;
@@ -72,6 +73,7 @@ export interface Database {
           phone?: string | null;
           whatsapp?: string | null;
           theme_color?: string;
+          menu_layout?: string;
           currency?: string;
           is_published?: boolean;
           is_partner?: boolean;
@@ -114,6 +116,7 @@ export interface Database {
           phone?: string | null;
           whatsapp?: string | null;
           theme_color?: string;
+          menu_layout?: string;
           currency?: string;
           is_published?: boolean;
           is_partner?: boolean;

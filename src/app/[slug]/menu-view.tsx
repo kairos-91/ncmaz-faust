@@ -38,6 +38,7 @@ export function MenuView({
   items,
   currency,
   themeColor,
+  menuLayout = "list",
   restaurantId,
   restaurantName,
   whatsapp,
@@ -56,6 +57,7 @@ export function MenuView({
   items: MenuItem[];
   currency: string;
   themeColor: string;
+  menuLayout?: "list" | "grid";
   restaurantId: string;
   restaurantName: string;
   whatsapp: string | null;
@@ -268,7 +270,13 @@ export function MenuView({
               <h2 className="mb-3 text-lg font-semibold text-neutral-900 dark:text-white">
                 {category.name}
               </h2>
-              <div className="space-y-3">
+              <div
+                className={
+                  menuLayout === "grid"
+                    ? "grid grid-cols-2 gap-3"
+                    : "space-y-3"
+                }
+              >
                 {filteredItems
                   .filter((item) => item.category_id === category.id)
                   .map((item) => {
@@ -284,6 +292,7 @@ export function MenuView({
                         item={item}
                         currency={currency}
                         themeColor={themeColor}
+                        layout={menuLayout}
                         bcvRate={bcvRate}
                         orderingEnabled={canOrder}
                         isBestSeller={bestSellerSet.has(item.name)}
@@ -362,6 +371,7 @@ function MenuItemCard({
   item,
   currency,
   themeColor,
+  layout = "list",
   bcvRate,
   orderingEnabled,
   isBestSeller,
@@ -375,6 +385,7 @@ function MenuItemCard({
   item: MenuItem;
   currency: string;
   themeColor: string;
+  layout?: "list" | "grid";
   bcvRate: BcvRate | null;
   orderingEnabled: boolean;
   isBestSeller: boolean;
@@ -454,114 +465,78 @@ function MenuItemCard({
     </button>
   );
 
-  return (
-    <div className="rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-      <div className="flex gap-4">
-        <div className="min-w-0 flex-1">
-          <h3 className="font-medium leading-tight text-neutral-900 dark:text-white">
-            {item.name}
-          </h3>
-          {item.description && (
-            <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
-              {item.description}
-            </p>
-          )}
-          <div className="mt-1.5 flex flex-wrap items-baseline gap-1.5">
-            <span className="text-lg font-semibold" style={{ color: themeColor }}>
-              {formatPrice(item.price, currency)}
-            </span>
-            {discounted && (
-              <span className="text-xs text-neutral-400 line-through dark:text-neutral-600">
-                {formatPrice(item.original_price!, currency)}
-              </span>
-            )}
-            {discounted && (
-              <span className="text-xs font-semibold text-green-600 dark:text-green-400">
-                -{discountPercent(item)}%
-              </span>
-            )}
-          </div>
-          {bcvRate && (
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              {formatBs(item.price, bcvRate.rate)}
-            </p>
-          )}
-          {(isBestSeller || item.tags.length > 0) && (
-            <div className="mt-1.5 flex flex-wrap gap-1">
-              {isBestSeller && (
-                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-medium text-orange-700 dark:bg-orange-400/10 dark:text-orange-400">
-                  <span className="animate-flame">🔥</span> Más vendido
-                </span>
-              )}
-              {item.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+  const priceRow = (
+    <div className="mt-1.5 flex flex-wrap items-baseline gap-1.5">
+      <span className="text-lg font-semibold" style={{ color: themeColor }}>
+        {formatPrice(item.price, currency)}
+      </span>
+      {discounted && (
+        <span className="text-xs text-neutral-400 line-through dark:text-neutral-600">
+          {formatPrice(item.original_price!, currency)}
+        </span>
+      )}
+      {discounted && (
+        <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+          -{discountPercent(item)}%
+        </span>
+      )}
+    </div>
+  );
 
-          {!hasPicker && noExtrasQty > 0 && (
-            <div className="mt-1.5">
-              <button
-                type="button"
-                onClick={() => setNoteOpen((v) => !v)}
-                className="text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
-              >
-                {noExtrasNote ? "📝 Editar nota" : "📝 Agregar nota"}
-              </button>
-              {noteOpen && (
-                <textarea
-                  autoFocus
-                  value={noExtrasNote}
-                  onChange={(e) => onNoExtrasNoteChange(e.target.value)}
-                  onBlur={() => setNoteOpen(false)}
-                  maxLength={140}
-                  rows={2}
-                  placeholder="Ej: sin cebolla, término medio..."
-                  className="mt-2 w-full rounded-lg border border-neutral-200 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
-                />
-              )}
-              {!noteOpen && noExtrasNote && (
-                <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                  📝 {noExtrasNote}
-                </p>
-              )}
-            </div>
-          )}
-          {hasPicker && totalQty > 0 && (
-            <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400">
-              {totalQty} en tu pedido
-            </p>
-          )}
+  const badgesRow = (isBestSeller || item.tags.length > 0) && (
+    <div className="mt-1.5 flex flex-wrap gap-1">
+      {isBestSeller && (
+        <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-medium text-orange-700 dark:bg-orange-400/10 dark:text-orange-400">
+          <span className="animate-flame">🔥</span> Más vendido
+        </span>
+      )}
+      {item.tags.map((tag) => (
+        <span
+          key={tag}
+          className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  );
 
-          {!item.image_url && orderingEnabled && (
-            <div className="mt-2 flex justify-end">{addControl}</div>
-          )}
-        </div>
-        {item.image_url && (
-          <div className="relative h-24 w-24 shrink-0">
-            <div className="h-full w-full overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
-              <Image
-                src={item.image_url}
-                alt={item.name}
-                width={96}
-                height={96}
-                className="h-full w-full object-cover"
-                unoptimized
-              />
-            </div>
-            {orderingEnabled && (
-              <div className="absolute -bottom-2 -right-2">{addControl}</div>
-            )}
-          </div>
-        )}
-      </div>
+  const noteBlock = !hasPicker && noExtrasQty > 0 && (
+    <div className="mt-1.5">
+      <button
+        type="button"
+        onClick={() => setNoteOpen((v) => !v)}
+        className="text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
+      >
+        {noExtrasNote ? "📝 Editar nota" : "📝 Agregar nota"}
+      </button>
+      {noteOpen && (
+        <textarea
+          autoFocus
+          value={noExtrasNote}
+          onChange={(e) => onNoExtrasNoteChange(e.target.value)}
+          onBlur={() => setNoteOpen(false)}
+          maxLength={140}
+          rows={2}
+          placeholder="Ej: sin cebolla, término medio..."
+          className="mt-2 w-full rounded-lg border border-neutral-200 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+        />
+      )}
+      {!noteOpen && noExtrasNote && (
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+          📝 {noExtrasNote}
+        </p>
+      )}
+    </div>
+  );
 
-      {orderingEnabled && hasPicker && pickerOpen && (
+  const qtyText = hasPicker && totalQty > 0 && (
+    <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+      {totalQty} en tu pedido
+    </p>
+  );
+
+  const modal = orderingEnabled && hasPicker && pickerOpen && (
         <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 sm:items-center">
           <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white sm:rounded-3xl dark:bg-neutral-900">
             <div className="relative">
@@ -736,7 +711,97 @@ function MenuItemCard({
             </div>
           </div>
         </div>
-      )}
+  );
+
+  if (layout === "grid") {
+    return (
+      <div className="relative overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="relative aspect-square w-full bg-neutral-100 dark:bg-neutral-800">
+          {item.image_url ? (
+            <Image
+              src={item.image_url}
+              alt={item.name}
+              fill
+              unoptimized
+              className="object-cover"
+            />
+          ) : (
+            <div className="h-full w-full" style={{ backgroundColor: themeColor }} />
+          )}
+        </div>
+        <div className="p-3 pb-10">
+          <h3 className="line-clamp-2 font-medium leading-tight text-neutral-900 dark:text-white">
+            {item.name}
+          </h3>
+          {item.description && (
+            <p className="mt-0.5 line-clamp-2 text-xs text-neutral-600 dark:text-neutral-400">
+              {item.description}
+            </p>
+          )}
+          {priceRow}
+          {bcvRate && (
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              {formatBs(item.price, bcvRate.rate)}
+            </p>
+          )}
+          {badgesRow}
+          {noteBlock}
+          {qtyText}
+        </div>
+        {orderingEnabled && (
+          <div className="absolute bottom-3 right-3">{addControl}</div>
+        )}
+        {modal}
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="flex gap-4">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-medium leading-tight text-neutral-900 dark:text-white">
+            {item.name}
+          </h3>
+          {item.description && (
+            <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
+              {item.description}
+            </p>
+          )}
+          {priceRow}
+          {bcvRate && (
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              {formatBs(item.price, bcvRate.rate)}
+            </p>
+          )}
+          {badgesRow}
+          {noteBlock}
+          {qtyText}
+
+          {!item.image_url && orderingEnabled && (
+            <div className="mt-2 flex justify-end">{addControl}</div>
+          )}
+        </div>
+        {item.image_url && (
+          <div className="relative h-24 w-24 shrink-0">
+            <div className="h-full w-full overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
+              <Image
+                src={item.image_url}
+                alt={item.name}
+                width={96}
+                height={96}
+                className="h-full w-full object-cover"
+                unoptimized
+              />
+            </div>
+            {orderingEnabled && (
+              <div className="absolute -bottom-2 -right-2">{addControl}</div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {modal}
     </div>
   );
 }

@@ -488,6 +488,7 @@ export default async function PublicMenuPage({
             items={items}
             currency={restaurant.currency}
             themeColor={restaurant.theme_color}
+            menuLayout={restaurant.menu_layout === "grid" ? "grid" : "list"}
             restaurantId={restaurant.id}
             restaurantName={restaurant.name}
             whatsapp={restaurant.whatsapp}

@@ -40,6 +40,7 @@ export function RestaurantForm({
   const [deliveryFeePercentageEnabled, setDeliveryFeePercentageEnabled] = useState(
     restaurant?.delivery_fee_percentage_enabled ?? false,
   );
+  const [menuLayout, setMenuLayout] = useState(restaurant?.menu_layout ?? "list");
   const selectedServices = parseServices(restaurant?.services);
 
   // slugResult solo se actualiza dentro del callback async (nunca de
@@ -465,6 +466,69 @@ export function RestaurantForm({
         </label>
         <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
           {t.managesKitchenStaffHint}
+        </p>
+      </div>
+
+      <div>
+        <Label>{t.menuLayoutLabel}</Label>
+        <div className="mt-2 grid grid-cols-2 gap-3">
+          {(["list", "grid"] as const).map((layout) => {
+            const isSelected = menuLayout === layout;
+            return (
+              <label
+                key={layout}
+                className={cn(
+                  "cursor-pointer rounded-xl border-2 p-3 transition-colors",
+                  isSelected
+                    ? "border-neutral-900 dark:border-white"
+                    : "border-neutral-200 dark:border-neutral-700",
+                )}
+              >
+                <input
+                  type="radio"
+                  name="menu_layout"
+                  value={layout}
+                  checked={isSelected}
+                  onChange={() => setMenuLayout(layout)}
+                  className="sr-only"
+                />
+                {layout === "list" ? (
+                  <div className="space-y-1.5">
+                    {[0, 1].map((i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-1.5 rounded-md bg-neutral-100 p-1.5 dark:bg-neutral-800"
+                      >
+                        <div className="h-2 flex-1 space-y-1">
+                          <div className="h-1 w-3/4 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+                          <div className="h-1 w-1/2 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+                        </div>
+                        <div className="h-5 w-5 shrink-0 rounded bg-neutral-300 dark:bg-neutral-600" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[0, 1].map((i) => (
+                      <div
+                        key={i}
+                        className="space-y-1 rounded-md bg-neutral-100 p-1.5 dark:bg-neutral-800"
+                      >
+                        <div className="aspect-square w-full rounded bg-neutral-300 dark:bg-neutral-600" />
+                        <div className="h-1 w-3/4 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="mt-2 text-center text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                  {layout === "list" ? t.menuLayoutListLabel : t.menuLayoutGridLabel}
+                </p>
+              </label>
+            );
+          })}
+        </div>
+        <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.menuLayoutHint}
         </p>
       </div>
 

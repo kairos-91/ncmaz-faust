@@ -52,6 +52,7 @@ export const restaurantSchema = z.object({
   phone: z.string().max(30).optional().or(z.literal("")),
   whatsapp: z.string().max(30).optional().or(z.literal("")),
   theme_color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  menu_layout: z.enum(["list", "grid"]),
   currency: z.string().min(3).max(3),
   is_published: z.boolean(),
   has_wifi: z.boolean(),

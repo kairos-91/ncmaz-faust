@@ -481,6 +481,14 @@ o recíbelo como prop `t` (client) donde lo necesites.
      solo para que el badge "🔥 Más vendido" se vea funcionando ahí. No
      hace nada si el restaurante o el plato no existen, o si ya se
      sembró antes (idempotente).
+   - `supabase/migrations/0060_menu_layout.sql` — agrega `menu_layout`
+     (text, `'list'` o `'grid'`, default `'list'`) a `restaurants`. Se
+     elige en "Diseño del menú" dentro de `/admin/restaurant` y decide
+     cómo se ven las tarjetas de los platos en el menú público: `list`
+     es el diseño de siempre (nombre y precio a la izquierda, foto
+     pequeña a la derecha); `grid` muestra las tarjetas en cuadrícula de
+     dos columnas con la foto grande arriba y el botón "+" superpuesto
+     en la esquina inferior derecha de la tarjeta.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

@@ -92,6 +92,7 @@ function parseRestaurantForm(formData: FormData) {
     phone: formData.get("phone") ?? "",
     whatsapp: formData.get("whatsapp") ?? "",
     theme_color: formData.get("theme_color") || "#84cc16",
+    menu_layout: formData.get("menu_layout") || "list",
     currency: formData.get("currency") || "USD",
     is_published: formData.get("is_published") === "on",
     has_wifi: formData.get("has_wifi") === "on",
