@@ -131,3 +131,30 @@ export function isOpenNow(hours: DayHours[], now: Date = new Date()): boolean {
   }
   return minutesNow >= openMinutes && minutesNow < closeMinutes;
 }
+
+// Minutos que faltan para cerrar, solo si está abierto ahora mismo (si no,
+// null) — para el aviso "Cierra en X min." cuando ya casi es la hora.
+export function getMinutesUntilClose(
+  hours: DayHours[],
+  now: Date = new Date(),
+): number | null {
+  const { day: todayKey, minutesOfDay: minutesNow } = getZonedParts(now);
+  const today = hours.find((h) => h.day === todayKey);
+  if (!today || today.closed) return null;
+  const [openH, openM] = today.open.split(":").map(Number);
+  const [closeH, closeM] = today.close.split(":").map(Number);
+  const openMinutes = openH * 60 + (openM || 0);
+  const closeMinutes = closeH * 60 + (closeM || 0);
+  if (closeMinutes <= openMinutes) {
+    // Overnight schedule (e.g. 18:00–02:00): el cierre puede ser hoy antes
+    // de medianoche (contando lo que queda del día + los minutos después
+    // de medianoche) o ya pasada la medianoche.
+    if (minutesNow >= openMinutes) return 24 * 60 - minutesNow + closeMinutes;
+    if (minutesNow < closeMinutes) return closeMinutes - minutesNow;
+    return null;
+  }
+  if (minutesNow >= openMinutes && minutesNow < closeMinutes) {
+    return closeMinutes - minutesNow;
+  }
+  return null;
+}

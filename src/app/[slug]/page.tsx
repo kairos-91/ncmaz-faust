@@ -13,6 +13,7 @@ import { parseDeliveryZones } from "@/lib/delivery-zones";
 import {
   parseOpeningHours,
   isOpenNow,
+  getMinutesUntilClose,
   getNextOpening,
   getDayKey,
   formatTime12h,
@@ -218,6 +219,11 @@ export default async function PublicMenuPage({
     Array.isArray(restaurant.opening_hours) && restaurant.opening_hours.length > 0;
   const openingHours = parseOpeningHours(restaurant.opening_hours);
   const openNow = hasOpeningHours ? isOpenNow(openingHours) : null;
+  // Solo se avisa cuando falta poco (≤30 min) — mostrar "Cierra en 6h" no
+  // ayuda a nadie, pero "Cierra en 7 min" sí apura a pedir ya.
+  const minutesUntilClose =
+    openNow === true ? getMinutesUntilClose(openingHours, new Date()) : null;
+  const closingSoon = minutesUntilClose !== null && minutesUntilClose <= 30;
   const todayKey = getDayKey(new Date());
 
   const isClosedNow = hasOpeningHours && openNow === false;
@@ -332,6 +338,7 @@ export default async function PublicMenuPage({
                       }`}
                     >
                       ● {openNow ? "Abierto" : "Cerrado"}
+                      {closingSoon && ` · Cierra en ${minutesUntilClose} min.`}
                     </span>
                   )}
                   <span
