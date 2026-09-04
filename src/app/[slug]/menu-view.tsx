@@ -488,7 +488,7 @@ function MenuItemCard({
           )}
           {orderingEnabled && !hasPicker && (
             <div className="mt-2">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-end gap-3">
                 {noExtrasQty === 0 ? (
                   <button
                     type="button"
@@ -500,6 +500,13 @@ function MenuItemCard({
                   </button>
                 ) : (
                   <>
+                    <button
+                      type="button"
+                      onClick={() => setNoteOpen((v) => !v)}
+                      className="text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
+                    >
+                      {noExtrasNote ? "📝 Editar nota" : "📝 Agregar nota"}
+                    </button>
                     <div className="flex items-center gap-3">
                       <QtyButton onClick={() => onNoExtrasQtyChange(noExtrasQty - 1)}>
                         <Minus className="h-3.5 w-3.5" />
@@ -511,13 +518,6 @@ function MenuItemCard({
                         <Plus className="h-3.5 w-3.5" />
                       </QtyButton>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setNoteOpen((v) => !v)}
-                      className="text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
-                    >
-                      {noExtrasNote ? "📝 Editar nota" : "📝 Agregar nota"}
-                    </button>
                   </>
                 )}
               </div>
@@ -541,7 +541,12 @@ function MenuItemCard({
             </div>
           )}
           {orderingEnabled && hasPicker && (
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 flex items-center justify-end gap-2">
+              {totalQty > 0 && (
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                  {totalQty} en tu pedido
+                </span>
+              )}
               <button
                 type="button"
                 onClick={() => setPickerOpen(true)}
@@ -550,11 +555,6 @@ function MenuItemCard({
               >
                 + Agregar
               </button>
-              {totalQty > 0 && (
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                  {totalQty} en tu pedido
-                </span>
-              )}
             </div>
           )}
         </div>
