@@ -58,6 +58,7 @@ export function CheckoutFields({
   packagingFeeAmount,
   availableTables,
   fixedTable,
+  onTotalChange,
   onOrderPlaced,
 }: {
   restaurantId: string;
@@ -80,6 +81,7 @@ export function CheckoutFields({
   packagingFeeAmount: number;
   availableTables: RestaurantTable[];
   fixedTable: RestaurantTable | null;
+  onTotalChange?: (total: number) => void;
   onOrderPlaced: () => void;
 }) {
   // Si el pedido viene del QR de una mesa específica, el tipo de pedido
@@ -141,6 +143,13 @@ export function CheckoutFields({
   const discountAmount =
     appliedCoupon && couponValidity?.valid ? computeDiscount(appliedCoupon, total) : 0;
   const grandTotal = total + deliveryFee + packagingFee - discountAmount;
+
+  // Reporta el total real (con envío/empaque/cupón ya sumados) al carrito,
+  // que lo usa para su "Total" — sin esto quedaría mostrando solo el
+  // subtotal de los platos, sin las tarifas que se van eligiendo aquí.
+  useEffect(() => {
+    onTotalChange?.(grandTotal);
+  }, [grandTotal, onTotalChange]);
 
   const missingForPayment: string[] = [];
   if (!customerName.trim()) missingForPayment.push("tu nombre");
@@ -492,8 +501,7 @@ export function CheckoutFields({
           </div>
           {deliveryFee > 0 && (
             <p className="text-sm font-medium text-neutral-900 dark:text-white">
-              Envío: {formatPrice(deliveryFee, currency)} · Total con envío:{" "}
-              {formatPrice(grandTotal, currency)}
+              Envío: {formatPrice(deliveryFee, currency)}
             </p>
           )}
         </div>

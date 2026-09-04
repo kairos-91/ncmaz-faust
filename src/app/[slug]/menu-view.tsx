@@ -780,12 +780,18 @@ function CartSheet({
   onOrderPlaced: () => void;
 }) {
   const [justPlacedOrder, setJustPlacedOrder] = useState(false);
+  // Arranca en null (sin envío/empaque/cupón todavía) y CheckoutFields la
+  // mantiene al día vía onTotalChange a medida que el cliente elige tipo
+  // de pedido, zona de envío o aplica un cupón — así el "Total" de aquí
+  // arriba siempre coincide con lo que de verdad se va a cobrar.
+  const [grandTotal, setGrandTotal] = useState<number | null>(null);
   const unitPrice = (item: MenuItem, extraNames: string[]) =>
     item.price + extrasTotal(parseExtras(item.extras), extraNames);
   const total = lines.reduce(
     (sum, l) => sum + unitPrice(l.item, l.extraNames) * l.qty,
     0,
   );
+  const displayTotal = grandTotal ?? total;
 
   return (
     <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 sm:items-center">
@@ -869,11 +875,11 @@ function CartSheet({
               </span>
               <span className="text-right">
                 <span className="block text-lg font-semibold text-neutral-900 dark:text-white">
-                  {formatPrice(total, currency)}
+                  {formatPrice(displayTotal, currency)}
                 </span>
                 {bcvRate && (
                   <span className="block text-xs text-neutral-500 dark:text-neutral-400">
-                    {formatBs(total, bcvRate.rate)}
+                    {formatBs(displayTotal, bcvRate.rate)}
                   </span>
                 )}
               </span>
@@ -897,6 +903,7 @@ function CartSheet({
             packagingFeeAmount={packagingFeeAmount}
             availableTables={availableTables}
             fixedTable={fixedTable}
+            onTotalChange={setGrandTotal}
             onOrderPlaced={() => {
               setJustPlacedOrder(true);
               onOrderPlaced();
