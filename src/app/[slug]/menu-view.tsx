@@ -593,9 +593,16 @@ function MenuItemCard({
             <div className="space-y-4 p-5">
               <div>
                 <div className="flex items-start justify-between gap-2">
-                  <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                    {item.name}
-                  </h2>
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-semibold leading-tight text-neutral-900 dark:text-white">
+                      {item.name}
+                    </h2>
+                    {item.description && (
+                      <p className="mt-0.5 text-sm text-neutral-600 dark:text-neutral-400">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
                   <span className="shrink-0 text-right">
                     <span className="flex items-center justify-end gap-1.5">
                       <span className="font-semibold" style={{ color: themeColor }}>
@@ -619,11 +626,6 @@ function MenuItemCard({
                     )}
                   </span>
                 </div>
-                {item.description && (
-                  <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                    {item.description}
-                  </p>
-                )}
                 {isBestSeller && (
                   <span className="mt-1.5 inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-medium text-orange-700 dark:bg-orange-400/10 dark:text-orange-400">
                     🔥 Más vendido
