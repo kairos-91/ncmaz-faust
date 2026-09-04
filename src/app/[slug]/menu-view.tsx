@@ -438,7 +438,7 @@ function MenuItemCard({
         )}
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-medium text-neutral-900 dark:text-white">
+            <h3 className="font-medium leading-tight text-neutral-900 dark:text-white">
               {item.name}
             </h3>
             <span className="shrink-0 text-right">
@@ -463,7 +463,7 @@ function MenuItemCard({
             </span>
           </div>
           {item.description && (
-            <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
+            <p className="mt-0 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
               {item.description}
             </p>
           )}
