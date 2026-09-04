@@ -319,8 +319,15 @@ export function MenuView({
             <ShoppingBag className="h-4 w-4" />
             {itemCount} {itemCount === 1 ? "plato" : "platos"}
           </span>
-          <span className="text-sm font-semibold">
-            Ver pedido · {formatPrice(total, currency)}
+          <span className="text-right">
+            <span className="block text-sm font-semibold">
+              Ver pedido · {formatPrice(total, currency)}
+            </span>
+            {bcvRate && (
+              <span className="block text-xs text-white/80">
+                {formatBs(total, bcvRate.rate)}
+              </span>
+            )}
           </span>
         </button>
       )}
@@ -860,8 +867,15 @@ function CartSheet({
               <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                 Total
               </span>
-              <span className="text-lg font-semibold text-neutral-900 dark:text-white">
-                {formatPrice(total, currency)}
+              <span className="text-right">
+                <span className="block text-lg font-semibold text-neutral-900 dark:text-white">
+                  {formatPrice(total, currency)}
+                </span>
+                {bcvRate && (
+                  <span className="block text-xs text-neutral-500 dark:text-neutral-400">
+                    {formatBs(total, bcvRate.rate)}
+                  </span>
+                )}
               </span>
             </div>
           </>
