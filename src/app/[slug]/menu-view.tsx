@@ -467,7 +467,7 @@ function MenuItemCard({
             </p>
           )}
           <div className="mt-1.5 flex flex-wrap items-baseline gap-1.5">
-            <span className="font-semibold" style={{ color: themeColor }}>
+            <span className="text-lg font-semibold" style={{ color: themeColor }}>
               {formatPrice(item.price, currency)}
             </span>
             {discounted && (
@@ -605,7 +605,7 @@ function MenuItemCard({
                   </div>
                   <span className="shrink-0 text-right">
                     <span className="flex items-center justify-end gap-1.5">
-                      <span className="font-semibold" style={{ color: themeColor }}>
+                      <span className="text-lg font-semibold" style={{ color: themeColor }}>
                         {formatPrice(item.price, currency)}
                       </span>
                       {discounted && (
