@@ -591,17 +591,36 @@ function MenuItemCard({
                   <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
                     {item.name}
                   </h2>
-                  <span
-                    className="shrink-0 font-semibold"
-                    style={{ color: themeColor }}
-                  >
-                    {formatPrice(item.price, currency)}
+                  <span className="shrink-0 text-right">
+                    {discounted && (
+                      <span className="flex items-center justify-end gap-1.5">
+                        <span className="text-xs text-neutral-400 line-through dark:text-neutral-600">
+                          {formatPrice(item.original_price!, currency)}
+                        </span>
+                        <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                          -{discountPercent(item)}%
+                        </span>
+                      </span>
+                    )}
+                    <span className="font-semibold" style={{ color: themeColor }}>
+                      {formatPrice(item.price, currency)}
+                    </span>
+                    {bcvRate && (
+                      <span className="block text-xs text-neutral-500 dark:text-neutral-400">
+                        {formatBs(item.price, bcvRate.rate)}
+                      </span>
+                    )}
                   </span>
                 </div>
                 {item.description && (
                   <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
                     {item.description}
                   </p>
+                )}
+                {isBestSeller && (
+                  <span className="mt-1.5 inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-medium text-orange-700 dark:bg-orange-400/10 dark:text-orange-400">
+                    🔥 Más vendido
+                  </span>
                 )}
               </div>
 
