@@ -9,6 +9,7 @@ export function formatPrice(price: number, currency: string) {
   return new Intl.NumberFormat("es-VE", {
     style: "currency",
     currency,
+    currencyDisplay: "narrowSymbol",
     maximumFractionDigits: 2,
   }).format(price);
 }
