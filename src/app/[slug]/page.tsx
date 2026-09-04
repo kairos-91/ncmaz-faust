@@ -287,17 +287,20 @@ export default async function PublicMenuPage({
               {[restaurant.state, restaurant.country].filter(Boolean).join(", ")}
             </p>
           )}
-          {avgRating !== null && (
-            <p className="mx-auto mt-1 flex w-fit items-center gap-1 text-sm text-neutral-600 dark:text-neutral-400">
-              <span className="text-amber-400">★</span>
-              <span className="font-medium text-neutral-900 dark:text-white">
-                {avgRating}
-              </span>
-            </p>
-          )}
-          {restaurant.description && (
-            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-              {restaurant.description}
+          {(restaurant.description || avgRating !== null) && (
+            <p className="mx-auto mt-1 flex w-fit items-center gap-1.5 text-sm text-neutral-600 dark:text-neutral-400">
+              {restaurant.description && <span>{restaurant.description}</span>}
+              {avgRating !== null && (
+                <span className="flex items-center gap-1">
+                  {restaurant.description && (
+                    <span className="text-neutral-300 dark:text-neutral-600">·</span>
+                  )}
+                  <span className="text-amber-400">★</span>
+                  <span className="font-medium text-neutral-900 dark:text-white">
+                    {avgRating}
+                  </span>
+                </span>
+              )}
             </p>
           )}
           <div className="mt-2">
