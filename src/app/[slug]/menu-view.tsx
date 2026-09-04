@@ -443,7 +443,7 @@ function MenuItemCard({
                 {item.name}
               </h3>
               {item.description && (
-                <p className="mt-0 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
+                <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
                   {item.description}
                 </p>
               )}
