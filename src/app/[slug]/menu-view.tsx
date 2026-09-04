@@ -490,7 +490,7 @@ function MenuItemCard({
             <div className="mt-1.5 flex flex-wrap gap-1">
               {isBestSeller && (
                 <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-medium text-orange-700 dark:bg-orange-400/10 dark:text-orange-400">
-                  🔥 Más vendido
+                  <span className="animate-flame">🔥</span> Más vendido
                 </span>
               )}
               {item.tags.map((tag) => (
@@ -628,7 +628,7 @@ function MenuItemCard({
                 </div>
                 {isBestSeller && (
                   <span className="mt-1.5 inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-medium text-orange-700 dark:bg-orange-400/10 dark:text-orange-400">
-                    🔥 Más vendido
+                    <span className="animate-flame">🔥</span> Más vendido
                   </span>
                 )}
               </div>

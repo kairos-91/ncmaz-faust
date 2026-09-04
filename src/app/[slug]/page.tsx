@@ -338,7 +338,7 @@ export default async function PublicMenuPage({
                       }`}
                     >
                       ● {openNow ? "Abierto" : "Cerrado"}
-                      {closingSoon && ` · Cierra en ${minutesUntilClose} min.`}
+                      {closingSoon && ` · Cierra en ${minutesUntilClose} min`}
                     </span>
                   )}
                   <span
