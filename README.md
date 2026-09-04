@@ -466,12 +466,21 @@ o recíbelo como prop `t` (client) donde lo necesites.
      público muestre `price` como precio con descuento y
      `original_price` tachado al lado, con una etiqueta "Descuento" —
      `price` sigue siendo el único monto real usado en carrito, pedidos
-     y ventas. Además, el menú público ahora etiqueta con "⭐ Más
+     y ventas. Además, el menú público ahora etiqueta con "🔥 Más
      vendido" los platos con más unidades vendidas en pedidos aceptados
      (mínimo 3 unidades, para no etiquetar cualquier cosa en un
      restaurante que recién empieza) — calculado en `[slug]/page.tsx`
      con `topOrderedItems()` (ya usada en `/admin/analytics`), sin
-     columna ni cache nueva.
+     columna ni cache nueva. Empareja por el nombre actual del plato,
+     así que si le cambias el nombre a un plato, sus pedidos viejos
+     (guardados con el nombre anterior) dejan de contar para esa
+     etiqueta.
+   - `supabase/migrations/0059_vaquita_hot_demo_orders.sql` — siembra 3
+     pedidos aceptados de "Pabellón" para el restaurante demo
+     `vaquita-hot` (el que enlaza el botón "Ver demo" de la landing),
+     solo para que el badge "🔥 Más vendido" se vea funcionando ahí. No
+     hace nada si el restaurante o el plato no existen, o si ya se
+     sembró antes (idempotente).
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como
