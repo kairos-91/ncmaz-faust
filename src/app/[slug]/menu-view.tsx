@@ -455,105 +455,109 @@ function MenuItemCard({
   );
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-      {item.image_url && (
-        <div className="relative aspect-[16/10] w-full bg-neutral-100 dark:bg-neutral-800">
-          <Image
-            src={item.image_url}
-            alt={item.name}
-            fill
-            unoptimized
-            className="object-cover"
-          />
-          {orderingEnabled && (
-            <div className="absolute bottom-2 right-2">{addControl}</div>
-          )}
-        </div>
-      )}
-      <div className="p-3">
-        <h3 className="font-medium leading-tight text-neutral-900 dark:text-white">
-          {item.name}
-        </h3>
-        {item.description && (
-          <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
-            {item.description}
-          </p>
+    <div className="rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="flex gap-4">
+        {item.image_url && (
+          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
+            <Image
+              src={item.image_url}
+              alt={item.name}
+              width={80}
+              height={80}
+              className="h-full w-full object-cover"
+              unoptimized
+            />
+          </div>
         )}
-        <div className="mt-1.5 flex flex-wrap items-baseline gap-1.5">
-          {discounted && (
-            <span className="text-xs text-neutral-400 line-through dark:text-neutral-600">
-              {formatPrice(item.original_price!, currency)}
-            </span>
-          )}
-          <span className="font-semibold" style={{ color: themeColor }}>
-            {formatPrice(item.price, currency)}
-          </span>
-          {discounted && (
-            <span className="text-xs font-semibold text-green-600 dark:text-green-400">
-              -{discountPercent(item)}%
-            </span>
-          )}
-        </div>
-        {bcvRate && (
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            {formatBs(item.price, bcvRate.rate)}
-          </p>
-        )}
-        {(isBestSeller || item.tags.length > 0) && (
-          <div className="mt-1.5 flex flex-wrap gap-1">
-            {isBestSeller && (
-              <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-medium text-orange-700 dark:bg-orange-400/10 dark:text-orange-400">
-                🔥 Más vendido
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <h3 className="font-medium leading-tight text-neutral-900 dark:text-white">
+                {item.name}
+              </h3>
+              {item.description && (
+                <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
+                  {item.description}
+                </p>
+              )}
+            </div>
+            <span className="shrink-0 text-right">
+              {discounted && (
+                <span className="flex items-center justify-end gap-1.5">
+                  <span className="text-xs text-neutral-400 line-through dark:text-neutral-600">
+                    {formatPrice(item.original_price!, currency)}
+                  </span>
+                  <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                    -{discountPercent(item)}%
+                  </span>
+                </span>
+              )}
+              <span className="font-semibold" style={{ color: themeColor }}>
+                {formatPrice(item.price, currency)}
               </span>
-            )}
-            {item.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
+              {bcvRate && (
+                <span className="block text-xs text-neutral-500 dark:text-neutral-400">
+                  {formatBs(item.price, bcvRate.rate)}
+                </span>
+              )}
+            </span>
+          </div>
+          {(isBestSeller || item.tags.length > 0) && (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {isBestSeller && (
+                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-medium text-orange-700 dark:bg-orange-400/10 dark:text-orange-400">
+                  🔥 Más vendido
+                </span>
+              )}
+              {item.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {!hasPicker && noExtrasQty > 0 && (
+            <div className="mt-1.5">
+              <button
+                type="button"
+                onClick={() => setNoteOpen((v) => !v)}
+                className="text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
               >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
+                {noExtrasNote ? "📝 Editar nota" : "📝 Agregar nota"}
+              </button>
+              {noteOpen && (
+                <textarea
+                  autoFocus
+                  value={noExtrasNote}
+                  onChange={(e) => onNoExtrasNoteChange(e.target.value)}
+                  onBlur={() => setNoteOpen(false)}
+                  maxLength={140}
+                  rows={2}
+                  placeholder="Ej: sin cebolla, término medio..."
+                  className="mt-2 w-full rounded-lg border border-neutral-200 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                />
+              )}
+              {!noteOpen && noExtrasNote && (
+                <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                  📝 {noExtrasNote}
+                </p>
+              )}
+            </div>
+          )}
+          {hasPicker && totalQty > 0 && (
+            <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+              {totalQty} en tu pedido
+            </p>
+          )}
 
-        {!hasPicker && noExtrasQty > 0 && (
-          <div className="mt-1.5">
-            <button
-              type="button"
-              onClick={() => setNoteOpen((v) => !v)}
-              className="text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
-            >
-              {noExtrasNote ? "📝 Editar nota" : "📝 Agregar nota"}
-            </button>
-            {noteOpen && (
-              <textarea
-                autoFocus
-                value={noExtrasNote}
-                onChange={(e) => onNoExtrasNoteChange(e.target.value)}
-                onBlur={() => setNoteOpen(false)}
-                maxLength={140}
-                rows={2}
-                placeholder="Ej: sin cebolla, término medio..."
-                className="mt-2 w-full rounded-lg border border-neutral-200 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
-              />
-            )}
-            {!noteOpen && noExtrasNote && (
-              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                📝 {noExtrasNote}
-              </p>
-            )}
-          </div>
-        )}
-        {hasPicker && totalQty > 0 && (
-          <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400">
-            {totalQty} en tu pedido
-          </p>
-        )}
-
-        {!item.image_url && orderingEnabled && (
-          <div className="mt-2 flex justify-end">{addControl}</div>
-        )}
+          {orderingEnabled && (
+            <div className="mt-2 flex justify-end">{addControl}</div>
+          )}
+        </div>
       </div>
 
       {orderingEnabled && hasPicker && pickerOpen && (
