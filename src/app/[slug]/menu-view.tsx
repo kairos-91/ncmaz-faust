@@ -457,23 +457,6 @@ function MenuItemCard({
   return (
     <div className="rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
       <div className="flex gap-4">
-        {item.image_url && (
-          <div className="relative h-24 w-24 shrink-0">
-            <div className="h-full w-full overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
-              <Image
-                src={item.image_url}
-                alt={item.name}
-                width={96}
-                height={96}
-                className="h-full w-full object-cover"
-                unoptimized
-              />
-            </div>
-            {orderingEnabled && (
-              <div className="absolute -bottom-2 -right-2">{addControl}</div>
-            )}
-          </div>
-        )}
         <div className="min-w-0 flex-1">
           <h3 className="font-medium leading-tight text-neutral-900 dark:text-white">
             {item.name}
@@ -559,6 +542,23 @@ function MenuItemCard({
             <div className="mt-2 flex justify-end">{addControl}</div>
           )}
         </div>
+        {item.image_url && (
+          <div className="relative h-24 w-24 shrink-0">
+            <div className="h-full w-full overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
+              <Image
+                src={item.image_url}
+                alt={item.name}
+                width={96}
+                height={96}
+                className="h-full w-full object-cover"
+                unoptimized
+              />
+            </div>
+            {orderingEnabled && (
+              <div className="absolute -bottom-2 -right-2">{addControl}</div>
+            )}
+          </div>
+        )}
       </div>
 
       {orderingEnabled && hasPicker && pickerOpen && (
