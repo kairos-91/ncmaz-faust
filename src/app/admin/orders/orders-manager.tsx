@@ -352,6 +352,12 @@ function OrderCard({
                       (+ {line.extraNames.join(", ")})
                     </span>
                   )}
+                  {line.preferenceNames.length > 0 && (
+                    <span className="text-neutral-500 dark:text-neutral-500">
+                      {" "}
+                      (🚫 {line.preferenceNames.join(", ")})
+                    </span>
+                  )}
                 </span>
                 <span className="shrink-0 font-medium text-neutral-900 dark:text-white">
                   {formatPrice(line.unitPrice * line.qty, currency)}

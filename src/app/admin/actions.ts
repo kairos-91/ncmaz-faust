@@ -13,6 +13,7 @@ import {
   restaurantSchema,
 } from "@/lib/validations";
 import { extrasTotal, parseExtras, parseExtrasText } from "@/lib/menu-item-extras";
+import { parsePreferencesText } from "@/lib/menu-item-preferences";
 import type { OrderItemSnapshot } from "@/lib/orders";
 import { parseDeliveryZonesForm } from "@/lib/delivery-zones";
 import { DAY_KEYS, type DayHours } from "@/lib/opening-hours";
@@ -441,10 +442,12 @@ function parseMenuItemForm(formData: FormData) {
     name: formData.get("name"),
     description: formData.get("description") ?? "",
     price: formData.get("price"),
+    original_price: formData.get("original_price") || "",
     is_available: formData.get("is_available") === "on",
     is_featured: formData.get("is_featured") === "on",
     tags: formData.get("tags") ?? "",
     extras: formData.get("extras") ?? "",
+    preferences: formData.get("preferences") ?? "",
   });
 }
 
@@ -480,10 +483,12 @@ export async function createMenuItem(
     name: parsed.data.name,
     description: parsed.data.description || null,
     price: parsed.data.price,
+    original_price: parsed.data.original_price || null,
     is_available: parsed.data.is_available,
     is_featured: parsed.data.is_featured,
     tags: toTagsArray(parsed.data.tags),
     extras: parseExtrasText(parsed.data.extras ?? ""),
+    preferences: parsePreferencesText(parsed.data.preferences ?? ""),
     image_url,
   });
   if (error) return { error: error.message };
@@ -519,10 +524,12 @@ export async function updateMenuItem(
       name: parsed.data.name,
       description: parsed.data.description || null,
       price: parsed.data.price,
+      original_price: parsed.data.original_price || null,
       is_available: parsed.data.is_available,
       is_featured: parsed.data.is_featured,
       tags: toTagsArray(parsed.data.tags),
       extras: parseExtrasText(parsed.data.extras ?? ""),
+      preferences: parsePreferencesText(parsed.data.preferences ?? ""),
       ...(image_url ? { image_url } : {}),
     })
     .eq("id", itemId);
@@ -701,7 +708,7 @@ export async function createOrderFromAdmin(
     deliveryZone?: string;
     deliveryFee?: number;
     packagingFee?: number;
-    lines: { itemId: string; qty: number; extraNames: string[] }[];
+    lines: { itemId: string; qty: number; extraNames: string[]; preferenceNames: string[] }[];
     paymentMethod?: string;
     bankPaidFrom?: string;
     reference?: string;
@@ -734,6 +741,7 @@ export async function createOrderFromAdmin(
       qty: line.qty,
       unitPrice,
       extraNames: line.extraNames,
+      preferenceNames: line.preferenceNames,
     });
     itemsTotal += unitPrice * line.qty;
   }

@@ -65,7 +65,13 @@ export function CheckoutFields({
   themeColor: string;
   currency: string;
   whatsapp: string;
-  lines: { item: MenuItem; qty: number; extraNames: string[]; note?: string }[];
+  lines: {
+    item: MenuItem;
+    qty: number;
+    extraNames: string[];
+    preferenceNames: string[];
+    note?: string;
+  }[];
   total: number;
   paymentMethods: PaymentMethodValues;
   bcvRate: BcvRate | null;
@@ -236,8 +242,10 @@ export function CheckoutFields({
           l.item.price + extrasTotal(parseExtras(l.item.extras), l.extraNames);
         const extrasText =
           l.extraNames.length > 0 ? `\n   ➕ ${l.extraNames.join(", ")}` : "";
+        const preferencesText =
+          l.preferenceNames.length > 0 ? `\n   🚫 ${l.preferenceNames.join(", ")}` : "";
         const noteText = l.note ? `\n   📝 ${l.note}` : "";
-        return `▪️ *${l.qty}x* ${l.item.name}${extrasText}${noteText}\n   ${formatPrice(unitPrice * l.qty, currency)}`;
+        return `▪️ *${l.qty}x* ${l.item.name}${extrasText}${preferencesText}${noteText}\n   ${formatPrice(unitPrice * l.qty, currency)}`;
       })
       .join("\n");
 
@@ -755,6 +763,7 @@ export function CheckoutFields({
                   l.item.price +
                   extrasTotal(parseExtras(l.item.extras), l.extraNames),
                 extraNames: l.extraNames,
+                preferenceNames: l.preferenceNames,
                 note: l.note,
               })),
               total: grandTotal,

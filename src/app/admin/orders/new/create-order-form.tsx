@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Minus, Plus, Search, UtensilsCrossed } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
+import { parsePreferences } from "@/lib/menu-item-preferences";
 import { formatBsAmount, type BcvRate } from "@/lib/bcv-rate";
 import {
   PAYMENT_METHOD_META,
@@ -21,7 +22,7 @@ import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 
 type T = Dictionary["createOrderForm"];
 type OrderType = "delivery" | "pickup" | "dine_in";
-type Line = { qty: number; extraNames: string[] };
+type Line = { qty: number; extraNames: string[]; preferenceNames: string[] };
 
 export function CreateOrderForm({
   restaurantId,
@@ -88,7 +89,14 @@ export function CreateOrderForm({
         delete next[itemId];
         return next;
       }
-      return { ...prev, [itemId]: { qty, extraNames: prev[itemId]?.extraNames ?? [] } };
+      return {
+        ...prev,
+        [itemId]: {
+          qty,
+          extraNames: prev[itemId]?.extraNames ?? [],
+          preferenceNames: prev[itemId]?.preferenceNames ?? [],
+        },
+      };
     });
   };
 
@@ -100,6 +108,17 @@ export function CreateOrderForm({
         ? line.extraNames.filter((n) => n !== extraName)
         : [...line.extraNames, extraName];
       return { ...prev, [itemId]: { ...line, extraNames } };
+    });
+  };
+
+  const togglePreference = (itemId: string, preferenceName: string) => {
+    setCart((prev) => {
+      const line = prev[itemId];
+      if (!line) return prev;
+      const preferenceNames = line.preferenceNames.includes(preferenceName)
+        ? line.preferenceNames.filter((n) => n !== preferenceName)
+        : [...line.preferenceNames, preferenceName];
+      return { ...prev, [itemId]: { ...line, preferenceNames } };
     });
   };
 
@@ -155,6 +174,7 @@ export function CreateOrderForm({
           itemId: l.itemId,
           qty: l.qty,
           extraNames: l.extraNames,
+          preferenceNames: l.preferenceNames,
         })),
         paymentMethod: methodId ?? undefined,
         amountPaid: amountBsRaw ?? undefined,
@@ -301,6 +321,7 @@ export function CreateOrderForm({
                   <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5">
                     {catItems.map((item) => {
                       const extras = parseExtras(item.extras);
+                      const preferences = parsePreferences(item.preferences);
                       const line = cart[item.id];
                       const qty = line?.qty ?? 0;
                       return (
@@ -382,6 +403,29 @@ export function CreateOrderForm({
                                         {extra.price > 0 &&
                                           ` (+${formatPrice(extra.price, currency)})`}
                                       </span>
+                                    </label>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {qty > 0 && preferences.length > 0 && (
+                              <div className="mt-2.5 border-t border-neutral-100 pt-2.5 dark:border-neutral-800">
+                                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-neutral-400">
+                                  {t.preferencesLabel}
+                                </p>
+                                <div className="space-y-1.5">
+                                  {preferences.map((pref) => (
+                                    <label
+                                      key={pref}
+                                      className="flex items-start gap-1.5 text-xs text-neutral-600 dark:text-neutral-400"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={line?.preferenceNames.includes(pref) ?? false}
+                                        onChange={() => togglePreference(item.id, pref)}
+                                        className="mt-0.5 h-3.5 w-3.5 shrink-0 rounded border-neutral-300 dark:border-neutral-600"
+                                      />
+                                      <span className="leading-snug">{pref}</span>
                                     </label>
                                   ))}
                                 </div>
@@ -512,6 +556,12 @@ export function CreateOrderForm({
                       <span className="text-neutral-500 dark:text-neutral-500">
                         {" "}
                         (+ {l.extraNames.join(", ")})
+                      </span>
+                    )}
+                    {l.preferenceNames.length > 0 && (
+                      <span className="text-neutral-500 dark:text-neutral-500">
+                        {" "}
+                        (🚫 {l.preferenceNames.join(", ")})
                       </span>
                     )}
                   </span>

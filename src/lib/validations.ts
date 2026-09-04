@@ -85,16 +85,30 @@ export const categorySchema = z.object({
 });
 export type CategoryInput = z.infer<typeof categorySchema>;
 
-export const menuItemSchema = z.object({
-  category_id: z.uuid("Selecciona una categoría"),
-  name: z.string().min(1, "El nombre es requerido").max(100),
-  description: z.string().max(500).optional().or(z.literal("")),
-  price: z.coerce.number().min(0, "El precio no puede ser negativo"),
-  is_available: z.boolean(),
-  is_featured: z.boolean(),
-  tags: z.string().max(200).optional().or(z.literal("")),
-  extras: z.string().max(1000).optional().or(z.literal("")),
-});
+export const menuItemSchema = z
+  .object({
+    category_id: z.uuid("Selecciona una categoría"),
+    name: z.string().min(1, "El nombre es requerido").max(100),
+    description: z.string().max(500).optional().or(z.literal("")),
+    price: z.coerce.number().min(0, "El precio no puede ser negativo"),
+    original_price: z.coerce
+      .number()
+      .min(0, "El precio no puede ser negativo")
+      .optional()
+      .or(z.literal("")),
+    is_available: z.boolean(),
+    is_featured: z.boolean(),
+    tags: z.string().max(200).optional().or(z.literal("")),
+    extras: z.string().max(1000).optional().or(z.literal("")),
+    preferences: z.string().max(1000).optional().or(z.literal("")),
+  })
+  .refine(
+    (data) => data.original_price === "" || (data.original_price ?? 0) > data.price,
+    {
+      message: "El precio antes del descuento debe ser mayor al precio actual",
+      path: ["original_price"],
+    },
+  );
 export type MenuItemInput = z.infer<typeof menuItemSchema>;
 
 export const couponSchema = z

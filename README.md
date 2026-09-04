@@ -455,6 +455,23 @@ o recíbelo como prop `t` (client) donde lo necesites.
      para recordar dónde quedó la portada al arrastrarla en
      `/admin/restaurant` (`CoverUploader`), en vez de mostrarla siempre
      centrada.
+   - `supabase/migrations/0058_menu_item_preferences_discount.sql` —
+     agrega `preferences` (jsonb, `[string]`, default `[]`) y
+     `original_price` (numeric, opcional) a `menu_items`. `preferences`
+     son opciones sin costo que el cliente puede marcar al pedir (ej.
+     "Sin sal", "Sin azúcar", "Sin queso") — se editan como una lista en
+     `/admin/menu` y se muestran como chips seleccionables junto a los
+     extras en el menú público, sin afectar el precio.
+     `original_price`, cuando es mayor que `price`, hace que el menú
+     público muestre `price` como precio con descuento y
+     `original_price` tachado al lado, con una etiqueta "Descuento" —
+     `price` sigue siendo el único monto real usado en carrito, pedidos
+     y ventas. Además, el menú público ahora etiqueta con "⭐ Más
+     vendido" los platos con más unidades vendidas en pedidos aceptados
+     (mínimo 3 unidades, para no etiquetar cualquier cosa en un
+     restaurante que recién empieza) — calculado en `[slug]/page.tsx`
+     con `topOrderedItems()` (ya usada en `/admin/analytics`), sin
+     columna ni cache nueva.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

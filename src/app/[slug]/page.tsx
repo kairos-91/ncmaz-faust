@@ -19,6 +19,7 @@ import {
   type DayKey,
 } from "@/lib/opening-hours";
 import { parseServices, type ServiceId } from "@/lib/restaurant-services";
+import { topOrderedItems } from "@/lib/orders";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SocialLinks } from "@/components/social-links";
 import { Logo } from "@/components/logo";
@@ -187,6 +188,22 @@ export default async function PublicMenuPage({
     (id) => PAYMENT_METHOD_META[id].convertToVes,
   );
   const bcvRate = needsBcvRate ? await getBcvRate(restaurant.currency) : null;
+
+  // "Más vendido": top platos por unidades vendidas en pedidos aceptados.
+  // Se exige un mínimo de ventas para no etiquetar cualquier plato en un
+  // restaurante que recién empieza y apenas tiene 1-2 pedidos.
+  const { data: acceptedOrdersItems } = await supabase
+    .from("orders")
+    .select("items")
+    .eq("restaurant_id", restaurant.id)
+    .eq("status", "accepted");
+  const MIN_BEST_SELLER_QTY = 3;
+  const bestSellerNames = topOrderedItems(
+    (acceptedOrdersItems ?? []).map((o) => o.items),
+    3,
+  )
+    .filter((entry) => entry.qty >= MIN_BEST_SELLER_QTY)
+    .map((entry) => entry.name);
 
   const services = parseServices(restaurant.services);
   const hasAmenities = services.length > 0 || restaurant.has_wifi || restaurant.accepts_pets;
@@ -476,6 +493,7 @@ export default async function PublicMenuPage({
             fixedTable={fixedTable ?? null}
             orderingAllowed={orderingAllowed}
             closedMessage={closedMessage}
+            bestSellerNames={bestSellerNames}
           />
         )}
 

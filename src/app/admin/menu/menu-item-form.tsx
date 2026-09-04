@@ -9,6 +9,7 @@ import type { Category, MenuItem } from "@/lib/supabase/database.types";
 import type { ActionState } from "@/app/admin/actions";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { extrasToText, parseExtras } from "@/lib/menu-item-extras";
+import { parsePreferences, preferencesToText } from "@/lib/menu-item-preferences";
 
 export function MenuItemForm({
   categories,
@@ -78,7 +79,22 @@ export function MenuItemForm({
             placeholder="8.50"
           />
         </div>
+        <div>
+          <Label htmlFor="original_price">{t.originalPriceLabel}</Label>
+          <Input
+            id="original_price"
+            name="original_price"
+            type="number"
+            step="0.01"
+            min="0"
+            defaultValue={item?.original_price ?? ""}
+            placeholder="10.00"
+          />
+        </div>
       </div>
+      <p className="-mt-2 text-xs text-neutral-500 dark:text-neutral-500">
+        {t.originalPriceHint}
+      </p>
 
       <div>
         <Label htmlFor="description">{t.descriptionLabel}</Label>
@@ -112,6 +128,20 @@ export function MenuItemForm({
         />
         <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
           {t.extrasHint}
+        </p>
+      </div>
+
+      <div>
+        <Label htmlFor="preferences">{t.preferencesLabel}</Label>
+        <Textarea
+          id="preferences"
+          name="preferences"
+          rows={3}
+          defaultValue={preferencesToText(parsePreferences(item?.preferences))}
+          placeholder={t.preferencesPlaceholder}
+        />
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+          {t.preferencesHint}
         </p>
       </div>
 

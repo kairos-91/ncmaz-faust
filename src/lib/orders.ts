@@ -7,6 +7,7 @@ export type OrderItemSnapshot = {
   qty: number;
   unitPrice: number;
   extraNames: string[];
+  preferenceNames: string[];
   note?: string;
 };
 
@@ -35,6 +36,9 @@ export function parseOrderItems(json: Json | null | undefined): OrderItemSnapsho
       unitPrice: Number(entry.unitPrice) || 0,
       extraNames: Array.isArray(entry.extraNames)
         ? entry.extraNames.map((n) => String(n))
+        : [],
+      preferenceNames: Array.isArray(entry.preferenceNames)
+        ? entry.preferenceNames.map((n) => String(n))
         : [],
       note: typeof entry.note === "string" && entry.note ? entry.note : undefined,
     }));

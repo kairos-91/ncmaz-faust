@@ -7,15 +7,26 @@ import { cn, formatPrice } from "@/lib/utils";
 import type { BcvRate } from "@/lib/bcv-rate";
 import type { PaymentMethodValues } from "@/lib/payment-methods";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
+import { parsePreferences } from "@/lib/menu-item-preferences";
 import type { DeliveryZone } from "@/lib/delivery-zones";
 import type { Category, MenuItem, RestaurantTable } from "@/lib/supabase/database.types";
 import { CheckoutFields } from "./checkout-fields";
 
-type CartLine = { itemId: string; extraNames: string[]; qty: number; note?: string };
+type CartLine = {
+  itemId: string;
+  extraNames: string[];
+  preferenceNames: string[];
+  qty: number;
+  note?: string;
+};
 type Cart = Record<string, CartLine>;
 
-function cartKey(itemId: string, extraNames: string[]) {
-  return `${itemId}::${[...extraNames].sort().join("|")}`;
+function cartKey(itemId: string, extraNames: string[], preferenceNames: string[]) {
+  return `${itemId}::${[...extraNames].sort().join("|")}::${[...preferenceNames].sort().join("|")}`;
+}
+
+function hasDiscount(item: MenuItem) {
+  return item.original_price !== null && item.original_price > item.price;
 }
 
 export function MenuView({
@@ -35,6 +46,7 @@ export function MenuView({
   fixedTable,
   orderingAllowed,
   closedMessage,
+  bestSellerNames = [],
 }: {
   categories: Category[];
   items: MenuItem[];
@@ -52,7 +64,9 @@ export function MenuView({
   fixedTable: RestaurantTable | null;
   orderingAllowed: boolean;
   closedMessage: string | null;
+  bestSellerNames?: string[];
 }) {
+  const bestSellerSet = useMemo(() => new Set(bestSellerNames), [bestSellerNames]);
   const canOrder = Boolean(whatsapp) && orderingAllowed;
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -96,18 +110,28 @@ export function MenuView({
   );
   const [active, setActive] = useState(nonEmptyCategories[0]?.id);
 
-  const setLineQty = (itemId: string, extraNames: string[], qty: number) => {
-    const key = cartKey(itemId, extraNames);
+  const setLineQty = (
+    itemId: string,
+    extraNames: string[],
+    preferenceNames: string[],
+    qty: number,
+  ) => {
+    const key = cartKey(itemId, extraNames, preferenceNames);
     setCart((prev) => {
       const next = { ...prev };
       if (qty <= 0) delete next[key];
-      else next[key] = { itemId, extraNames, qty, note: prev[key]?.note };
+      else next[key] = { itemId, extraNames, preferenceNames, qty, note: prev[key]?.note };
       return next;
     });
   };
 
-  const setLineNote = (itemId: string, extraNames: string[], note: string) => {
-    const key = cartKey(itemId, extraNames);
+  const setLineNote = (
+    itemId: string,
+    extraNames: string[],
+    preferenceNames: string[],
+    note: string,
+  ) => {
+    const key = cartKey(itemId, extraNames, preferenceNames);
     setCart((prev) => {
       const existing = prev[key];
       if (!existing) return prev;
@@ -117,13 +141,19 @@ export function MenuView({
 
   const clearCart = () => setCart({});
 
-  const addLine = (itemId: string, extraNames: string[], note?: string) => {
-    const key = cartKey(itemId, extraNames);
+  const addLine = (
+    itemId: string,
+    extraNames: string[],
+    preferenceNames: string[],
+    note?: string,
+  ) => {
+    const key = cartKey(itemId, extraNames, preferenceNames);
     setCart((prev) => ({
       ...prev,
       [key]: {
         itemId,
         extraNames,
+        preferenceNames,
         qty: (prev[key]?.qty ?? 0) + 1,
         note: note || prev[key]?.note,
       },
@@ -135,6 +165,7 @@ export function MenuView({
       item: items.find((i) => i.id === line.itemId),
       qty: line.qty,
       extraNames: line.extraNames,
+      preferenceNames: line.preferenceNames,
       note: line.note,
     }))
     .filter(
@@ -144,6 +175,7 @@ export function MenuView({
         item: MenuItem;
         qty: number;
         extraNames: string[];
+        preferenceNames: string[];
         note: string | undefined;
       } => Boolean(line.item),
     );
@@ -237,8 +269,8 @@ export function MenuView({
                   .filter((item) => item.category_id === category.id)
                   .map((item) => {
                     const noExtrasQty =
-                      cart[cartKey(item.id, [])]?.qty ?? 0;
-                    const noExtrasNote = cart[cartKey(item.id, [])]?.note ?? "";
+                      cart[cartKey(item.id, [], [])]?.qty ?? 0;
+                    const noExtrasNote = cart[cartKey(item.id, [], [])]?.note ?? "";
                     const totalQty = Object.values(cart)
                       .filter((line) => line.itemId === item.id)
                       .reduce((sum, line) => sum + line.qty, 0);
@@ -249,17 +281,18 @@ export function MenuView({
                         currency={currency}
                         themeColor={themeColor}
                         orderingEnabled={canOrder}
+                        isBestSeller={bestSellerSet.has(item.name)}
                         noExtrasQty={noExtrasQty}
                         noExtrasNote={noExtrasNote}
                         totalQty={totalQty}
                         onNoExtrasQtyChange={(qty) =>
-                          setLineQty(item.id, [], qty)
+                          setLineQty(item.id, [], [], qty)
                         }
                         onNoExtrasNoteChange={(note) =>
-                          setLineNote(item.id, [], note)
+                          setLineNote(item.id, [], [], note)
                         }
-                        onAddWithExtras={(extraNames, note) =>
-                          addLine(item.id, extraNames, note)
+                        onAddWithExtras={(extraNames, preferenceNames, note) =>
+                          addLine(item.id, extraNames, preferenceNames, note)
                         }
                       />
                     );
@@ -302,8 +335,8 @@ export function MenuView({
           packagingFeeAmount={packagingFeeAmount}
           availableTables={availableTables}
           fixedTable={fixedTable}
-          onQtyChange={(itemId, extraNames, qty) =>
-            setLineQty(itemId, extraNames, qty)
+          onQtyChange={(itemId, extraNames, preferenceNames, qty) =>
+            setLineQty(itemId, extraNames, preferenceNames, qty)
           }
           onClose={() => setCartOpen(false)}
           onOrderPlaced={clearCart}
@@ -318,6 +351,7 @@ function MenuItemCard({
   currency,
   themeColor,
   orderingEnabled,
+  isBestSeller,
   noExtrasQty,
   noExtrasNote,
   totalQty,
@@ -329,17 +363,27 @@ function MenuItemCard({
   currency: string;
   themeColor: string;
   orderingEnabled: boolean;
+  isBestSeller: boolean;
   noExtrasQty: number;
   noExtrasNote: string;
   totalQty: number;
   onNoExtrasQtyChange: (qty: number) => void;
   onNoExtrasNoteChange: (note: string) => void;
-  onAddWithExtras: (extraNames: string[], note?: string) => void;
+  onAddWithExtras: (
+    extraNames: string[],
+    preferenceNames: string[],
+    note?: string,
+  ) => void;
 }) {
   const extras = parseExtras(item.extras);
   const hasExtras = extras.length > 0;
+  const preferences = parsePreferences(item.preferences);
+  const hasPreferences = preferences.length > 0;
+  const hasPicker = hasExtras || hasPreferences;
+  const discounted = hasDiscount(item);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
   const [pickerNote, setPickerNote] = useState("");
   const [noteOpen, setNoteOpen] = useState(false);
 
@@ -349,9 +393,16 @@ function MenuItemCard({
     );
   };
 
+  const togglePreference = (name: string) => {
+    setSelectedPreferences((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    );
+  };
+
   const confirmAdd = () => {
-    onAddWithExtras(selected, pickerNote.trim() || undefined);
+    onAddWithExtras(selected, selectedPreferences, pickerNote.trim() || undefined);
     setSelected([]);
+    setSelectedPreferences([]);
     setPickerNote("");
     setPickerOpen(false);
   };
@@ -376,11 +427,15 @@ function MenuItemCard({
             <h3 className="font-medium text-neutral-900 dark:text-white">
               {item.name}
             </h3>
-            <span
-              className="shrink-0 font-semibold"
-              style={{ color: themeColor }}
-            >
-              {formatPrice(item.price, currency)}
+            <span className="shrink-0 text-right">
+              {discounted && (
+                <span className="block text-xs text-neutral-400 line-through dark:text-neutral-600">
+                  {formatPrice(item.original_price!, currency)}
+                </span>
+              )}
+              <span className="font-semibold" style={{ color: themeColor }}>
+                {formatPrice(item.price, currency)}
+              </span>
             </span>
           </div>
           {item.description && (
@@ -388,8 +443,18 @@ function MenuItemCard({
               {item.description}
             </p>
           )}
-          {item.tags.length > 0 && (
+          {(isBestSeller || discounted || item.tags.length > 0) && (
             <div className="mt-1.5 flex flex-wrap gap-1">
+              {isBestSeller && (
+                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-400/10 dark:text-amber-400">
+                  ⭐ Más vendido
+                </span>
+              )}
+              {discounted && (
+                <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700 dark:bg-red-500/10 dark:text-red-400">
+                  Descuento
+                </span>
+              )}
               {item.tags.map((tag) => (
                 <span
                   key={tag}
@@ -400,7 +465,7 @@ function MenuItemCard({
               ))}
             </div>
           )}
-          {orderingEnabled && !hasExtras && (
+          {orderingEnabled && !hasPicker && (
             <div className="mt-2">
               <div className="flex items-center gap-3">
                 {noExtrasQty === 0 ? (
@@ -454,7 +519,7 @@ function MenuItemCard({
               )}
             </div>
           )}
-          {orderingEnabled && hasExtras && !pickerOpen && (
+          {orderingEnabled && hasPicker && !pickerOpen && (
             <div className="mt-2 flex items-center gap-2">
               <button
                 type="button"
@@ -474,34 +539,66 @@ function MenuItemCard({
         </div>
       </div>
 
-      {orderingEnabled && hasExtras && pickerOpen && (
-        <div className="mt-3 space-y-2 rounded-xl border border-neutral-100 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/50">
-          <p className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
-            Toppings y extras
-          </p>
-          <div className="space-y-1.5">
-            {extras.map((extra) => (
-              <label
-                key={extra.name}
-                className="flex cursor-pointer items-center justify-between gap-2 text-sm text-neutral-700 dark:text-neutral-300"
-              >
-                <span className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(extra.name)}
-                    onChange={() => toggleExtra(extra.name)}
-                    className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
-                  />
-                  {extra.name}
-                </span>
-                {extra.price > 0 && (
-                  <span className="text-neutral-500 dark:text-neutral-400">
-                    +{formatPrice(extra.price, currency)}
-                  </span>
-                )}
-              </label>
-            ))}
-          </div>
+      {orderingEnabled && hasPicker && pickerOpen && (
+        <div className="mt-3 space-y-3 rounded-xl border border-neutral-100 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/50">
+          {hasExtras && (
+            <div className="space-y-1.5">
+              <p className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                Toppings y extras
+              </p>
+              <div className="space-y-1.5">
+                {extras.map((extra) => (
+                  <label
+                    key={extra.name}
+                    className="flex cursor-pointer items-center justify-between gap-2 text-sm text-neutral-700 dark:text-neutral-300"
+                  >
+                    <span className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(extra.name)}
+                        onChange={() => toggleExtra(extra.name)}
+                        className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-600"
+                      />
+                      {extra.name}
+                    </span>
+                    {extra.price > 0 && (
+                      <span className="text-neutral-500 dark:text-neutral-400">
+                        +{formatPrice(extra.price, currency)}
+                      </span>
+                    )}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+          {hasPreferences && (
+            <div className="space-y-1.5">
+              <p className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                Preferencias
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {preferences.map((pref) => {
+                  const isSelected = selectedPreferences.includes(pref);
+                  return (
+                    <button
+                      key={pref}
+                      type="button"
+                      onClick={() => togglePreference(pref)}
+                      className={cn(
+                        "rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+                        isSelected
+                          ? "border-transparent text-white"
+                          : "border-neutral-200 bg-white text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400",
+                      )}
+                      style={isSelected ? { backgroundColor: themeColor } : undefined}
+                    >
+                      {pref}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           <div>
             <p className="mb-1 text-xs font-medium text-neutral-700 dark:text-neutral-300">
               Nota (opcional)
@@ -520,6 +617,7 @@ function MenuItemCard({
               type="button"
               onClick={() => {
                 setSelected([]);
+                setSelectedPreferences([]);
                 setPickerNote("");
                 setPickerOpen(false);
               }}
@@ -582,7 +680,13 @@ function CartSheet({
   onClose,
   onOrderPlaced,
 }: {
-  lines: { item: MenuItem; qty: number; extraNames: string[]; note?: string }[];
+  lines: {
+    item: MenuItem;
+    qty: number;
+    extraNames: string[];
+    preferenceNames: string[];
+    note?: string;
+  }[];
   currency: string;
   themeColor: string;
   restaurantId: string;
@@ -595,7 +699,12 @@ function CartSheet({
   packagingFeeAmount: number;
   availableTables: RestaurantTable[];
   fixedTable: RestaurantTable | null;
-  onQtyChange: (itemId: string, extraNames: string[], qty: number) => void;
+  onQtyChange: (
+    itemId: string,
+    extraNames: string[],
+    preferenceNames: string[],
+    qty: number,
+  ) => void;
   onClose: () => void;
   onOrderPlaced: () => void;
 }) {
@@ -631,9 +740,9 @@ function CartSheet({
               </p>
             ) : (
               <div className="space-y-3">
-                {lines.map(({ item, qty, extraNames, note }) => (
+                {lines.map(({ item, qty, extraNames, preferenceNames, note }) => (
                   <div
-                    key={`${item.id}::${extraNames.join("|")}`}
+                    key={`${item.id}::${extraNames.join("|")}::${preferenceNames.join("|")}`}
                     className="flex items-center justify-between gap-3"
                   >
                     <div className="min-w-0">
@@ -643,6 +752,11 @@ function CartSheet({
                       {extraNames.length > 0 && (
                         <p className="truncate text-xs text-neutral-500 dark:text-neutral-500">
                           + {extraNames.join(", ")}
+                        </p>
+                      )}
+                      {preferenceNames.length > 0 && (
+                        <p className="truncate text-xs text-neutral-500 dark:text-neutral-500">
+                          🚫 {preferenceNames.join(", ")}
                         </p>
                       )}
                       {note && (
@@ -656,7 +770,9 @@ function CartSheet({
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
                       <QtyButton
-                        onClick={() => onQtyChange(item.id, extraNames, qty - 1)}
+                        onClick={() =>
+                          onQtyChange(item.id, extraNames, preferenceNames, qty - 1)
+                        }
                       >
                         <Minus className="h-3.5 w-3.5" />
                       </QtyButton>
@@ -664,7 +780,9 @@ function CartSheet({
                         {qty}
                       </span>
                       <QtyButton
-                        onClick={() => onQtyChange(item.id, extraNames, qty + 1)}
+                        onClick={() =>
+                          onQtyChange(item.id, extraNames, preferenceNames, qty + 1)
+                        }
                       >
                         <Plus className="h-3.5 w-3.5" />
                       </QtyButton>
