@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Search, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
-import type { BcvRate } from "@/lib/bcv-rate";
+import { formatBs, type BcvRate } from "@/lib/bcv-rate";
 import type { PaymentMethodValues } from "@/lib/payment-methods";
 import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
 import { parsePreferences } from "@/lib/menu-item-preferences";
@@ -280,6 +280,7 @@ export function MenuView({
                         item={item}
                         currency={currency}
                         themeColor={themeColor}
+                        bcvRate={bcvRate}
                         orderingEnabled={canOrder}
                         isBestSeller={bestSellerSet.has(item.name)}
                         noExtrasQty={noExtrasQty}
@@ -350,6 +351,7 @@ function MenuItemCard({
   item,
   currency,
   themeColor,
+  bcvRate,
   orderingEnabled,
   isBestSeller,
   noExtrasQty,
@@ -362,6 +364,7 @@ function MenuItemCard({
   item: MenuItem;
   currency: string;
   themeColor: string;
+  bcvRate: BcvRate | null;
   orderingEnabled: boolean;
   isBestSeller: boolean;
   noExtrasQty: number;
@@ -436,6 +439,11 @@ function MenuItemCard({
               <span className="font-semibold" style={{ color: themeColor }}>
                 {formatPrice(item.price, currency)}
               </span>
+              {bcvRate && (
+                <span className="block text-xs text-neutral-500 dark:text-neutral-400">
+                  {formatBs(item.price, bcvRate.rate)}
+                </span>
+              )}
             </span>
           </div>
           {item.description && (
