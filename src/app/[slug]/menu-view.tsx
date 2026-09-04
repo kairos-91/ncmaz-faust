@@ -467,14 +467,14 @@ function MenuItemCard({
             </p>
           )}
           <div className="mt-1.5 flex flex-wrap items-baseline gap-1.5">
+            <span className="font-semibold" style={{ color: themeColor }}>
+              {formatPrice(item.price, currency)}
+            </span>
             {discounted && (
               <span className="text-xs text-neutral-400 line-through dark:text-neutral-600">
                 {formatPrice(item.original_price!, currency)}
               </span>
             )}
-            <span className="font-semibold" style={{ color: themeColor }}>
-              {formatPrice(item.price, currency)}
-            </span>
             {discounted && (
               <span className="text-xs font-semibold text-green-600 dark:text-green-400">
                 -{discountPercent(item)}%
@@ -597,18 +597,20 @@ function MenuItemCard({
                     {item.name}
                   </h2>
                   <span className="shrink-0 text-right">
-                    {discounted && (
-                      <span className="flex items-center justify-end gap-1.5">
+                    <span className="flex items-center justify-end gap-1.5">
+                      <span className="font-semibold" style={{ color: themeColor }}>
+                        {formatPrice(item.price, currency)}
+                      </span>
+                      {discounted && (
                         <span className="text-xs text-neutral-400 line-through dark:text-neutral-600">
                           {formatPrice(item.original_price!, currency)}
                         </span>
+                      )}
+                      {discounted && (
                         <span className="text-xs font-semibold text-green-600 dark:text-green-400">
                           -{discountPercent(item)}%
                         </span>
-                      </span>
-                    )}
-                    <span className="font-semibold" style={{ color: themeColor }}>
-                      {formatPrice(item.price, currency)}
+                      )}
                     </span>
                     {bcvRate && (
                       <span className="block text-xs text-neutral-500 dark:text-neutral-400">
