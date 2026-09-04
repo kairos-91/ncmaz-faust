@@ -93,7 +93,7 @@ export function parseOpeningHours(json: Json | null | undefined): DayHours[] {
 export function getNextOpening(
   hours: DayHours[],
   now: Date = new Date(),
-): { day: DayKey; time: string; isToday: boolean } | null {
+): { day: DayKey; time: string; isToday: boolean; isTomorrow: boolean } | null {
   const { day: todayKey, minutesOfDay: minutesNow } = getZonedParts(now);
   const todayIndex = DAY_KEYS.indexOf(todayKey);
   const byDay = new Map(hours.map((h) => [h.day, h]));
@@ -103,7 +103,7 @@ export function getNextOpening(
     const [openH, openM] = today.open.split(":").map(Number);
     const openMinutes = openH * 60 + (openM || 0);
     if (minutesNow < openMinutes) {
-      return { day: todayKey, time: today.open, isToday: true };
+      return { day: todayKey, time: today.open, isToday: true, isTomorrow: false };
     }
   }
 
@@ -111,7 +111,7 @@ export function getNextOpening(
     const day = DAY_KEYS[(todayIndex + i) % 7];
     const entry = byDay.get(day);
     if (entry && !entry.closed) {
-      return { day, time: entry.open, isToday: false };
+      return { day, time: entry.open, isToday: false, isTomorrow: i === 1 };
     }
   }
   return null;

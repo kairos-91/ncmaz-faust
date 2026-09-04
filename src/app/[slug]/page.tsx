@@ -234,10 +234,10 @@ export default async function PublicMenuPage({
     ? null
     : restaurant.allow_orders_when_closed
       ? nextOpening
-        ? `Estamos cerrados, pero puedes hacer tu pedido — lo prepararemos ${nextOpening.isToday ? "hoy" : `el ${DAY_LABELS[nextOpening.day].toLowerCase()}`} a las ${formatTime12h(nextOpening.time)}.`
+        ? `Estamos cerrados, pero puedes hacer tu pedido — lo prepararemos ${nextOpening.isToday ? "hoy" : nextOpening.isTomorrow ? "mañana" : `el ${DAY_LABELS[nextOpening.day].toLowerCase()}`} a las ${formatTime12h(nextOpening.time)}.`
         : "Estamos cerrados, pero puedes hacer tu pedido igual."
       : nextOpening
-        ? `Estamos cerrados. Abrimos ${nextOpening.isToday ? "hoy" : `el ${DAY_LABELS[nextOpening.day].toLowerCase()}`} a las ${formatTime12h(nextOpening.time)}.`
+        ? `Estamos cerrados. Abrimos ${nextOpening.isToday ? "hoy" : nextOpening.isTomorrow ? "mañana" : `el ${DAY_LABELS[nextOpening.day].toLowerCase()}`} a las ${formatTime12h(nextOpening.time)}.`
         : "Estamos cerrados por el momento.";
 
   return (
