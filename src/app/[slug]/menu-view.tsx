@@ -421,143 +421,139 @@ function MenuItemCard({
     setPickerOpen(false);
   };
 
+  const addControl = !hasPicker && noExtrasQty > 0 ? (
+    <div className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white px-1 py-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
+      <button
+        type="button"
+        onClick={() => onNoExtrasQtyChange(noExtrasQty - 1)}
+        className="flex h-6 w-6 items-center justify-center rounded-full text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+      >
+        <Minus className="h-3.5 w-3.5" />
+      </button>
+      <span className="w-3 text-center text-xs font-medium text-neutral-900 dark:text-white">
+        {noExtrasQty}
+      </span>
+      <button
+        type="button"
+        onClick={() => onNoExtrasQtyChange(noExtrasQty + 1)}
+        className="flex h-6 w-6 items-center justify-center rounded-full text-white"
+        style={{ backgroundColor: themeColor }}
+      >
+        <Plus className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  ) : (
+    <button
+      type="button"
+      onClick={() => (hasPicker ? setPickerOpen(true) : onNoExtrasQtyChange(1))}
+      className="flex h-9 w-9 items-center justify-center rounded-full text-white shadow-md"
+      style={{ backgroundColor: themeColor }}
+      aria-label="Agregar"
+    >
+      <Plus className="h-5 w-5" />
+    </button>
+  );
+
   return (
-    <div className="rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-      <div className="flex gap-4">
-        {item.image_url && (
-          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
-            <Image
-              src={item.image_url}
-              alt={item.name}
-              width={80}
-              height={80}
-              className="h-full w-full object-cover"
-              unoptimized
-            />
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <h3 className="font-medium leading-tight text-neutral-900 dark:text-white">
-                {item.name}
-              </h3>
-              {item.description && (
-                <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
-                  {item.description}
-                </p>
-              )}
-            </div>
-            <span className="shrink-0 text-right">
-              {discounted && (
-                <span className="flex items-center justify-end gap-1.5">
-                  <span className="text-xs text-neutral-400 line-through dark:text-neutral-600">
-                    {formatPrice(item.original_price!, currency)}
-                  </span>
-                  <span className="text-xs font-semibold text-green-600 dark:text-green-400">
-                    -{discountPercent(item)}%
-                  </span>
-                </span>
-              )}
-              <span className="font-semibold" style={{ color: themeColor }}>
-                {formatPrice(item.price, currency)}
-              </span>
-              {bcvRate && (
-                <span className="block text-xs text-neutral-500 dark:text-neutral-400">
-                  {formatBs(item.price, bcvRate.rate)}
-                </span>
-              )}
-            </span>
-          </div>
-          {(isBestSeller || item.tags.length > 0) && (
-            <div className="mt-1.5 flex flex-wrap gap-1">
-              {isBestSeller && (
-                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-medium text-orange-700 dark:bg-orange-400/10 dark:text-orange-400">
-                  🔥 Más vendido
-                </span>
-              )}
-              {item.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-          {orderingEnabled && !hasPicker && (
-            <div className="mt-2">
-              <div className="flex items-center justify-end gap-3">
-                {noExtrasQty === 0 ? (
-                  <button
-                    type="button"
-                    onClick={() => onNoExtrasQtyChange(1)}
-                    className="rounded-full border px-3 py-1 text-xs font-medium"
-                    style={{ borderColor: themeColor, color: themeColor }}
-                  >
-                    + Agregar
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => setNoteOpen((v) => !v)}
-                      className="text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
-                    >
-                      {noExtrasNote ? "📝 Editar nota" : "📝 Agregar nota"}
-                    </button>
-                    <div className="flex items-center gap-3">
-                      <QtyButton onClick={() => onNoExtrasQtyChange(noExtrasQty - 1)}>
-                        <Minus className="h-3.5 w-3.5" />
-                      </QtyButton>
-                      <span className="w-4 text-center text-sm font-medium text-neutral-900 dark:text-white">
-                        {noExtrasQty}
-                      </span>
-                      <QtyButton onClick={() => onNoExtrasQtyChange(noExtrasQty + 1)}>
-                        <Plus className="h-3.5 w-3.5" />
-                      </QtyButton>
-                    </div>
-                  </>
-                )}
-              </div>
-              {noExtrasQty > 0 && noteOpen && (
-                <textarea
-                  autoFocus
-                  value={noExtrasNote}
-                  onChange={(e) => onNoExtrasNoteChange(e.target.value)}
-                  onBlur={() => setNoteOpen(false)}
-                  maxLength={140}
-                  rows={2}
-                  placeholder="Ej: sin cebolla, término medio..."
-                  className="mt-2 w-full rounded-lg border border-neutral-200 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
-                />
-              )}
-              {noExtrasQty > 0 && !noteOpen && noExtrasNote && (
-                <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                  📝 {noExtrasNote}
-                </p>
-              )}
-            </div>
-          )}
-          {orderingEnabled && hasPicker && (
-            <div className="mt-2 flex items-center justify-end gap-2">
-              {totalQty > 0 && (
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                  {totalQty} en tu pedido
-                </span>
-              )}
-              <button
-                type="button"
-                onClick={() => setPickerOpen(true)}
-                className="rounded-full border px-3 py-1 text-xs font-medium"
-                style={{ borderColor: themeColor, color: themeColor }}
-              >
-                + Agregar
-              </button>
-            </div>
+    <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+      {item.image_url && (
+        <div className="relative aspect-[16/10] w-full bg-neutral-100 dark:bg-neutral-800">
+          <Image
+            src={item.image_url}
+            alt={item.name}
+            fill
+            unoptimized
+            className="object-cover"
+          />
+          {orderingEnabled && (
+            <div className="absolute bottom-2 right-2">{addControl}</div>
           )}
         </div>
+      )}
+      <div className="p-3">
+        <h3 className="font-medium leading-tight text-neutral-900 dark:text-white">
+          {item.name}
+        </h3>
+        {item.description && (
+          <p className="mt-0.5 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-400">
+            {item.description}
+          </p>
+        )}
+        <div className="mt-1.5 flex flex-wrap items-baseline gap-1.5">
+          {discounted && (
+            <span className="text-xs text-neutral-400 line-through dark:text-neutral-600">
+              {formatPrice(item.original_price!, currency)}
+            </span>
+          )}
+          <span className="font-semibold" style={{ color: themeColor }}>
+            {formatPrice(item.price, currency)}
+          </span>
+          {discounted && (
+            <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+              -{discountPercent(item)}%
+            </span>
+          )}
+        </div>
+        {bcvRate && (
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            {formatBs(item.price, bcvRate.rate)}
+          </p>
+        )}
+        {(isBestSeller || item.tags.length > 0) && (
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {isBestSeller && (
+              <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-medium text-orange-700 dark:bg-orange-400/10 dark:text-orange-400">
+                🔥 Más vendido
+              </span>
+            )}
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {!hasPicker && noExtrasQty > 0 && (
+          <div className="mt-1.5">
+            <button
+              type="button"
+              onClick={() => setNoteOpen((v) => !v)}
+              className="text-xs font-medium text-neutral-500 underline-offset-2 hover:underline dark:text-neutral-400"
+            >
+              {noExtrasNote ? "📝 Editar nota" : "📝 Agregar nota"}
+            </button>
+            {noteOpen && (
+              <textarea
+                autoFocus
+                value={noExtrasNote}
+                onChange={(e) => onNoExtrasNoteChange(e.target.value)}
+                onBlur={() => setNoteOpen(false)}
+                maxLength={140}
+                rows={2}
+                placeholder="Ej: sin cebolla, término medio..."
+                className="mt-2 w-full rounded-lg border border-neutral-200 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+              />
+            )}
+            {!noteOpen && noExtrasNote && (
+              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                📝 {noExtrasNote}
+              </p>
+            )}
+          </div>
+        )}
+        {hasPicker && totalQty > 0 && (
+          <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+            {totalQty} en tu pedido
+          </p>
+        )}
+
+        {!item.image_url && orderingEnabled && (
+          <div className="mt-2 flex justify-end">{addControl}</div>
+        )}
       </div>
 
       {orderingEnabled && hasPicker && pickerOpen && (
