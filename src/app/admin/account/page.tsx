@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import Image from "next/image";
 import { getStaffRestaurant } from "@/lib/get-owner-restaurant";
 import { getT } from "@/lib/i18n/locale";
 import { AvatarSection } from "./avatar-section";
+import { GoogleAvatar } from "./google-avatar";
 import { PasswordSection } from "./password-section";
 import { DeleteAccountSection } from "./delete-account-section";
 
@@ -32,20 +32,7 @@ export default async function AccountPage() {
         <div className="mt-3">
           {isGoogleAccount ? (
             <div className="flex items-center gap-4">
-              {avatarUrl ? (
-                <Image
-                  src={avatarUrl}
-                  alt=""
-                  width={64}
-                  height={64}
-                  unoptimized
-                  className="h-16 w-16 shrink-0 rounded-full object-cover"
-                />
-              ) : (
-                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-lime-100 text-xl font-semibold text-lime-700 dark:bg-lime-400/10 dark:text-lime-400">
-                  {userEmail[0]?.toUpperCase()}
-                </span>
-              )}
+              <GoogleAvatar avatarUrl={avatarUrl} initial={userEmail[0]?.toUpperCase() ?? "?"} />
               <p className="text-sm text-neutral-500 dark:text-neutral-500">
                 {pt.googleManagedPhoto}
               </p>

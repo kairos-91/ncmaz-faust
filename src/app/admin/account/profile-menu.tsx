@@ -36,6 +36,7 @@ export function ProfileMenu({
   }, [open]);
 
   const initial = email?.[0]?.toUpperCase() ?? "?";
+  const [avatarBroken, setAvatarBroken] = useState(false);
 
   return (
     <div className="relative" ref={menuRef}>
@@ -45,13 +46,14 @@ export function ProfileMenu({
         className="flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2 hover:bg-neutral-100 dark:hover:bg-neutral-800"
         aria-label={t.menuLabel}
       >
-        {avatarUrl ? (
+        {avatarUrl && !avatarBroken ? (
           <Image
             src={avatarUrl}
             alt=""
             width={32}
             height={32}
             unoptimized
+            onError={() => setAvatarBroken(true)}
             className="h-8 w-8 shrink-0 rounded-full object-cover"
           />
         ) : (

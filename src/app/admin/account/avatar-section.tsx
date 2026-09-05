@@ -20,6 +20,7 @@ export function AvatarSection({
   const t = getDictionary(locale).profileMenu;
   const router = useRouter();
   const [avatar, setAvatar] = useState(avatarUrl);
+  const [avatarBroken, setAvatarBroken] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isUploading, startUpload] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -36,6 +37,7 @@ export function AvatarSection({
       if ("error" in result && result.error) setError(result.error);
       if ("url" in result && result.url) {
         setAvatar(result.url);
+        setAvatarBroken(false);
         router.refresh();
       }
     });
@@ -43,13 +45,14 @@ export function AvatarSection({
 
   return (
     <div className="flex items-center gap-4">
-      {avatar ? (
+      {avatar && !avatarBroken ? (
         <Image
           src={avatar}
           alt=""
           width={64}
           height={64}
           unoptimized
+          onError={() => setAvatarBroken(true)}
           className="h-16 w-16 shrink-0 rounded-full object-cover"
         />
       ) : (
