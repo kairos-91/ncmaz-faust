@@ -30,6 +30,15 @@ export function ExtrasFields({
       <Label>{t.extrasLabel}</Label>
       {rows.length > 0 && (
         <div className="mt-2 space-y-2">
+          <div className="flex items-center gap-2 px-0.5">
+            <span className="w-full min-w-0 flex-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              {t.extrasNameColumnLabel}
+            </span>
+            <span className="w-24 shrink-0 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              {t.extrasPriceColumnLabel}
+            </span>
+            <span className="w-9 shrink-0" />
+          </div>
           {rows.map((row, index) => (
             <div key={index} className="flex items-center gap-2">
               <input
