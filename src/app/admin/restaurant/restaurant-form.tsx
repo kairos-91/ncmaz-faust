@@ -167,7 +167,7 @@ export function RestaurantForm({
             id="phone"
             name="phone"
             defaultValue={restaurant?.phone ?? ""}
-            placeholder="+58 412 0000000"
+            placeholder="04120000000"
           />
         </div>
         <div>
@@ -176,7 +176,7 @@ export function RestaurantForm({
             id="whatsapp"
             name="whatsapp"
             defaultValue={restaurant?.whatsapp ?? ""}
-            placeholder="+58 412 0000000"
+            placeholder="04120000000"
           />
         </div>
       </div>
