@@ -13,7 +13,7 @@ import {
   restaurantSchema,
 } from "@/lib/validations";
 import { extrasTotal, parseExtras, parseExtrasForm } from "@/lib/menu-item-extras";
-import { parsePreferencesText } from "@/lib/menu-item-preferences";
+import { parsePreferencesForm } from "@/lib/menu-item-preferences";
 import type { OrderItemSnapshot } from "@/lib/orders";
 import { parseDeliveryZonesForm } from "@/lib/delivery-zones";
 import { DAY_KEYS, type DayHours } from "@/lib/opening-hours";
@@ -448,7 +448,7 @@ function parseMenuItemForm(formData: FormData) {
     is_featured: formData.get("is_featured") === "on",
     tags: formData.get("tags") ?? "",
     extras: parseExtrasForm(formData),
-    preferences: formData.get("preferences") ?? "",
+    preferences: parsePreferencesForm(formData),
   });
 }
 
@@ -489,7 +489,7 @@ export async function createMenuItem(
     is_featured: parsed.data.is_featured,
     tags: toTagsArray(parsed.data.tags),
     extras: parsed.data.extras,
-    preferences: parsePreferencesText(parsed.data.preferences ?? ""),
+    preferences: parsed.data.preferences,
     image_url,
   });
   if (error) return { error: error.message };
@@ -530,7 +530,7 @@ export async function updateMenuItem(
       is_featured: parsed.data.is_featured,
       tags: toTagsArray(parsed.data.tags),
       extras: parsed.data.extras,
-      preferences: parsePreferencesText(parsed.data.preferences ?? ""),
+      preferences: parsed.data.preferences,
       ...(image_url ? { image_url } : {}),
     })
     .eq("id", itemId);

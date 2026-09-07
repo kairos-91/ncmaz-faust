@@ -770,9 +770,11 @@ const es = {
     extrasHint:
       "El precio se suma al del plato cuando el cliente lo elige. Usa 0 si el extra es gratis.",
     preferencesLabel: "Preferencias (sin costo)",
-    preferencesPlaceholder: "Sin sal\nSin azúcar\nSin queso",
+    preferencesNamePlaceholder: "Sin sal",
+    preferencesAdd: "Agregar preferencia",
+    preferencesRemove: "Quitar preferencia",
     preferencesHint:
-      "Una preferencia por línea. No afectan el precio, solo dejan que el cliente marque una opción al pedir.",
+      "No afectan el precio, solo dejan que el cliente marque una opción al pedir.",
     imageLabel: "Foto del plato",
     availableLabel: "Disponible",
     featuredLabel: "Destacado",
@@ -1913,9 +1915,11 @@ const en: typeof es = {
     extrasHint:
       "The price is added to the dish's price when the customer picks it. Use 0 if the extra is free.",
     preferencesLabel: "Preferences (no cost)",
-    preferencesPlaceholder: "No salt\nNo sugar\nNo cheese",
+    preferencesNamePlaceholder: "No salt",
+    preferencesAdd: "Add preference",
+    preferencesRemove: "Remove preference",
     preferencesHint:
-      "One preference per line. They don't affect the price — just let the customer flag an option when ordering.",
+      "They don't affect the price — just let the customer flag an option when ordering.",
     imageLabel: "Dish photo",
     availableLabel: "Available",
     featuredLabel: "Featured",

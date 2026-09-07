@@ -108,7 +108,7 @@ export const menuItemSchema = z
         }),
       )
       .max(50),
-    preferences: z.string().max(1000).optional().or(z.literal("")),
+    preferences: z.array(z.string().min(1).max(80)).max(50),
   })
   .refine(
     (data) => data.original_price === "" || (data.original_price ?? 0) > data.price,
