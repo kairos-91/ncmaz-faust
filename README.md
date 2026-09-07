@@ -489,6 +489,21 @@ o recíbelo como prop `t` (client) donde lo necesites.
      pequeña a la derecha); `grid` muestra las tarjetas en cuadrícula de
      dos columnas con la foto grande arriba y el botón "+" superpuesto
      en la esquina inferior derecha de la tarjeta.
+   - Otro hueco de seguridad real cerrado (sin migración, es código): en
+     `createOrder` (`src/app/[slug]/actions.ts`), el precio de cada plato,
+     el envío, el empaque y el descuento del cupón se recalculan siempre
+     en el servidor a partir de `menu_items`/`restaurants`/`coupons` —
+     antes se guardaban tal cual los mandaba el navegador (`unitPrice`,
+     `total`, `deliveryFee`, etc.), así que cualquiera con las devtools
+     podía editar esos valores antes de enviar el pedido. Ahora el
+     checkout público solo manda `itemId` + cantidad/extras/preferencias
+     elegidos; el servidor busca el precio real, filtra extras/
+     preferencias que no existan en ese plato, calcula el envío desde las
+     zonas configuradas del restaurante y revalida el cupón (mismo código
+     que ya usaba `checkCoupon`, extraído a `fetchCoupon`/
+     `fetchCouponUsage`) antes de armar el `total` que se guarda. Mismo
+     patrón que ya usaba `createOrderFromAdmin` para los pedidos que crea
+     el propio restaurante desde `/admin/orders/new`.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

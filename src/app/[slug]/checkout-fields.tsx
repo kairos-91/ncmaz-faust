@@ -760,22 +760,14 @@ export function CheckoutFields({
               tableNumber: orderType === "dine_in" ? table : undefined,
               tableId: orderType === "dine_in" ? tableId ?? undefined : undefined,
               deliveryZone: orderType === "delivery" ? deliveryZone || undefined : undefined,
-              deliveryFee,
-              packagingFee: packagingFee || undefined,
               couponCode: couponValidity?.valid ? appliedCoupon?.code : undefined,
-              discountAmount: discountAmount || undefined,
               items: lines.map((l) => ({
-                name: l.item.name,
+                itemId: l.item.id,
                 qty: l.qty,
-                unitPrice:
-                  l.item.price +
-                  extrasTotal(parseExtras(l.item.extras), l.extraNames),
                 extraNames: l.extraNames,
                 preferenceNames: l.preferenceNames,
                 note: l.note,
               })),
-              total: grandTotal,
-              currency,
               paymentMethod: methodId ?? undefined,
               bankPaidFrom: isCash ? undefined : confirmValues.bankPaidFrom || undefined,
               reference: isCash ? undefined : confirmValues.reference || undefined,

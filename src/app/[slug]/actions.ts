@@ -8,7 +8,11 @@ import { ORDER_TYPE_LABELS, type OrderItemSnapshot } from "@/lib/orders";
 import { formatPrice } from "@/lib/utils";
 import { imageExtension, validateImageFile } from "@/lib/file-validation";
 import { checkIpRateLimit } from "@/lib/rate-limit";
+import { extrasTotal, parseExtras } from "@/lib/menu-item-extras";
+import { parsePreferences } from "@/lib/menu-item-preferences";
+import { parseDeliveryZones } from "@/lib/delivery-zones";
 import {
+  computeDiscount,
   parseValidDays,
   parseValidPaymentMethods,
   validateCoupon,
@@ -66,6 +70,56 @@ async function notifyAdminsOfNewOrder(
   );
 }
 
+async function fetchCoupon(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  restaurantId: string,
+  code: string,
+): Promise<Coupon | null> {
+  const { data } = await supabase
+    .from("coupons")
+    .select(
+      "id, code, discount_type, discount_value, is_active, expires_at, min_order_amount, max_total_uses, max_uses_per_customer, starts_at, valid_time_start, valid_time_end, valid_days, valid_payment_methods",
+    )
+    .eq("restaurant_id", restaurantId)
+    .eq("code", code.trim().toUpperCase())
+    .maybeSingle();
+  if (!data) return null;
+
+  return {
+    id: data.id,
+    code: data.code,
+    discount_type: data.discount_type,
+    discount_value: data.discount_value,
+    is_active: data.is_active,
+    expires_at: data.expires_at,
+    min_order_amount: data.min_order_amount,
+    max_total_uses: data.max_total_uses,
+    max_uses_per_customer: data.max_uses_per_customer,
+    starts_at: data.starts_at,
+    valid_time_start: data.valid_time_start,
+    valid_time_end: data.valid_time_end,
+    valid_days: parseValidDays(data.valid_days),
+    valid_payment_methods: parseValidPaymentMethods(data.valid_payment_methods),
+  };
+}
+
+async function fetchCouponUsage(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  restaurantId: string,
+  code: string,
+  customerPhone: string,
+): Promise<{ totalUses: number; customerUses: number }> {
+  const { data: usageRows } = await supabase.rpc("get_coupon_usage", {
+    p_restaurant_id: restaurantId,
+    p_code: code,
+    p_customer_phone: customerPhone,
+  });
+  const row = usageRows?.[0];
+  return row
+    ? { totalUses: row.total_uses, customerUses: row.customer_uses }
+    : { totalUses: 0, customerUses: 0 };
+}
+
 export async function createOrder(
   restaurantId: string,
   input: {
@@ -78,13 +132,14 @@ export async function createOrder(
     tableNumber?: string;
     tableId?: string;
     deliveryZone?: string;
-    deliveryFee?: number;
-    packagingFee?: number;
     couponCode?: string;
-    discountAmount?: number;
-    items: OrderItemSnapshot[];
-    total: number;
-    currency: string;
+    items: {
+      itemId: string;
+      qty: number;
+      extraNames: string[];
+      preferenceNames: string[];
+      note?: string;
+    }[];
     paymentMethod?: string;
     bankPaidFrom?: string;
     reference?: string;
@@ -96,6 +151,9 @@ export async function createOrder(
   if (!input.customerName.trim() || !input.customerPhone.trim()) {
     return { error: "Faltan los datos del cliente" };
   }
+  if (input.items.length === 0) {
+    return { error: "Tu pedido está vacío" };
+  }
 
   const canProceed = await checkIpRateLimit(`order:${restaurantId}`, 8, 900);
   if (!canProceed) {
@@ -103,6 +161,93 @@ export async function createOrder(
   }
 
   const supabase = await createClient();
+
+  const { data: restaurant } = await supabase
+    .from("restaurants")
+    .select("currency, is_published, packaging_fee_enabled, packaging_fee, delivery_zones")
+    .eq("id", restaurantId)
+    .maybeSingle();
+  if (!restaurant || !restaurant.is_published) {
+    return { error: "Este restaurante no está disponible en este momento." };
+  }
+
+  // El precio de cada plato (y de sus extras) se recalcula aquí desde
+  // menu_items — nunca se confía en lo que manda el navegador, que
+  // cualquiera puede editar antes de enviar el pedido (ver revisión de
+  // seguridad previa a producción).
+  const { data: menuItems } = await supabase
+    .from("menu_items")
+    .select("id, name, price, extras, preferences, is_available")
+    .eq("restaurant_id", restaurantId);
+  const menuItemById = new Map((menuItems ?? []).map((mi) => [mi.id, mi]));
+
+  const items: OrderItemSnapshot[] = [];
+  let itemsTotal = 0;
+  for (const line of input.items) {
+    const menuItem = menuItemById.get(line.itemId);
+    const qty = Math.floor(Number(line.qty)) || 0;
+    if (!menuItem || !menuItem.is_available || qty <= 0) continue;
+
+    const extras = parseExtras(menuItem.extras);
+    const extraNames = line.extraNames.filter((name) =>
+      extras.some((e) => e.name === name),
+    );
+    const preferences = parsePreferences(menuItem.preferences);
+    const preferenceNames = line.preferenceNames.filter((name) =>
+      preferences.includes(name),
+    );
+    const unitPrice = menuItem.price + extrasTotal(extras, extraNames);
+
+    items.push({
+      name: menuItem.name,
+      qty,
+      unitPrice,
+      extraNames,
+      preferenceNames,
+      note: line.note,
+    });
+    itemsTotal += unitPrice * qty;
+  }
+  if (items.length === 0) {
+    return { error: "Los platos de tu pedido ya no están disponibles." };
+  }
+
+  const deliveryZones = parseDeliveryZones(restaurant.delivery_zones);
+  const deliveryFee =
+    input.orderType === "delivery" && input.deliveryZone
+      ? (deliveryZones.find((z) => z.name === input.deliveryZone)?.fee ?? 0)
+      : 0;
+  const packagingFee =
+    restaurant.packaging_fee_enabled &&
+    (input.orderType === "delivery" || input.orderType === "pickup")
+      ? restaurant.packaging_fee
+      : 0;
+
+  let discountAmount = 0;
+  let couponCode: string | null = null;
+  if (input.couponCode) {
+    const coupon = await fetchCoupon(supabase, restaurantId, input.couponCode);
+    if (coupon) {
+      const usage =
+        coupon.max_total_uses !== null || coupon.max_uses_per_customer !== null
+          ? await fetchCouponUsage(supabase, restaurantId, coupon.code, input.customerPhone.trim())
+          : { totalUses: 0, customerUses: 0 };
+      const validity = validateCoupon(coupon, {
+        orderTotal: itemsTotal,
+        currency: restaurant.currency,
+        paymentMethodId: input.paymentMethod ?? null,
+        totalUses: usage.totalUses,
+        customerUses: usage.customerUses,
+      });
+      if (validity.valid) {
+        discountAmount = computeDiscount(coupon, itemsTotal);
+        couponCode = coupon.code;
+      }
+    }
+  }
+
+  const total = itemsTotal + deliveryFee + packagingFee - discountAmount;
+
   const { data, error } = await supabase
     .from("orders")
     .insert({
@@ -115,14 +260,15 @@ export async function createOrder(
       lng: input.lng ?? null,
       table_number: input.tableNumber?.trim() || null,
       table_id: input.tableId || null,
-      delivery_zone: input.deliveryZone?.trim() || null,
-      delivery_fee: input.deliveryFee ?? 0,
-      packaging_fee: input.packagingFee ?? 0,
-      coupon_code: input.couponCode?.trim() || null,
-      discount_amount: input.discountAmount ?? 0,
-      items: input.items,
-      total: input.total,
-      currency: input.currency,
+      delivery_zone:
+        input.orderType === "delivery" ? input.deliveryZone?.trim() || null : null,
+      delivery_fee: deliveryFee,
+      packaging_fee: packagingFee,
+      coupon_code: couponCode,
+      discount_amount: discountAmount,
+      items,
+      total,
+      currency: restaurant.currency,
       payment_method: input.paymentMethod || null,
       bank_paid_from: input.bankPaidFrom || null,
       payment_reference: input.reference || null,
@@ -145,8 +291,8 @@ export async function createOrder(
     notifyAdminsOfNewOrder(restaurantId, {
       orderType: input.orderType,
       customerName: input.customerName.trim(),
-      total: input.total,
-      currency: input.currency,
+      total,
+      currency: restaurant.currency,
     }).catch(() => {}),
   );
 
@@ -207,45 +353,15 @@ export async function checkCoupon(
   }
 
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("coupons")
-    .select(
-      "id, code, discount_type, discount_value, is_active, expires_at, min_order_amount, max_total_uses, max_uses_per_customer, starts_at, valid_time_start, valid_time_end, valid_days, valid_payment_methods",
-    )
-    .eq("restaurant_id", restaurantId)
-    .eq("code", code)
-    .maybeSingle();
-  if (!data) {
+  const coupon = await fetchCoupon(supabase, restaurantId, code);
+  if (!coupon) {
     return { error: "Ese cupón no existe o ya venció." };
   }
 
-  const coupon: Coupon = {
-    id: data.id,
-    code: data.code,
-    discount_type: data.discount_type,
-    discount_value: data.discount_value,
-    is_active: data.is_active,
-    expires_at: data.expires_at,
-    min_order_amount: data.min_order_amount,
-    max_total_uses: data.max_total_uses,
-    max_uses_per_customer: data.max_uses_per_customer,
-    starts_at: data.starts_at,
-    valid_time_start: data.valid_time_start,
-    valid_time_end: data.valid_time_end,
-    valid_days: parseValidDays(data.valid_days),
-    valid_payment_methods: parseValidPaymentMethods(data.valid_payment_methods),
-  };
-
-  let usage = { totalUses: 0, customerUses: 0 };
-  if (coupon.max_total_uses !== null || coupon.max_uses_per_customer !== null) {
-    const { data: usageRows } = await supabase.rpc("get_coupon_usage", {
-      p_restaurant_id: restaurantId,
-      p_code: coupon.code,
-      p_customer_phone: input.customerPhone.trim(),
-    });
-    const row = usageRows?.[0];
-    if (row) usage = { totalUses: row.total_uses, customerUses: row.customer_uses };
-  }
+  const usage =
+    coupon.max_total_uses !== null || coupon.max_uses_per_customer !== null
+      ? await fetchCouponUsage(supabase, restaurantId, coupon.code, input.customerPhone.trim())
+      : { totalUses: 0, customerUses: 0 };
 
   const result = validateCoupon(coupon, {
     orderTotal: input.orderTotal,
