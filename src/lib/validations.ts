@@ -100,7 +100,14 @@ export const menuItemSchema = z
     is_available: z.boolean(),
     is_featured: z.boolean(),
     tags: z.string().max(200).optional().or(z.literal("")),
-    extras: z.string().max(1000).optional().or(z.literal("")),
+    extras: z
+      .array(
+        z.object({
+          name: z.string().min(1).max(80),
+          price: z.coerce.number().min(0),
+        }),
+      )
+      .max(50),
     preferences: z.string().max(1000).optional().or(z.literal("")),
   })
   .refine(

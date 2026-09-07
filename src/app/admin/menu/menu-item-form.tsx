@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import type { Category, MenuItem } from "@/lib/supabase/database.types";
 import type { ActionState } from "@/app/admin/actions";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
-import { extrasToText, parseExtras } from "@/lib/menu-item-extras";
 import { parsePreferences, preferencesToText } from "@/lib/menu-item-preferences";
+import { ExtrasFields } from "./extras-fields";
 
 export function MenuItemForm({
   categories,
@@ -117,19 +117,7 @@ export function MenuItemForm({
         />
       </div>
 
-      <div>
-        <Label htmlFor="extras">{t.extrasLabel}</Label>
-        <Textarea
-          id="extras"
-          name="extras"
-          rows={3}
-          defaultValue={extrasToText(parseExtras(item?.extras))}
-          placeholder={t.extrasPlaceholder}
-        />
-        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
-          {t.extrasHint}
-        </p>
-      </div>
+      <ExtrasFields extras={item?.extras} t={t} />
 
       <div>
         <Label htmlFor="preferences">{t.preferencesLabel}</Label>

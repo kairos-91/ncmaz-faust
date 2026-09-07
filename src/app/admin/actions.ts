@@ -12,7 +12,7 @@ import {
   menuItemSchema,
   restaurantSchema,
 } from "@/lib/validations";
-import { extrasTotal, parseExtras, parseExtrasText } from "@/lib/menu-item-extras";
+import { extrasTotal, parseExtras, parseExtrasForm } from "@/lib/menu-item-extras";
 import { parsePreferencesText } from "@/lib/menu-item-preferences";
 import type { OrderItemSnapshot } from "@/lib/orders";
 import { parseDeliveryZonesForm } from "@/lib/delivery-zones";
@@ -447,7 +447,7 @@ function parseMenuItemForm(formData: FormData) {
     is_available: formData.get("is_available") === "on",
     is_featured: formData.get("is_featured") === "on",
     tags: formData.get("tags") ?? "",
-    extras: formData.get("extras") ?? "",
+    extras: parseExtrasForm(formData),
     preferences: formData.get("preferences") ?? "",
   });
 }
@@ -488,7 +488,7 @@ export async function createMenuItem(
     is_available: parsed.data.is_available,
     is_featured: parsed.data.is_featured,
     tags: toTagsArray(parsed.data.tags),
-    extras: parseExtrasText(parsed.data.extras ?? ""),
+    extras: parsed.data.extras,
     preferences: parsePreferencesText(parsed.data.preferences ?? ""),
     image_url,
   });
@@ -529,7 +529,7 @@ export async function updateMenuItem(
       is_available: parsed.data.is_available,
       is_featured: parsed.data.is_featured,
       tags: toTagsArray(parsed.data.tags),
-      extras: parseExtrasText(parsed.data.extras ?? ""),
+      extras: parsed.data.extras,
       preferences: parsePreferencesText(parsed.data.preferences ?? ""),
       ...(image_url ? { image_url } : {}),
     })

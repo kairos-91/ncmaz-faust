@@ -763,8 +763,12 @@ const es = {
     tagsLabel: "Etiquetas (separadas por coma)",
     tagsPlaceholder: "vegano, picante, sin gluten",
     extrasLabel: "Toppings y extras",
-    extrasPlaceholder: "Queso extra, 1.00\nTocineta, 1.50\nSalsa picante, 0",
-    extrasHint: "Un extra por línea: nombre, precio. Usa 0 si el extra es gratis.",
+    extrasNamePlaceholder: "Queso extra",
+    extrasPricePlaceholder: "1.00",
+    extrasAdd: "Agregar extra",
+    extrasRemove: "Quitar extra",
+    extrasHint:
+      "El precio se suma al del plato cuando el cliente lo elige. Usa 0 si el extra es gratis.",
     preferencesLabel: "Preferencias (sin costo)",
     preferencesPlaceholder: "Sin sal\nSin azúcar\nSin queso",
     preferencesHint:
@@ -1902,8 +1906,12 @@ const en: typeof es = {
     tagsLabel: "Tags (comma-separated)",
     tagsPlaceholder: "vegan, spicy, gluten-free",
     extrasLabel: "Toppings and extras",
-    extrasPlaceholder: "Extra cheese, 1.00\nBacon, 1.50\nHot sauce, 0",
-    extrasHint: "One extra per line: name, price. Use 0 if the extra is free.",
+    extrasNamePlaceholder: "Extra cheese",
+    extrasPricePlaceholder: "1.00",
+    extrasAdd: "Add extra",
+    extrasRemove: "Remove extra",
+    extrasHint:
+      "The price is added to the dish's price when the customer picks it. Use 0 if the extra is free.",
     preferencesLabel: "Preferences (no cost)",
     preferencesPlaceholder: "No salt\nNo sugar\nNo cheese",
     preferencesHint:
