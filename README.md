@@ -504,6 +504,17 @@ o recíbelo como prop `t` (client) donde lo necesites.
      `fetchCouponUsage`) antes de armar el `total` que se guarda. Mismo
      patrón que ya usaba `createOrderFromAdmin` para los pedidos que crea
      el propio restaurante desde `/admin/orders/new`.
+   - Otro más (también sin migración): `/api/bank-notifications` ya no
+     acepta `GET` — solo `POST` con `text`/`secret`/`source` en el body
+     (JSON o form). Antes también respondía a `GET /api/bank-notifications
+     ?secret=...`, y un secreto viajando en la URL queda tal cual en logs
+     de acceso del hosting/proxy (y en el historial del navegador si
+     alguien lo prueba a mano) — con más superficie de exposición que un
+     body de POST, que normalmente no se loguea. La mayoría de apps de
+     reenvío de SMS/webhooks (MacroDroid, Tasker, Automate, IFTTT)
+     soportan POST con JSON o form igual de fácil que GET, así que esto no
+     debería requerir cambiar la app que reenvía las notificaciones — solo
+     confirma que esté configurada para mandar un POST.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

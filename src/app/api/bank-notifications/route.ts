@@ -21,15 +21,15 @@ function anonClient() {
   );
 }
 
+// Deliberadamente solo lee el body, nunca query params: un GET con
+// ?secret=... en la URL queda guardado tal cual en logs de acceso del
+// hosting/proxy (y en el historial del navegador si alguien lo prueba a
+// mano), exponiendo el secreto a cualquiera con acceso a esos logs. Con
+// esto el secreto solo viaja en el body de un POST, que normalmente no
+// se loguea. La mayoría de apps de reenvío de SMS/webhooks (MacroDroid,
+// Tasker, Automate, IFTTT) soportan POST con JSON o form igual de fácil
+// que GET, así que esto no les cierra la puerta.
 async function extractParams(request: Request) {
-  const url = new URL(request.url);
-  const fromQuery = {
-    text: url.searchParams.get("text"),
-    secret: url.searchParams.get("secret"),
-    source: url.searchParams.get("source"),
-  };
-  if (fromQuery.text) return fromQuery;
-
   const contentType = request.headers.get("content-type") ?? "";
   if (contentType.includes("application/json")) {
     const body = await request.json().catch(() => ({}) as Record<string, unknown>);
@@ -100,9 +100,5 @@ async function handle(request: Request) {
 }
 
 export async function POST(request: Request) {
-  return handle(request);
-}
-
-export async function GET(request: Request) {
   return handle(request);
 }
