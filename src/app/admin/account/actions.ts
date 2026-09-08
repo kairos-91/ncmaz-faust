@@ -29,7 +29,13 @@ export async function updateProfileAvatar(formData: FormData) {
   if (uploadError) return { error: "No pudimos subir la imagen" };
 
   const url = supabase.storage.from("menu-images").getPublicUrl(path).data.publicUrl;
-  const { error } = await supabase.auth.updateUser({ data: { avatar_url: url } });
+  // Se guarda en user_profiles, no en user_metadata: para cuentas con
+  // Google vinculado además de correo/contraseña, cada login con Google
+  // resincroniza user_metadata.avatar_url con la foto de Google, pisando
+  // lo que se guarde ahí. Una tabla propia queda inmune a eso.
+  const { error } = await supabase
+    .from("user_profiles")
+    .upsert({ user_id: user.id, avatar_url: url });
   if (error) return { error: error.message };
 
   revalidatePath("/admin", "layout");

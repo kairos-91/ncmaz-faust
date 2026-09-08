@@ -515,6 +515,19 @@ o recíbelo como prop `t` (client) donde lo necesites.
      soportan POST con JSON o form igual de fácil que GET, así que esto no
      debería requerir cambiar la app que reenvía las notificaciones — solo
      confirma que esté configurada para mandar un POST.
+   - `supabase/migrations/0061_user_profiles.sql` — agrega
+     `user_profiles` (`user_id` primary key, `avatar_url`). La foto de
+     perfil subida a mano en `/admin/account` (para cuentas sin Google)
+     se guardaba antes en `user_metadata.avatar_url`, dentro de
+     `auth.users` — pero para una cuenta con Google vinculado además de
+     correo/contraseña (`providers: ["email", "google"]`), cada inicio
+     de sesión con Google re-sincroniza `user_metadata` con el perfil de
+     Google (`avatar_url`/`picture` incluidos), pisando la foto subida a
+     mano sin avisar: el dueño la "pierde" solo por cerrar sesión y
+     volver a entrar con Google. Ahora se guarda en esta tabla propia,
+     ajena a `auth.users` e inmune a esa sincronización;
+     `getStaffRestaurant()` la usa primero y solo cae de vuelta a la foto
+     de Google si no hay una subida a mano.
 3. Copia `.env.example` a `.env.local` y completa las credenciales de tu
    proyecto (Settings → API). Para las notificaciones push, genera un par
    de claves VAPID con `npx web-push generate-vapid-keys` y agrégalas como

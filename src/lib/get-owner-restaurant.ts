@@ -98,9 +98,20 @@ export async function getStaffRestaurant(): Promise<{
     };
   }
 
-  // Google llena user_metadata.avatar_url (o .picture, según la versión
-  // del flujo OAuth); las cuentas por correo no tienen ninguno de los dos.
+  // La foto subida a mano en /admin/account vive en user_profiles, ajena
+  // a auth.users — así no la pisa la sincronización de Google en cuentas
+  // con Google vinculado además de correo/contraseña (ver
+  // 0061_user_profiles.sql). Si no hay una subida propia, se cae de
+  // vuelta a la foto de Google (user_metadata.avatar_url o .picture,
+  // según la versión del flujo OAuth); las cuentas solo por correo no
+  // tienen ninguna de las dos.
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("avatar_url")
+    .eq("user_id", user.id)
+    .maybeSingle();
   const avatarUrl =
+    profile?.avatar_url ??
     (user.user_metadata?.avatar_url as string | undefined) ??
     (user.user_metadata?.picture as string | undefined) ??
     null;
