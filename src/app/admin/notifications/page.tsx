@@ -28,6 +28,7 @@ export default async function NotificationsPage() {
       </div>
       <NotificationsManager
         restaurantId={restaurant.id}
+        restaurantSlug={restaurant.slug}
         subscriberCount={count ?? 0}
         locale={locale}
       />

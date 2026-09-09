@@ -11,10 +11,12 @@ type T = Dictionary["common"] & Dictionary["notificationManager"];
 
 export function NotificationsManager({
   restaurantId,
+  restaurantSlug,
   subscriberCount,
   locale,
 }: {
   restaurantId: string;
+  restaurantSlug: string;
   subscriberCount: number;
   locale: Locale;
 }) {
@@ -63,7 +65,12 @@ export function NotificationsManager({
           </div>
           <div>
             <Label htmlFor="url">{t.urlLabel}</Label>
-            <Input id="url" name="url" placeholder="/#promociones" />
+            <Input
+              id="url"
+              name="url"
+              defaultValue={`/${restaurantSlug}`}
+              placeholder="/#promociones"
+            />
           </div>
           <Button type="submit" disabled={isPending}>
             {isPending ? t.sending : t.send}
