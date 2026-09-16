@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Proyecto aparte con su propia configuracion de ESLint.
+    "payload-demo/**",
   ]),
 ]);
 

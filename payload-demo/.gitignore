@@ -1,0 +1,15 @@
+/node_modules
+/.next/
+/out/
+/build
+.env
+.env*.local
+*.tsbuildinfo
+next-env.d.ts
+
+# Base de datos SQLite local y archivos subidos desde el panel
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+/public/medios
